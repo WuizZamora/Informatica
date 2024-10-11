@@ -25,6 +25,22 @@ class ServicioModel
         return $VistaDeServicios;
     }
 
+    public function consultarServicio($idServicio)
+    {
+        // Llamar al procedimiento almacenado
+        $query = "CALL 	Servicios_SELECT_Reporte(?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $idServicio);
+        $stmt->execute();
+
+        // Obtener los resultados
+        $result = $stmt->get_result();
+        $VistaServicio = $result->fetch_assoc();
+
+        // Retornar los datos del servicio
+        return $VistaServicio;
+    }
+
     public function guardarServicio($PersonalSolicitante, $personalEntrega, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud)
     {
         // Inserta los datos en la tabla Servicios
@@ -32,17 +48,17 @@ class ServicioModel
                   VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("iiissss", $PersonalSolicitante, $personalEntrega, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud);
-    
+
         if ($stmt->execute()) {
             // Retorna el ID del servicio recién insertado
             return $stmt->insert_id;
         } else {
             return false;
         }
-    
+
         $stmt->close();
     }
-    
+
 
     public function guardarIncidencia($idServicio, $campos)
     {
@@ -89,7 +105,7 @@ class ServicioModel
     {
         // Inicializa $pkIDActivo en null
         $pkIDActivo = null;
-    
+
         // Primero, consulta el Pk_IDActivo en la tabla Activos usando CABMS y Progresivo
         $queryActivo = "SELECT Pk_IDActivo FROM Activos WHERE CABMS = ? AND Progresivo = ? AND Estatus = 'ACTIVO'";
         $stmtActivo = $this->db->prepare($queryActivo);
@@ -98,10 +114,9 @@ class ServicioModel
         $stmtActivo->bind_result($pkIDActivo);
         $stmtActivo->fetch();
         $stmtActivo->close();
-    
+
         // Si encontramos un activo con el CABMS y Progresivo dados
         if ($pkIDActivo) {
-            // Ahora guarda en la tabla Servicios_Tecnicos
             $queryServicioTecnico = "INSERT INTO Servicios_Tecnicos (Fk_IDServicio_Servicios, Fk_IDActivo_Activos, Descripcion, Evaluacion) VALUES (?, ?, ?, ?)";
             $stmtServicioTecnico = $this->db->prepare($queryServicioTecnico);
             $stmtServicioTecnico->bind_param(
@@ -109,17 +124,24 @@ class ServicioModel
                 $idServicio,
                 $pkIDActivo,
                 $campos['DescripcionEstado'],
-                $campos['EstadoConservacion'] // Aquí debes usar la evaluación correspondiente ('FUNCIONAL' o 'NO FUNCIONAL')
+                $campos['EstadoConservacion']
             );
-    
-            return $stmtServicioTecnico->execute();
+
+            $resultado = $stmtServicioTecnico->execute();
+            $stmtServicioTecnico->close();
+
+            // Si la inserción fue exitosa y el EstadoConservacion es 'No funcional'
+            if ($resultado && $campos['EstadoConservacion'] === 'No funcional') {
+                $queryBaja = "CALL Activo_UPDATE_Estatus_Baja(?)";
+                $stmtBaja = $this->db->prepare($queryBaja);
+                $stmtBaja->bind_param("i", $pkIDActivo);
+                $stmtBaja->execute();
+                $stmtBaja->close();
+            }
+
+            return $resultado;
         } else {
-            // Si no encontramos un activo, devolvemos false
             return false;
         }
     }
-    
-    
-
-    // Otros métodos (si lo necesitas) como crearServicio, actualizarServicio, eliminarServicio
 }

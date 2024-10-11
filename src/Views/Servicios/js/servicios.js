@@ -277,18 +277,17 @@ function renderTable(data, page) {
 
   paginatedData.forEach((servicio) => {
     const row = `
-      <tr>
-          <td>${`<a href="/INFORMATICA/src/Views/Servicios/seguimiento_servicios.php?IDServicio=${servicio.Pk_IDServicio}">${servicio.Pk_IDServicio}</a>`}</td>
-          <td>${servicio.Fk_Solicitante_Personal}</td>
-          <td>${servicio.Fk_Atiende_Personal}</td>
-          <td>${servicio.FechaSolicitud}</td>
-          <td style="word-break: break-word; white-space: normal;">${
-            servicio.Oficio
-          }</td>
-          <td>${servicio.FechaAtencion}</td>
-          <td>${servicio.TipoServicio}</td>
-      </tr>
-    `;
+  <tr>
+      <td>${`<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" target="_blank">${servicio.Pk_IDServicio}</a>`}</td>
+      <td>${servicio.Fk_Solicitante_Personal}</td>
+      <td>${servicio.Fk_Atiende_Personal}</td>
+      <td>${servicio.FechaSolicitud}</td>
+      <td style="word-break: break-word; white-space: normal;">${servicio.Oficio}</td>
+      <td>${servicio.FechaAtencion}</td>
+      <td>${servicio.TipoServicio}</td>
+  </tr>
+`;
+
     serviciosBody.innerHTML += row;
   });
 }
