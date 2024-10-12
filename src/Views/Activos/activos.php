@@ -12,7 +12,6 @@
     <div class="container">
         <h1>Página de Activos</h1>
         <p>Contenido relacionado con los activos...</p>
-        <a href="/INVEA/index.php" class="btn btn-primary">Regresar al Inicio</a>
     </div>
 </body>
 

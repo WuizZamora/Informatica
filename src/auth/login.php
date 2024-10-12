@@ -1,9 +1,10 @@
 <?php
-require '../../config/conexion.php'; // Asegúrate de incluir tu archivo de conexión
+require '../../config/conexion.php';
+require '../../config/config.php';
 session_start();
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $usuario = trim($_POST['usuario']); // Eliminamos espacios en blanco
-    $password = $_POST['password'];
+    $password = $_POST['pass'];
 
     // Validación básica del correo electrónico
     if (!filter_var($usuario, FILTER_VALIDATE_EMAIL)) {
@@ -26,10 +27,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (password_verify($password, $row['Pass'])) {
             // Guardar datos en la sesión
             $_SESSION['NumeroEmpleado'] = $row['Fk_NumeroEmpleado_Personal']; // Agregar el correo a la sesión (opcional)
-            header('Location: /INFORMATICA/index.php'); // Redirigir a la página principal en la raíz
+            header('Location: '.BASE_URL. 'index.php'); // Redirigir a la página principal en la raíz
             exit();
         } else {
-            echo '<div class="alert alert-danger">Credenciales incorrectas</div>'; // Mensaje genérico
+            echo '<div class="container alert alert-danger">Credenciales incorrectas</div>'; // Mensaje genérico
         }
     } else {
         echo '<div class="alert alert-danger">Credenciales incorrectas</div>'; // Mensaje genérico
@@ -39,30 +40,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conn->close();
 }
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
     <meta charset="UTF-8">
-    <title>Iniciar Sesión</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inicio de Sesión</title>
+    <?php include BASE_PATH.'src/Views/partials/head.php'; ?>
 </head>
-
 <body>
-    <div class="container mt-5">
-        <h2>Iniciar Sesión</h2>
+    
+    <div class="container form-signin w-100 m-auto d-flex justify-content-center">
         <form action="login.php" method="POST">
-            <div class="mb-3">
-                <label for="usuario" class="form-label">Usuario</label>
-                <input type="text" class="form-control" id="usuario" name="usuario" required>
+            <h1 class="text-center">INFORMÁTICA</h1>
+            <h4 class="h3 mb-3 fw-normal text-center">Inicio de Sesión</h4>
+            <div class="text-center mb-4">
+            <img src="<?php echo ASSETS_URL; ?>images/cdmx_logo_completo.png" alt="LOGO" width="200">
             </div>
             <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
-                <input type="password" class="form-control" id="password" name="password" required>
+                <div class="form-floating">
+                    <input type="text" id="usuario" name="usuario" class="form-control" autocomplete="off" required>
+                    <label for="usuario" class="form-label">Usuario:</label>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
+            <div class="mb-3">
+                <div class="form-floating">
+                    <input type="password" id="pass" name="pass" class="form-control" autocomplete="off" required>
+                    <label for="pass" class="form-label">Contraseña:</label>
+                </div>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-primary w-100 py-2">Iniciar sesión</button>
+            </div>            
         </form>
     </div>
 </body>
-
 </html>

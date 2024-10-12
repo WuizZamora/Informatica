@@ -279,8 +279,8 @@ function renderTable(data, page) {
     const row = `
   <tr>
       <td>${`<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" target="_blank">${servicio.Pk_IDServicio}</a>`}</td>
-      <td>${servicio.Fk_Solicitante_Personal}</td>
-      <td>${servicio.Fk_Atiende_Personal}</td>
+      <td>${servicio.Solicitante}</td>
+      <td>${servicio.Atiende}</td>
       <td>${servicio.FechaSolicitud}</td>
       <td style="word-break: break-word; white-space: normal;">${servicio.Oficio}</td>
       <td>${servicio.FechaAtencion}</td>

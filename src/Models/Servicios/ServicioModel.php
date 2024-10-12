@@ -17,7 +17,7 @@ class ServicioModel
     // Método para obtener todos los servicios
     public function obtenerServicios()
     {
-        $query = "SELECT * FROM Servicios
+        $query = "SELECT * FROM Servicios_informacion_general
             ORDER BY Pk_IDServicio DESC
         "; // Ajusta la consulta según tu tabla
         $result = $this->db->query($query);
@@ -58,7 +58,6 @@ class ServicioModel
 
         $stmt->close();
     }
-
 
     public function guardarIncidencia($idServicio, $campos)
     {

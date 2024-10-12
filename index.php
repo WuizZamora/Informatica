@@ -1,12 +1,15 @@
 <?php
+require 'config/config.php';
+require 'config/conexion.php';
 include './src/Controllers/ServicioController.php';
-require_once 'config/conexion.php';
+include './src/Controllers/ActivosController.php';
+include './src/Controllers/PersonalController.php';
 session_start();
 
 // Verificar si la sesión está activa
 if (!isset($_SESSION['NumeroEmpleado'])) {
     // Redirigir a la página de inicio de sesión si no hay sesión activa
-    header('Location: /INFORMATICA/src/auth/login.php');
+    header('Location:' . BASE_URL . 'src/auth/login.php');
     exit();
 }
 
@@ -37,20 +40,22 @@ if ($result->num_rows > 0) {
     // Controlador y mensajes según el rol
     switch ($rol) {
         case 1:
-            $mensaje = "Hola " . $row['Nombre'] . "<br>Tu rol es: " . $row['DescripcionRol'];
-            // Aquí puedes agregar más lógica para el rol 1 si es necesario
+            $mensaje = $row['Nombre'];
+            $sudoPersonal = new PersonalController();
+            $sudoActivos = new ActivosController();
+            $sudoServicios = new ServicioController();
             break;
         case 2:
-            $mensaje = "Hola " . $row['Nombre'] . "<br>Tu rol es: " . $row['DescripcionRol'];
-            $controller = new ServicioController();
-            // $servicios = $controller->index(); // Captura el contenido de servicios
+            $mensaje = $row['Nombre'];
+            $encargadoServicios = new ServicioController();
             break;
         case 3:
-            $mensaje = "Hola " . $row['Nombre'] . "<br>Tu rol es: " . $row['DescripcionRol'];
-            // Aquí puedes agregar más lógica para el rol 3 si es necesario
+            $mensaje = $row['Nombre'];
+            $suActivos = new ActivosController();
+            $suServicios = new ServicioController();
             break;
         case 4:
-            $mensaje = "Hola " . $row['Nombre'] . "<br>Tu rol es: " . $row['DescripcionRol'];
+            $mensaje = $row['Nombre'];
             // Aquí puedes agregar más lógica para el rol 4 si es necesario
             break;
         default:
@@ -64,35 +69,30 @@ if ($result->num_rows > 0) {
 $stmt->close();
 $conn->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="es">
 
 <head>
     <meta charset="UTF-8">
-    <title>Página Principal</title>
-    <link rel="shortcut icon" href="public/images/logo_cdmx.png">
-    <?php include './src/Views/partials/head.php'; ?>
+    <title><?php echo SITE_NAME; ?></title>
+    <?php include BASE_PATH . 'src/Views/partials/head.php'; ?>
 </head>
 
 <body>
-    <div class="text-center align-items-center">
-        <p><?php echo $mensaje; ?></p>
-        <form action="./src/auth/logout.php" method="post">
-            <!-- <button type="submit" class="btn btn-primary">Cerrar Sesión</button> -->
-            <button type="submit" class="btn btn-primary">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd" d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0z"></path>
-                    <path fill-rule="evenodd" d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708z"></path>
-                </svg>
-                Salir
-            </button>
-        </form>
-    </div>
+    <?php include BASE_PATH . 'src/Views/partials/header.php'; ?>
 
     <?php
-    if ($rol == 2) {
-        $controller->index();
+    if ($rol == 1) {
+        $sudoActivos->index();
+        $sudoPersonal->index();
+        $sudoServicios->index();
+    } else if ($rol == 2) {
+        $encargadoServicios->index();
+    } else if ($rol == 3) {
+        $suActivos->index();
+        $suServicios->index();
+    } else if ($rol == 4) {
+        echo "HOLA AMIGUITO: " . $row['Nombre'] . "<br>NO TIENES PERMISOS DE VER NADA CHIQUITIN";
     }
     ?>
 </body>

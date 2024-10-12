@@ -12,7 +12,6 @@
     <div class="container">
         <h1>Página de Personal</h1>
         <p>Contenido relacionado con el personal...</p>
-        <a href="/INVEA/index.php" class="btn btn-primary">Regresar al Inicio</a>
     </div>
 </body>
 
