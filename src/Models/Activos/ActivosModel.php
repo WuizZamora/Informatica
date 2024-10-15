@@ -47,4 +47,23 @@ class ActivosModel
         }
         return $activos;
     }    
+
+    public function obtenerAllActivos()
+    {
+        // Consulta base con orden alfabético por nombre
+        $query = "SELECT * FROM Activos 
+        ORDER BY Pk_IDActivo ASC";
+
+        $result = mysqli_query($this->db, $query);
+
+        if (!$result) {
+            throw new Exception("Error en la consulta: " . mysqli_error($this->db));
+        }
+        $Activos = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $Activos[] = $row;
+        }
+        return $Activos;
+    }
+
 }

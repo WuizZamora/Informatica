@@ -25,6 +25,22 @@ class ServicioModel
         return $VistaDeServicios;
     }
 
+    public function obtenerServicioDetalles($idServicio)
+    {
+        // Llamar al procedimiento almacenado
+        $query = "CALL ObtenerDetallesServicio(?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $idServicio);
+        $stmt->execute();
+
+        // Obtener los resultados
+        $result = $stmt->get_result();
+        $VistaServicio = $result->fetch_assoc();
+
+        // Retornar los datos del servicio
+        return $VistaServicio;
+    }
+
     public function consultarServicio($idServicio)
     {
         // Llamar al procedimiento almacenado
@@ -61,25 +77,43 @@ class ServicioModel
 
     public function guardarIncidencia($idServicio, $campos)
     {
-        // Guardar en tabla Atencion_Soporte
+        // Asegúrate de que ServicioSolicitado sea un array y eliminar duplicados
+        if (is_array($campos['ServicioSolicitado'])) {
+            // Eliminar duplicados
+            $serviciosSinDuplicados = array_unique($campos['ServicioSolicitado']);
+            // Concatenar todos los servicios solicitados en una sola cadena
+            $serviciosConcatenados = implode(", ", $serviciosSinDuplicados);
+        } else {
+            // Manejar el caso donde no se recibe un array
+            $serviciosConcatenados = ''; // O manejarlo de otra manera
+        }
+    
+        // Log para verificar los valores antes de la inserción
+        error_log("Antes de la inserción: ID Servicio: $idServicio, Servicios Solicitados: $serviciosConcatenados, Detalles: {$campos['DetallesServicioIncidencia']}, Observaciones: {$campos['ObservacionesServicioIncidencia']}");
+    
+        // Guardar en tabla Servicios_Incidencias
         $query = "INSERT INTO Servicios_Incidencias (Fk_IDServicio_Servicios, ServicioSolicitado, Descripcion, Observaciones) VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
+        
+        $result = true; // Variable para rastrear errores
+    
+        // Ejecutar la consulta con la cadena concatenada
         $stmt->bind_param(
             "isss",
             $idServicio,
-            $campos['ServicioSolicitado'],
+            $serviciosConcatenados, // Cadena concatenada de servicios solicitados
             $campos['DetallesServicioIncidencia'],
-            $campos['ObservacionesServicioIncidencia'],
+            $campos['ObservacionesServicioIncidencia']
         );
-
+    
+        // Ejecutar la consulta y manejar errores
         if (!$stmt->execute()) {
             error_log("Error en la consulta: " . $stmt->error);
-            return false; // O lanzar una excepción
+            $result = false; // Si hay un error, marca como false
         }
-
-        return true; // Retornar true si la inserción fue exitosa
-    }
-
+    
+        return $result; // Retornar el estado de la inserción
+    }    
 
     public function guardarVideos($idServicio, $campos)
     {

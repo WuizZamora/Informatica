@@ -15,7 +15,6 @@ if (!isset($_SESSION['NumeroEmpleado'])) {
 
 // Obtener Numero de empleado de la sesión
 $NumeroEmpleado = $_SESSION['NumeroEmpleado'];
-
 // Obtener la conexión
 $conn = Conexion::conectar();
 
@@ -85,12 +84,12 @@ $conn->close();
     if ($rol == 1) {
         $sudoActivos->index();
         $sudoPersonal->index();
-        $sudoServicios->index();
+        $sudoServicios->index($rol);
     } else if ($rol == 2) {
-        $encargadoServicios->index();
+        $encargadoServicios->index($rol);
     } else if ($rol == 3) {
         $suActivos->index();
-        $suServicios->index();
+        $suServicios->index($rol);
     } else if ($rol == 4) {
         echo "HOLA AMIGUITO: " . $row['Nombre'] . "<br>NO TIENES PERMISOS DE VER NADA CHIQUITIN";
     }
