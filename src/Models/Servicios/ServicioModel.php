@@ -28,7 +28,7 @@ class ServicioModel
     public function obtenerServicioDetalles($idServicio)
     {
         // Llamar al procedimiento almacenado
-        $query = "CALL ObtenerDetallesServicio(?)";
+        $query = "CALL Servicios_SELECT_ToUPDATE(?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $idServicio);
         $stmt->execute();
@@ -177,4 +177,23 @@ class ServicioModel
             return false;
         }
     }
+
+    public function actualizarServicioTecnico($idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionTecnico, $evaluacion, $fk_IDActivo_Activos) {
+        $sql = "CALL NombreDelProcedimientoAlmacenado(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionTecnico, $evaluacion, $fk_IDActivo_Activos]);
+    }
+
+    public function actualizarServicioIncidencia($idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $servicioSolicitado, $descripcionIncidencia, $observaciones) {
+        $sql = "CALL NombreDelProcedimientoAlmacenado(?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $servicioSolicitado, $descripcionIncidencia, $observaciones]);
+    }
+
+    public function actualizarServicioEntregaMaterial($idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionVideo, $cantidadVideos, $periodo, $periodoInicial, $periodoFinal, $equipo) {
+        $sql = "CALL NombreDelProcedimientoAlmacenado(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([$idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionVideo, $cantidadVideos, $periodo, $periodoInicial, $periodoFinal, $equipo]);
+    }
+    
 }

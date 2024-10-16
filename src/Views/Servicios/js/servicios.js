@@ -27,62 +27,58 @@ $(document).ready(function () {
   let isSubmitting = false; // Variable para evitar envíos múltiples
 
   $("#servicioForm").on("submit", function (event) {
-    event.preventDefault();
+    event.preventDefault(); // Detiene el envío por defecto
+
+    // Imprimir todos los datos del formulario antes de validar
+    let formData = {};
+    $(this)
+      .find(":input")
+      .each(function () {
+        formData[this.id || this.name] = $(this).val(); // Captura ID o nombre y valor
+      });
+    console.log("Datos del formulario antes de validar:", formData);
 
     console.log("Validando formulario...");
     let isValid = true;
     const invalidFields = [];
 
-    // Recorre todos los campos de entrada del formulario
     $(this)
       .find(":input")
       .each(function () {
+        // Validar solo si el campo es visible y requerido
         if ($(this).attr("id") === "ServicioSolicitado") {
-          // Validate multiple selections
           const selectedOptions = $(this).val();
-          if (selectedOptions.length === 0) {
+          console.log("Opciones seleccionadas:", selectedOptions); // Imprime las opciones seleccionadas
+
+          // Validar solo si es visible y se requiere
+          if ($(this).is(":visible") && selectedOptions.length === 0) {
             isValid = false;
             invalidFields.push(this.id); // Guarda el ID del campo inválido
-          } else {
-            $.each(selectedOptions, function (index, value) {
-              if (!value) {
-                isValid = false;
-                invalidFields.push(this.id); // Guarda el ID del campo inválido
-              }
-            });
           }
         } else if (!this.checkValidity()) {
           isValid = false;
-          invalidFields.push(this.id); // Guarda el ID del campo inválido
+          invalidFields.push(this.id);
         }
       });
 
     if (!isValid) {
       console.log("Formulario inválido");
       console.log("Campos inválidos:", invalidFields);
-      event.stopPropagation(); // Detener la propagación si hay campos inválidos
-      $(this).addClass("was-validated"); // Asegúrate de agregar la clase aquí
+      event.stopPropagation();
+      $(this).addClass("was-validated");
     } else {
-      // Mostrar modal de confirmación si es válido
       $("#confirmModal").modal("show");
-
-      // Llenar el modal con los datos del formulario antes de mostrarlo
       fillFormDataReview();
     }
   });
 
-  // Función para llenar la tabla de revisión en el modal
   function fillFormDataReview() {
-    let formDataHtml = ""; // Inicializa una cadena para los datos
-
-    // Recorre cada campo del formulario y crea filas en la tabla
+    let formDataHtml = "";
     $("#servicioForm")
-      .find(":input:not([type='hidden'])") // Excluye campos ocultos
+      .find(":input:not([type='hidden'])")
       .each(function () {
-        let label = $("label[for='" + this.id + "']").text() || this.name; // Intenta obtener la etiqueta
-        let value = $(this).val(); // Captura el valor del campo
-
-        // Si el campo tiene algún valor, mostrarlo
+        let label = $("label[for='" + this.id + "']").text() || this.name;
+        let value = $(this).val();
         if (value) {
           formDataHtml += `
             <tr>
@@ -92,76 +88,51 @@ $(document).ready(function () {
           `;
         }
       });
-
-    // Colocar los datos en el cuerpo de la tabla
     $("#formDataReview").html(formDataHtml);
   }
 
-  // Registrar el evento del botón de confirmación una vez
   $("#confirmSubmit").on("click", function () {
     if (!isSubmitting) {
-      // Solo permite el envío si no está en proceso
-      isSubmitting = true; // Marcar como en proceso para evitar duplicaciones
-      $("#confirmModal").modal("hide"); // Cierra el modal
-      submitForm(); // Llama la función que envía el formulario
+      isSubmitting = true;
+      $("#confirmModal").modal("hide");
+      submitForm();
     }
   });
 
-  // Función que envía el formulario por AJAX
   function submitForm() {
     console.log("Formulario válido, enviando...");
 
-    const formData = new FormData($("#servicioForm")[0]); // Captura todos los datos del formulario, incluyendo archivos
-
-    // Obtener los valores seleccionados del select múltiple
+    const formData = new FormData($("#servicioForm")[0]);
     const selectedOptions = $("#ServicioSolicitado").val();
 
-    // Si hay opciones seleccionadas, agrégalas a formData
     if (selectedOptions) {
       selectedOptions.forEach(function (option) {
-        formData.append("ServicioSolicitado[]", option); // Usa el mismo nombre con [] para almacenar múltiples valores
+        formData.append("ServicioSolicitado[]", option);
       });
     }
 
     $.ajax({
-      url: "/INFORMATICA/src/Models/Servicios/guardar_servicio.php", // Cambia a la ruta correcta
+      url: "/INFORMATICA/src/Models/Servicios/guardar_servicio.php",
       type: "POST",
       data: formData,
-      contentType: false, // No establecer el tipo de contenido
-      processData: false, // No procesar los datos
+      contentType: false,
+      processData: false,
       dataType: "json",
       success: function (response) {
-        $("#mensaje").text(response.message).show(); // Muestra el mensaje
-        // Limpia los mensajes de error de Bootstrap
-        const invalidFeedbacks = document.querySelectorAll(
-          ".was-validated .invalid-feedback"
-        );
-        invalidFeedbacks.forEach((feedback) => {
-          feedback.style.display = "none"; // Oculta todos los mensajes de error
-        });
-
-        // Resetea el formulario
+        $("#mensaje").text(response.message).show();
+        $(".was-validated .invalid-feedback").hide();
         $("#servicioForm")[0].reset();
         $("#servicioForm").removeClass("was-validated");
-
-        // Oculta todos los formularios dinámicos
         $("#formIncidencia, #formVideos, #formDictaminacion").hide();
-
-        // Oculta el mensaje después de 5 segundos
-        setTimeout(() => {
-          $("#mensaje").hide();
-        }, 5000);
-
-        actualizarServicios(); // Actualiza la lista de servicios
-
-        isSubmitting = false; // Restablecer el estado después del éxito
+        setTimeout(() => $("#mensaje").hide(), 5000);
+        actualizarServicios();
+        isSubmitting = false;
       },
       error: function (jqXHR, textStatus, errorThrown) {
         console.error("Error:", textStatus, errorThrown);
-        console.error("Respuesta del servidor:", jqXHR.responseText); // Añadir esto para ver la respuesta completa
+        console.error("Respuesta del servidor:", jqXHR.responseText);
         $("#mensaje").text("Error al enviar los datos.").show();
-
-        isSubmitting = false; // Restablecer el estado en caso de error
+        isSubmitting = false;
       },
     });
   }
@@ -173,7 +144,7 @@ function mostrarFormulario() {
 
   // Ocultar todos los formularios y limpiar campos
   const incidendenciaFields = document.querySelectorAll(
-    "#formIncidencia input, #formIncidencia textarea, #formIncidencia select, #formIncidencia checkbox"
+    "#formIncidencia input, #formIncidencia textarea, #formIncidencia select"
   );
   const videoFields = document.querySelectorAll(
     "#formVideos input, #formVideos textarea, #formVideos select"
@@ -224,7 +195,20 @@ function mostrarFormulario() {
     campoConfirmacionOficio.style.display = "block"; // Mostrar el campo confirmacion Oficio
     incidendenciaFields.forEach((field) => (field.required = true)); // Hacer los campos requeridos
     campoConfirmacionOficio.required = true; // Hacer el campo confirmación del oficio requerido
-  } else if (tipoServicio === "ENTREGA MATERIAL FÍLMICO") {
+
+    // Hacer que ServicioSolicitado sea requerido solo si es INCIDENCIA
+    const servicioSolicitadoSelect =
+      document.getElementById("ServicioSolicitado");
+    servicioSolicitadoSelect.required = true; // Hacer que el select múltiple sea requerido
+  } else {
+    // Asegúrate de quitar el requisito del select cuando no sea INCIDENCIA
+    const servicioSolicitadoSelect =
+      document.getElementById("ServicioSolicitado");
+    servicioSolicitadoSelect.required = false; // Quitar el requisito del select
+  }
+
+  // Manejo para otros tipos de servicios
+  if (tipoServicio === "ENTREGA MATERIAL FÍLMICO") {
     document.getElementById("formVideos").style.display = "block";
     campoOficio.style.display = "block"; // Mostrar el campo Oficio
     videoFields.forEach((field) => (field.required = true));
@@ -461,16 +445,6 @@ function editServicio(id) {
         // Llamar a la función para mostrar campos adicionales
         mostrarCamposAdicionales(tipoServicioSelect.value, data);
 
-        tipoServicioSelect.addEventListener("change", function () {
-          mostrarCamposAdicionales(this.value, data);
-        });
-
-        document
-          .getElementById("saveButton")
-          .addEventListener("click", function () {
-            actualizarServicio(id);
-          });
-
         $("#editModal").modal("show");
       }
     })
@@ -544,7 +518,7 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       </div>
       <div class="form-group">
           <label for="descripcionTecnico_Tecnico">Descripción:</label>
-          <textarea class="form-control" id="descripcionTecnico">${
+          <textarea class="form-control" id="descripcionTecnico_Tecnico">${
             data.DescripcionTecnico
           }</textarea>
       </div>
@@ -563,7 +537,9 @@ function mostrarCamposAdicionales(tipoServicio, data) {
     `;
   } else if (tipoServicio === "INCIDENCIA") {
     // Suponiendo que data.ServicioSolicitado es una cadena concatenada
-    const serviciosSolicitados = data.ServicioSolicitado.split(", ").map(servicio => servicio.trim());
+    const serviciosSolicitados = data.ServicioSolicitado.split(", ").map(
+      (servicio) => servicio.trim()
+    );
 
     camposAdicionalesDiv.innerHTML = `
     <hr>
@@ -571,11 +547,27 @@ function mostrarCamposAdicionales(tipoServicio, data) {
           <label for="ServicioSolicitado">Servicio Solicitado:</label>
           <select class="form-select text-center" id="ServicioSolicitado" name="ServicioSolicitado[]" size="9" multiple>
               <option value="">Elige una opción</option>
-              <option value="GESTIÓN DE EQUIPOS" ${serviciosSolicitados.includes("GESTIÓN DE EQUIPOS") ? "selected" : ""}>GESTIÓN DE EQUIPOS</option>
-              <option value="CONECTIVIDAD" ${serviciosSolicitados.includes("CONECTIVIDAD") ? "selected" : ""}>CONECTIVIDAD</option>
-              <option value="GESTIÓN DE USUARIOS" ${serviciosSolicitados.includes("GESTIÓN DE USUARIOS") ? "selected" : ""}>GESTIÓN DE USUARIOS</option>
-              <option value="CAPACITACIÓN Y ASESORÍA" ${serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA") ? "selected" : ""}>CAPACITACIÓN Y ASESORÍA</option>
-              <option value="OTROS" ${serviciosSolicitados.includes("OTROS") ? "selected" : ""}>OTROS</option>
+              <option value="GESTIÓN DE EQUIPOS" ${
+                serviciosSolicitados.includes("GESTIÓN DE EQUIPOS")
+                  ? "selected"
+                  : ""
+              }>GESTIÓN DE EQUIPOS</option>
+              <option value="CONECTIVIDAD" ${
+                serviciosSolicitados.includes("CONECTIVIDAD") ? "selected" : ""
+              }>CONECTIVIDAD</option>
+              <option value="GESTIÓN DE USUARIOS" ${
+                serviciosSolicitados.includes("GESTIÓN DE USUARIOS")
+                  ? "selected"
+                  : ""
+              }>GESTIÓN DE USUARIOS</option>
+              <option value="CAPACITACIÓN Y ASESORÍA" ${
+                serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA")
+                  ? "selected"
+                  : ""
+              }>CAPACITACIÓN Y ASESORÍA</option>
+              <option value="OTROS" ${
+                serviciosSolicitados.includes("OTROS") ? "selected" : ""
+              }>OTROS</option>
           </select>
           <div class="invalid-feedback">
               Ingresa una opción
@@ -583,115 +575,18 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       </div>
       <div class="form-group">
           <label for="descripcionIncidencia_Incidencia">Descripción:</label>
-          <textarea class="form-control" id="descripcionIncidencia_Incidencia">${data.DescripcionIncidencia}</textarea>
+          <textarea class="form-control" id="descripcionIncidencia_Incidencia">${
+            data.DescripcionIncidencia
+          }</textarea>
       </div>
       <div class="form-group">
           <label for="observaciones_Incidencia">Observaciones:</label>
-          <textarea class="form-control" id="observaciones_Incidencia">${data.Observaciones}</textarea>
+          <textarea class="form-control" id="observaciones_Incidencia">${
+            data.Observaciones
+          }</textarea>
       </div>
     `;
-}
-}
-
-function actualizarServicio(id) {
-  const solicitante = document.getElementById("solicitante").value;
-  const entrega = document.getElementById("entrega").value;
-  const atiende = document.getElementById("atiende").value;
-  const tipoServicio = document.getElementById("tipoServicio").value;
-  const oficio = document.getElementById("Oficio").value;
-  const fechaSolicitud = document.getElementById("fechaSolicitud").value;
-  const cantidadVideos =
-    tipoServicio === "ENTREGA MATERIAL FÍLMICO"
-      ? document.getElementById("cantidadVideos").value
-      : null;
-  const periodoInicial_Videos =
-    tipoServicio === "ENTREGA MATERIAL FÍLMICO"
-      ? document.getElementById("periodoInicial_Videos").value
-      : null;
-  const periodoFinal_Videos =
-    tipoServicio === "ENTREGA MATERIAL FÍLMICO"
-      ? document.getElementById("periodoFinal_Videos").value
-      : null;
-  const periodo_Videos =
-    tipoServicio === "ENTREGA MATERIAL FÍLMICO"
-      ? document.getElementById("periodo_Videos").value
-      : null;
-  const equipo_Videos =
-    tipoServicio === "ENTREGA MATERIAL FÍLMICO"
-      ? document.getElementById("equipo_Videos").value
-      : null;
-  const cabms_Tecnico =
-    tipoServicio === "TÉCNICO"
-      ? document.getElementById("cabms_Tecnico").value
-      : null;
-  const progresivo_Tecnico =
-    tipoServicio === "TÉCNICO"
-      ? document.getElementById("progresivo_Tecnico").value
-      : null;
-  const descripcionTecnico =
-    tipoServicio === "TÉCNICO"
-      ? document.getElementById("descripcionTecnico").value
-      : null;
-  const evaluacion_Tecnico =
-    tipoServicio === "TÉCNICO"
-      ? document.getElementById("evaluacion_Tecnico").value
-      : null;
-  const servicioSolicitado_Incidencia =
-    tipoServicio === "INCIDENCIA"
-      ? document.getElementById("servicioSolicitado_Incidencia").value
-      : null;
-  const descripcionIncidencia_Incidencia =
-    tipoServicio === "INCIDENCIA"
-      ? document.getElementById("descripcionIncidencia").value
-      : null;
-  const observaciones_Incidencia =
-    tipoServicio === "INCIDENCIA"
-      ? document.getElementById("observaciones_Incidencia").value
-      : null;
-
-  // Crear objeto con los datos para enviar
-  const data = {
-    id,
-    solicitante,
-    entrega,
-    atiende,
-    tipoServicio,
-    oficio,
-    fechaSolicitud,
-    cantidadVideos,
-    periodoInicial_Videos,
-    periodoFinal_Videos,
-    periodo_Videos,
-    equipo_Videos,
-    cabms_Tecnico,
-    progresivo_Tecnico,
-    descripcionTecnico,
-    evaluacion_Tecnico,
-    servicioSolicitado_Incidencia,
-    descripcionIncidencia_Incidencia,
-    observaciones_Incidencia,
-  };
-
-  fetch("/INFORMATICA/src/Models/Servicios/actualizar_servicio.php", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  })
-    .then((response) => response.text()) // Cambiar a text() para inspeccionar el HTML o JSON devuelto.
-    .then((text) => {
-      console.log(text); // Ver la respuesta cruda del servidor en la consola.
-      const data = JSON.parse(text); // Intentar parsear manualmente si es JSON.
-      if (data.success) {
-        alert("Servicio actualizado exitosamente.");
-        $("#editModal").modal("hide");
-      } else {
-        alert(data.error);
-      }
-    })
-    .catch((error) => {
-      console.error("Error:", error);
-      alert("Ocurrió un error al actualizar el servicio.");
-    });
+  }
 }
 
 document.addEventListener("DOMContentLoaded", function () {
