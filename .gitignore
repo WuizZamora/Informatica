@@ -2,3 +2,4 @@
 vendor/
 hash_pass.php
 uploads/
+config.php
