@@ -23,119 +23,221 @@
   });
 })();
 
-$(document).ready(function () {
-  let isSubmitting = false; // Variable para evitar envíos múltiples
+document.addEventListener("DOMContentLoaded", function () {
+  let isSubmitting = false; // Evita envíos múltiples
 
-  $("#servicioForm").on("submit", function (event) {
-    event.preventDefault(); // Detiene el envío por defecto
+  const servicioForm = document.getElementById("servicioForm");
+  const confirmModal = new bootstrap.Modal(
+    document.getElementById("confirmModal")
+  );
+  const mensaje = document.getElementById("mensaje");
 
-    // Imprimir todos los datos del formulario antes de validar
-    let formData = {};
-    $(this)
-      .find(":input")
-      .each(function () {
-        formData[this.id || this.name] = $(this).val(); // Captura ID o nombre y valor
-      });
-    console.log("Datos del formulario antes de validar:", formData);
-
+  // Validación y envío del formulario
+  servicioForm.addEventListener("submit", function (event) {
+    event.preventDefault();
     console.log("Validando formulario...");
+
     let isValid = true;
     const invalidFields = [];
+    const inputs = servicioForm.querySelectorAll("input, select, textarea");
 
-    $(this)
-      .find(":input")
-      .each(function () {
-        // Validar solo si el campo es visible y requerido
-        if ($(this).attr("id") === "ServicioSolicitado") {
-          const selectedOptions = $(this).val();
-          console.log("Opciones seleccionadas:", selectedOptions); // Imprime las opciones seleccionadas
+    inputs.forEach((input) => {
+      const isHidden = input.offsetParent === null; // Detecta si el campo está oculto
 
-          // Validar solo si es visible y se requiere
-          if ($(this).is(":visible") && selectedOptions.length === 0) {
+      if (!isHidden) {
+        if (input.id === "ServicioSolicitado") {
+          const selectedOptions = Array.from(input.selectedOptions).map(
+            (option) => option.value
+          );
+          if (selectedOptions.length === 0) {
             isValid = false;
-            invalidFields.push(this.id); // Guarda el ID del campo inválido
+            invalidFields.push(input.id);
           }
-        } else if (!this.checkValidity()) {
+        } else if (!input.checkValidity()) {
           isValid = false;
-          invalidFields.push(this.id);
+          invalidFields.push(input.id);
         }
-      });
+      }
+    });
 
     if (!isValid) {
-      console.log("Formulario inválido");
-      console.log("Campos inválidos:", invalidFields);
-      event.stopPropagation();
-      $(this).addClass("was-validated");
+      console.log("Formulario inválido:", invalidFields);
+      servicioForm.classList.add("was-validated");
     } else {
-      $("#confirmModal").modal("show");
       fillFormDataReview();
+      confirmModal.show();
     }
   });
 
   function fillFormDataReview() {
+    const formDataReview = document.getElementById("formDataReview");
     let formDataHtml = "";
-    $("#servicioForm")
-      .find(":input:not([type='hidden'])")
-      .each(function () {
-        let label = $("label[for='" + this.id + "']").text() || this.name;
-        let value = $(this).val();
-        if (value) {
-          formDataHtml += `
-            <tr>
-              <td>${label}</td>
-              <td>${value}</td>
-            </tr>
-          `;
-        }
-      });
-    $("#formDataReview").html(formDataHtml);
+
+    const inputs = servicioForm.querySelectorAll(
+      'input:not([type="hidden"]), select, textarea'
+    );
+    inputs.forEach((input) => {
+      const label =
+        document.querySelector(`label[for='${input.id}']`)?.textContent ||
+        input.name;
+      const value = input.value;
+      if (value) {
+        formDataHtml += `<tr><td>${label}</td><td>${value}</td></tr>`;
+      }
+    });
+
+    formDataReview.innerHTML = formDataHtml;
   }
 
-  $("#confirmSubmit").on("click", function () {
-    if (!isSubmitting) {
-      isSubmitting = true;
-      $("#confirmModal").modal("hide");
-      submitForm();
-    }
-  });
+  document
+    .getElementById("confirmSubmit")
+    .addEventListener("click", function () {
+      if (!isSubmitting) {
+        isSubmitting = true;
+        confirmModal.hide();
+        submitForm();
+      }
+    });
 
   function submitForm() {
     console.log("Formulario válido, enviando...");
 
-    const formData = new FormData($("#servicioForm")[0]);
-    const selectedOptions = $("#ServicioSolicitado").val();
+    const formData = new FormData(servicioForm);
+    const selectedOptions = Array.from(
+      document.getElementById("ServicioSolicitado").selectedOptions
+    ).map((option) => option.value);
 
-    if (selectedOptions) {
-      selectedOptions.forEach(function (option) {
-        formData.append("ServicioSolicitado[]", option);
-      });
-    }
+    selectedOptions.forEach((option) =>
+      formData.append("ServicioSolicitado[]", option)
+    );
 
-    $.ajax({
-      url: "/INFORMATICA/src/Models/Servicios/guardar_servicio.php",
-      type: "POST",
-      data: formData,
-      contentType: false,
-      processData: false,
-      dataType: "json",
-      success: function (response) {
-        $("#mensaje").text(response.message).show();
-        $(".was-validated .invalid-feedback").hide();
-        $("#servicioForm")[0].reset();
-        $("#servicioForm").removeClass("was-validated");
-        $("#formIncidencia, #formVideos, #formDictaminacion").hide();
-        setTimeout(() => $("#mensaje").hide(), 5000);
+    fetch("/INFORMATICA/src/Models/Servicios/guardar_servicio.php", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        mensaje.textContent = data.message;
+        mensaje.style.display = "block";
+
+        resetForm(); // Llamar al reseteo completo
+        setTimeout(() => {
+          mensaje.style.display = "none";
+        }, 5000);
+
         actualizarServicios();
         isSubmitting = false;
-      },
-      error: function (jqXHR, textStatus, errorThrown) {
-        console.error("Error:", textStatus, errorThrown);
-        console.error("Respuesta del servidor:", jqXHR.responseText);
-        $("#mensaje").text("Error al enviar los datos.").show();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        mensaje.textContent = "Error al enviar los datos.";
+        mensaje.style.display = "block";
         isSubmitting = false;
-      },
+      });
+  }
+
+  // Función para resetear el formulario completamente
+  function resetForm() {
+    servicioForm.reset(); // Resetea el formulario principal
+    servicioForm.classList.remove("was-validated");
+
+    // Ocultar y limpiar todos los formularios dinámicos
+    const dynamicForms = ["formIncidencia", "formVideos", "formDictaminacion"];
+    dynamicForms.forEach((formId) => {
+      const form = document.getElementById(formId);
+      form.style.display = "none";
+      form.querySelectorAll("input, select, textarea").forEach((field) => {
+        field.value = "";
+        field.required = false;
+      });
+    });
+
+    // Resetear selects a su opción por defecto
+    document.querySelectorAll("select").forEach((select) => {
+      select.selectedIndex = 0;
+    });
+
+    // Ocultar campos adicionales como Oficio y Confirmación
+    document.getElementById("ConfirmacionCampoOficio").style.display = "none";
+    document.getElementById("CampoOficio").style.display = "none";
+    document.getElementById("Oficio").value = "";
+  }
+
+  // Carga de datos en los selects
+  function cargarDatosIniciales() {
+    fetch("./src/Models/Personal/obtener_personal.php")
+      .then((response) => response.json())
+      .then((data) => {
+        llenarSelect(data, "PersonalSolicitante");
+        llenarSelect(data, "PersonalEntrega");
+      })
+      .catch((error) => console.error("Error fetching personal data:", error));
+
+    fetch("./src/Models/Personal/obtener_personal.php?filtrar=true")
+      .then((response) => response.json())
+      .then((data) => {
+        llenarSelect(data, "PersonalAtiende");
+      })
+      .catch((error) => console.error("Error fetching atiende data:", error));
+
+    fetch("./src/Models/Activos/obtener_activos.php")
+      .then((response) => response.json())
+      .then((data) => {
+        const selectCABMS = document.getElementById("CABMSDictaminacion");
+        llenarSelect(data, "CABMSDictaminacion", "CABMS", "Descripcion");
+
+        selectCABMS.addEventListener("change", (event) => {
+          fetchProgresivos(event.target.value);
+        });
+      })
+      .catch((error) => console.error("Error fetching activos data:", error));
+  }
+
+  function llenarSelect(
+    data,
+    selectId,
+    valueKey = "Pk_NumeroEmpleado",
+    textKey = "Nombre"
+  ) {
+    const select = document.getElementById(selectId);
+    data.forEach((item) => {
+      const option = document.createElement("option");
+      option.value = item[valueKey];
+      option.textContent = `${item[valueKey]} - ${item[textKey]}`;
+      select.appendChild(option);
     });
   }
+
+  function fetchProgresivos(cabms) {
+    fetch(`./src/Models/Activos/obtener_progresivo.php?cabms=${cabms}`)
+      .then((response) => response.json())
+      .then((data) => {
+        const selectProgresivo = document.getElementById(
+          "ProgresivoDictaminacion"
+        );
+        selectProgresivo.innerHTML = "";
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = "Selecciona un progresivo";
+        defaultOption.selected = true;
+        defaultOption.disabled = true;
+        selectProgresivo.appendChild(defaultOption);
+
+        data.forEach((activos) => {
+          const option = document.createElement("option");
+          option.value = activos.Progresivo;
+          option.textContent = activos.Progresivo;
+          selectProgresivo.appendChild(option);
+        });
+      })
+      .catch((error) =>
+        console.error("Error fetching progresivos data:", error)
+      );
+  }
+
+  // Inicializar carga de datos
+  cargarDatosIniciales();
 });
 
 // SELECCION DE SERVICIO CAMPOS DINAMICOS
@@ -299,7 +401,7 @@ function renderTable(data, page) {
                   userRole == 2 ||
                   userRole == 3 ||
                   userRole == 4
-                    ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" target="_blank" class="btn btn-success">VER</a>`
+                    ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" target="_blank" class="btn btn-success">Ver</a>`
                     : ""
                 }              
                     ${
@@ -309,7 +411,7 @@ function renderTable(data, page) {
                     }
                     ${
                       userRole == 1
-                        ? `<button class="btn btn-dark" onclick="deleteServicio(${servicio.Pk_IDServicio})">Eliminar</button>`
+                        ? `<button class="btn btn-warning" onclick="deleteServicio(${servicio.Pk_IDServicio})">Estado</button>`
                         : ""
                     }
                 </td>
@@ -327,14 +429,26 @@ function renderPagination(totalPages) {
   // Botón de página anterior
   pagination.innerHTML += `
     <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${
-        currentPage - 1
-      })">Anterior</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Anterior</a>
     </li>
   `;
 
+  // Determinar el rango de páginas a mostrar
+  const maxVisiblePages = 5; // Número máximo de páginas visibles
+  const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+  // Ajustar el rango si estamos cerca de los extremos
+  if (endPage - startPage < maxVisiblePages - 1) {
+    if (startPage === 1) {
+      endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+    } else if (endPage === totalPages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+  }
+
   // Botones de páginas
-  for (let i = 1; i <= totalPages; i++) {
+  for (let i = startPage; i <= endPage; i++) {
     pagination.innerHTML += `
       <li class="page-item ${i === currentPage ? "active" : ""}">
         <a class="page-link" href="#" onclick="changePage(${i})">${i}</a>
@@ -342,15 +456,38 @@ function renderPagination(totalPages) {
     `;
   }
 
+  // Botón para ir a la primera página si no estamos en ella
+  if (startPage > 1) {
+    pagination.innerHTML = `
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(1)">1</a>
+      </li>
+      <li class="page-item">
+        <span class="page-link">...</span>
+      </li>
+    ` + pagination.innerHTML;
+  }
+
+  // Botón para ir a la última página si no estamos en ella
+  if (endPage < totalPages) {
+    pagination.innerHTML += `
+      <li class="page-item">
+        <span class="page-link">...</span>
+      </li>
+      <li class="page-item">
+        <a class="page-link" href="#" onclick="changePage(${totalPages})">${totalPages}</a>
+      </li>
+    `;
+  }
+
   // Botón de página siguiente
   pagination.innerHTML += `
     <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${
-        currentPage + 1
-      })">Siguiente</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Siguiente</a>
     </li>
   `;
 }
+
 
 function changePage(page) {
   if (page < 1 || page > totalPages) return;
@@ -399,8 +536,8 @@ function editServicio(id) {
               <input type="text" class="form-control text-center" id="tipoServicio" value="${data.TipoServicio}" readonly>
           </div>
           <div class="form-group">
-              <label for="Oficio">Oficio:</label>
-              <input type="text" class="form-control" id="Oficio" value="${data.Oficio}">
+              <label for="OficioUpdate">Oficio:</label>
+              <input type="text" class="form-control" id="OficioUpdate" value="${data.Oficio}">
           </div>
           <div class="form-group">
               <label for="fechaSolicitud">Fecha de solicitud:</label>
@@ -445,7 +582,119 @@ function editServicio(id) {
         // Llamar a la función para mostrar campos adicionales
         mostrarCamposAdicionales(tipoServicioSelect.value, data);
 
-        $("#editModal").modal("show");
+        tipoServicioSelect.addEventListener("change", function () {
+          mostrarCamposAdicionales(this.value, data);
+        });
+        let myModal = new bootstrap.Modal(document.getElementById("editModal"));
+        myModal.show();
+
+        document.getElementById("saveButton").onclick = function () {
+          // Obtener los valores de los campos
+          const idServicio = data.Pk_IDServicio;
+          const solicitante = document.getElementById("solicitante").value;
+          const entrega = document.getElementById("entrega").value;
+          const atiende = document.getElementById("atiende").value;
+          const oficio = document.getElementById("OficioUpdate").value;
+          const fechaSolicitud =
+            document.getElementById("fechaSolicitud").value;
+          const tipoServicio = document.getElementById("tipoServicio").value;
+
+          // Inicializar un objeto para almacenar los datos del servicio
+          const datosServicio = {
+            idServicio,
+            solicitante,
+            entrega,
+            atiende,
+            oficio,
+            fechaSolicitud,
+            tipoServicio,
+          };
+
+          // Agregar datos específicos según el tipo de servicio
+          if (tipoServicio === "TÉCNICO") {
+            const IDActivo = document.getElementById("cabms_Tecnico").value;
+            const DescripcionTecnico = document.getElementById(
+              "descripcionTecnico_Tecnico"
+            ).value;
+            const EvaluacionTecnico =
+              document.getElementById("evaluacion_Tecnico").value;
+
+            datosServicio.IDActivo = IDActivo;
+            datosServicio.DescripcionTecnico = DescripcionTecnico;
+            datosServicio.EvaluacionTecnico = EvaluacionTecnico;
+          } else if (tipoServicio === "INCIDENCIA") {
+            const selectElement = document.getElementById(
+              "ServicioSolicitadoUPDATE"
+            );
+            const selectedOptionsUPDATE = Array.from(
+              selectElement.selectedOptions
+            )
+              .map((option) => option.value)
+              .join(", "); // Unir los valores seleccionados con comas
+
+            const DescripcionIncidencia = document.getElementById(
+              "descripcionIncidencia_Incidencia"
+            ).value;
+            const ObservacionesIncidencia = document.getElementById(
+              "observaciones_Incidencia"
+            ).value;
+
+            datosServicio.ServicioSolicitado = selectedOptionsUPDATE;
+            datosServicio.DescripcionIncidencia = DescripcionIncidencia;
+            datosServicio.ObservacionesIncidencia = ObservacionesIncidencia;
+          } else if (tipoServicio === "ENTREGA MATERIAL FÍLMICO") {
+            const CantidadVideos =
+              document.getElementById("cantidadVideos").value;
+            const PIVideos = document.getElementById(
+              "periodoInicial_Videos"
+            ).value;
+            const PFVideos = document.getElementById(
+              "periodoFinal_Videos"
+            ).value;
+            const PVideos = document.getElementById("periodo_Videos").value;
+            const Equipo = document.getElementById("equipo_Videos").value;
+            const DescripcionVideos = document.getElementById(
+              "DescripcionVideosUpdate"
+            ).value;
+
+            datosServicio.CantidadVideos = CantidadVideos;
+            datosServicio.PIVideos = PIVideos;
+            datosServicio.PFVideos = PFVideos;
+            datosServicio.PVideos = PVideos;
+            datosServicio.Equipo = Equipo;
+            datosServicio.DescripcionVideos = DescripcionVideos;
+          }
+
+          // Enviar los datos al backend
+          fetch("/INFORMATICA/src/Models/Servicios/actualizar_servicio.php", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(datosServicio), // Convierte los datos a JSON
+          })
+            .then(async (response) => {
+              const text = await response.text(); // Lee la respuesta como texto
+              try {
+                const result = JSON.parse(text); // Intenta parsear como JSON
+                if (result.success) {
+                  alert("Datos del servicio guardados exitosamente.");
+                  myModal.hide(); // Cierra el modal si estás usando uno
+                } else {
+                  alert(
+                    result.error || "Ocurrió un error al guardar los datos."
+                  );
+                }
+              } catch (error) {
+                console.error("Respuesta inválida del servidor:", text); // Muestra el contenido
+                alert("Error en la respuesta del servidor.");
+              }
+            })
+            .catch((error) => {
+              console.error("Error al guardar el servicio:", error);
+              alert("Ocurrió un error al guardar los datos.");
+            });
+        };
       }
     })
     .catch((error) => {
@@ -503,8 +752,8 @@ function mostrarCamposAdicionales(tipoServicio, data) {
           <input type="text" class="form-control" id="equipo_Videos" value="${data.Equipo}">
       </div>
       <div class="form-group">
-          <label for="DescripcionVideos">Descripcion de los Videos:</label>
-          <textarea class="form-control" id="DescripcionVideos">${data.DescripcionVideo}</textarea>
+          <label for="DescripcionVideosUpdate">Descripcion de los Videos:</label>
+          <textarea class="form-control" id="DescripcionVideosUpdate">${data.DescripcionVideo}</textarea>
       </div>
     `;
   } else if (tipoServicio === "TÉCNICO") {
@@ -544,8 +793,8 @@ function mostrarCamposAdicionales(tipoServicio, data) {
     camposAdicionalesDiv.innerHTML = `
     <hr>
       <div class="form-group">
-          <label for="ServicioSolicitado">Servicio Solicitado:</label>
-          <select class="form-select text-center" id="ServicioSolicitado" name="ServicioSolicitado[]" size="9" multiple>
+          <label for="ServicioSolicitadoUPDATE">Servicio Solicitado:</label>
+          <select class="form-select text-center" id="ServicioSolicitadoUPDATE" name="ServicioSolicitadoUPDATE[]" size="9" multiple>
               <option value="">Elige una opción</option>
               <option value="GESTIÓN DE EQUIPOS" ${
                 serviciosSolicitados.includes("GESTIÓN DE EQUIPOS")
@@ -588,98 +837,3 @@ function mostrarCamposAdicionales(tipoServicio, data) {
     `;
   }
 }
-
-document.addEventListener("DOMContentLoaded", function () {
-  // Obtener todos los empleados para PersonalSolicitante
-  fetch("./src/Models/Personal/obtener_personal.php")
-    .then((response) => response.json())
-    .then((data) => {
-      // Llenar el select de PersonalSolicitante
-      const selectSolicitante = document.getElementById("PersonalSolicitante");
-      data.forEach((persona) => {
-        const optionSolicitante = document.createElement("option");
-        optionSolicitante.value = persona.Pk_NumeroEmpleado;
-        optionSolicitante.textContent = `${persona.Pk_NumeroEmpleado} - ${persona.Nombre}`;
-        selectSolicitante.appendChild(optionSolicitante);
-      });
-
-      // Llenar el select de PersonalEntrega
-      const selectEntrega = document.getElementById("PersonalEntrega");
-      data.forEach((persona) => {
-        const optionEntrega = document.createElement("option");
-        optionEntrega.value = persona.Pk_NumeroEmpleado;
-        optionEntrega.textContent = `${persona.Pk_NumeroEmpleado} - ${persona.Nombre}`;
-        selectEntrega.appendChild(optionEntrega);
-      });
-    })
-    .catch((error) => console.error("Error fetching personal data:", error));
-
-  // Obtener empleados filtrados para PersonalAtiende
-  fetch("./src/Models/Personal/obtener_personal.php?filtrar=true")
-    .then((response) => response.json())
-    .then((data) => {
-      const selectAtiende = document.getElementById("PersonalAtiende");
-      data.forEach((persona) => {
-        const optionAtiende = document.createElement("option");
-        optionAtiende.value = persona.Pk_NumeroEmpleado;
-        optionAtiende.textContent = `${persona.Pk_NumeroEmpleado} - ${persona.Nombre}`;
-        selectAtiende.appendChild(optionAtiende);
-      });
-    })
-    .catch((error) => console.error("Error fetching atiende data:", error));
-
-  // Obtener activos para CABMSDictaminacion
-  fetch("./src/Models/Activos/obtener_activos.php")
-    .then((response) => response.json())
-    .then((data) => {
-      const selectCABMSDictaminacion =
-        document.getElementById("CABMSDictaminacion");
-      data.forEach((activos) => {
-        const optionCABMSDictaminacion = document.createElement("option");
-        optionCABMSDictaminacion.value = activos.CABMS;
-        optionCABMSDictaminacion.textContent = activos.Descripcion;
-        optionCABMSDictaminacion.title = activos.Descripcion;
-        selectCABMSDictaminacion.appendChild(optionCABMSDictaminacion);
-      });
-
-      // Agregar evento change para filtrar progresivos
-      selectCABMSDictaminacion.addEventListener("change", (event) => {
-        const selectedCABMS = event.target.value;
-        fetchProgresivos(selectedCABMS); // Llamar a la función para obtener progresivos
-      });
-    })
-    .catch((error) => console.error("Error fetching activos data:", error));
-
-  // Función para obtener progresivos filtrados
-  function fetchProgresivos(cabms) {
-    fetch(`./src/Models/Activos/obtener_progresivo.php?cabms=${cabms}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const selectProgresivo = document.getElementById(
-          "ProgresivoDictaminacion"
-        );
-        selectProgresivo.innerHTML = ""; // Limpiar opciones anteriores
-
-        // Agregar opción por defecto
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "Selecciona un progresivo";
-        defaultOption.selected = true;
-        defaultOption.disabled = true;
-        selectProgresivo.appendChild(defaultOption);
-
-        // Agregar las opciones de los progresivos
-        data.forEach((activos) => {
-          const optionProgresivo = document.createElement("option");
-          optionProgresivo.value = activos.Progresivo;
-          optionProgresivo.textContent = activos.Progresivo;
-          selectProgresivo.appendChild(optionProgresivo);
-        });
-      })
-      .catch((error) =>
-        console.error("Error fetching progresivos data:", error)
-      );
-  }
-  // Obtener Progresivo inicialmente (si es necesario)
-  fetchProgresivos(); // Si deseas cargar los progresivos inicialmente
-});

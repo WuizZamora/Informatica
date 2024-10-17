@@ -87,16 +87,16 @@ class ServicioModel
             // Manejar el caso donde no se recibe un array
             $serviciosConcatenados = ''; // O manejarlo de otra manera
         }
-    
+
         // Log para verificar los valores antes de la inserción
         error_log("Antes de la inserción: ID Servicio: $idServicio, Servicios Solicitados: $serviciosConcatenados, Detalles: {$campos['DetallesServicioIncidencia']}, Observaciones: {$campos['ObservacionesServicioIncidencia']}");
-    
+
         // Guardar en tabla Servicios_Incidencias
         $query = "INSERT INTO Servicios_Incidencias (Fk_IDServicio_Servicios, ServicioSolicitado, Descripcion, Observaciones) VALUES (?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
-        
+
         $result = true; // Variable para rastrear errores
-    
+
         // Ejecutar la consulta con la cadena concatenada
         $stmt->bind_param(
             "isss",
@@ -105,15 +105,15 @@ class ServicioModel
             $campos['DetallesServicioIncidencia'],
             $campos['ObservacionesServicioIncidencia']
         );
-    
+
         // Ejecutar la consulta y manejar errores
         if (!$stmt->execute()) {
             error_log("Error en la consulta: " . $stmt->error);
             $result = false; // Si hay un error, marca como false
         }
-    
+
         return $result; // Retornar el estado de la inserción
-    }    
+    }
 
     public function guardarVideos($idServicio, $campos)
     {
@@ -178,22 +178,57 @@ class ServicioModel
         }
     }
 
-    public function actualizarServicioTecnico($idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionTecnico, $evaluacion, $fk_IDActivo_Activos) {
-        $sql = "CALL NombreDelProcedimientoAlmacenado(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionTecnico, $evaluacion, $fk_IDActivo_Activos]);
+    public function actualizarServicioTecnico($idServicio, $datos)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado
+            $stmt = $this->db->prepare("CALL ActualizarServicioTecnico(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            // Vincular los parámetros
+            $stmt->bind_param("iiiissssi", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionTecnico, $datos->EvaluacionTecnico, $datos->IDActivo);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Servicio técnico actualizado exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
     }
 
-    public function actualizarServicioIncidencia($idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $servicioSolicitado, $descripcionIncidencia, $observaciones) {
-        $sql = "CALL NombreDelProcedimientoAlmacenado(?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $servicioSolicitado, $descripcionIncidencia, $observaciones]);
+    public function actualizarServicioIncidencia($idServicio, $datos)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado
+            $stmt = $this->db->prepare("CALL ActualizarServicioIncidencia(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            // Vincular los parámetros
+            $stmt->bind_param("iiiisssss", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->ServicioSolicitado, $datos->DescripcionIncidencia, $datos->ObservacionesIncidencia);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Incidencia actualizada exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
     }
 
-    public function actualizarServicioEntregaMaterial($idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionVideo, $cantidadVideos, $periodo, $periodoInicial, $periodoFinal, $equipo) {
-        $sql = "CALL NombreDelProcedimientoAlmacenado(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-        $stmt = $this->db->prepare($sql);
-        return $stmt->execute([$idServicio, $solicitante, $entrega, $atiende, $oficio, $fechaSolicitud, $descripcionVideo, $cantidadVideos, $periodo, $periodoInicial, $periodoFinal, $equipo]);
+    public function actualizarServicioVideo($idServicio, $datos)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado
+            $stmt = $this->db->prepare("CALL ActualizarServicioVideo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+
+            // Vincular los parámetros
+            $stmt->bind_param("iiiisssissss", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionVideos, $datos->CantidadVideos, $datos->PVideos, $datos->PIVideos, $datos->PFVideos, $datos->Equipo);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Entrega de material fílmico actualizada exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
     }
-    
 }
