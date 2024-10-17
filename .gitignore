@@ -1,4 +1,4 @@
 .env
 vendor/
-test_connection.php
 hash_pass.php
+uploads/
