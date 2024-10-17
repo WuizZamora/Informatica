@@ -295,6 +295,8 @@
                         <th>Oficio</th>
                         <th>Fecha de atención</th>
                         <th>Tipo de servicio</th>
+                        <th>Estado de la solicitud</th>
+                        <th>Soporte Documental</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>
@@ -327,5 +329,25 @@
                 </div>
             </div>
         </div>
+        
+        <!-- MODAL ESTADO SOLICITUD Y SOPORTE -->
+        <div class="modal fade" id="servicioModal" tabindex="-1" aria-labelledby="servicioModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="servicioModalLabel">Detalles del Servicio</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body" id="resultadoModal">
+                        <!-- Aquí se mostrará la información del servicio -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-primary" id="saveButtonEstado">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 </body>

@@ -43,7 +43,7 @@ class PersonalModel
     public function obtenerAllPersonal()
     {
         // Consulta base con orden alfabético por nombre
-        $query = "SELECT * FROM Personal 
+        $query = "SELECT * FROM Personal WHERE Estatus = 1
         ORDER BY Nombre ASC";
 
         $result = mysqli_query($this->db, $query);

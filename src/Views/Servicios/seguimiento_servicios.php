@@ -10,130 +10,73 @@
 
 <body>
     <?php
-    if (isset($_GET['IDServicio'])) {
-        $idServicio = htmlspecialchars($_GET['IDServicio']);
-    } else {
-        $idServicio = null;
-    }
+    $idServicio = isset($_GET['IDServicio']) ? htmlspecialchars($_GET['IDServicio']) : null;
     ?>
-    <div id="resultado" class="mt-4"></div>
+
+    <div id="resultado"></div>
+
     <script>
         const idServicio = "<?php echo $idServicio; ?>";
+
         if (idServicio) {
-            fetch(`/INFORMATICA/src/Models/Servicios/consultar_servicio.php?IDServicio=${idServicio}`)
-                .then(response => response.json())
+            fetch(`/INFORMATICA/src/Models/Servicios/consultar_estado_solicitud.php?IDServicio=${idServicio}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Error en la solicitud');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     if (data.error) {
-                        document.getElementById('resultado').innerHTML = `<div class="alert alert-danger" role="alert">${data.error}</div>`;
+                        document.getElementById('resultado').innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
                     } else {
-                        let servicioHtml = `
-                        <div class="container">
-                            <div class="row mb-3">
-                                <div class="col-md-12 mb-3">
-                                    <strong># Servicio:</strong> ${data.Pk_IDServicio}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Solicitante:</strong> ${data.Solicitante}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Entrega:</strong> ${data.Entrega}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Oficio:</strong> ${data.Oficio}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Tipo de Servicio:</strong> ${data.TipoServicio}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Fecha de Solicitud:</strong> ${data.FechaSolicitud}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Atiende:</strong> ${data.Atiende}
-                                </div>
-                                <div class="col-md-6 mb-3">
-                                    <strong>Fecha de Atención:</strong> ${data.FechaAtencion}
-                                </div>`;
-
-                        // Mostrar campos adicionales según el tipo de servicio
-                        if (data.TipoServicio === 'ENTREGA MATERIAL FÍLMICO') {
-                            servicioHtml += `
-                            <div class="col-md-6 mb-3">
-                                <strong>Cantidad de videos:</strong> ${data.CantidadVideos}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Periodo:</strong> ${data.Periodo}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Periodo Inicial:</strong> ${data.PeriodoInicial}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Periodo Final:</strong> ${data.PeriodoFinal}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Equipo:</strong> ${data.Equipo}
-                            </div>
-                            <div class="col-md-12 mb-3 text-center">
-                                <span style="display: inline-block; border-bottom: 1px solid black; width: 30%;"></span><br>
-                                Firma del solicitante
-                            </div>
-                        `;
-                        } else if (data.TipoServicio === 'TÉCNICO') {
-                            servicioHtml += `
-                            <div class="col-md-6 mb-3">
-                                <strong>Area solicitante:</strong> ${data.Area}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Activo:</strong> ${data.Fk_IDActivo_Activos}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Descripción del Activo:</strong> ${data.DescripcionActivo}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>CABMS:</strong> ${data.CABMS}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Progresivo:</strong> ${data.Progresivo}
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <strong>Descripción del Servicio:</strong> ${data.Descripcion}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Resultado de la dictaminación:</strong> ${data.Evaluacion}
-                            </div>
-                            <div class="col-md-12 mb-3 text-center">
-                                <span style="display: inline-block; border-bottom: 1px solid black; width: 30%;"></span><br>
-                                LIC. ${data.Nombre_JUD_IT}
-                            </div>
-                            `;
-                        } else if (data.TipoServicio === 'INCIDENCIA') {
-                            servicioHtml += `
-                             <div class="col-md-6 mb-3">
-                                <strong>Area solicitante:</strong> ${data.Area}
-                            </div>
-                            <div class="col-md-6 mb-3">
-                                <strong>Servicio solictado:</strong> ${data.ServicioSolicitado}
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <strong>Descripción:</strong> ${data.Descripcion}
-                            </div>
-                            <div class="col-md-12 mb-3">
-                                <strong>Observaciones:</strong> ${data.Observaciones}
-                            </div>
-                            <div class="col-md-12 mb-3 text-center">
-                                <span style="display: inline-block; border-bottom: 1px solid black; width: 30%;"></span><br>
-                                LIC. ${data.Nombre_JUD_IT}
-                            </div>
-                            `;
-                        }
-
-                        servicioHtml += `</div></div>`;
-                        document.getElementById('resultado').innerHTML = servicioHtml;
+                        mostrarDatos(data);
                     }
                 })
                 .catch(error => {
-                    console.error('Error:', error);
-                    document.getElementById('resultado').innerHTML = `<div class="alert alert-danger" role="alert">Ocurrió un error</div>`;
+                    document.getElementById('resultado').innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
                 });
+        } else {
+            document.getElementById('resultado').innerHTML = '<div class="alert alert-warning">No se proporcionó un ID de servicio.</div>';
+        }
+
+        function mostrarDatos(servicio) {
+            const {
+                Pk_IDServicio,
+                EstadoSolicitud,
+                SoporteDocumental
+            } = servicio;
+            const resultadoDiv = document.getElementById('resultado');
+
+            resultadoDiv.innerHTML = `
+                <form id="servicioForm" class="needs-validation">
+                    <div class="row text-center">
+                        <div class="col-md-3">
+                            <label for="idServicio" class="form-label"><strong>ID Servicio:</strong></label>
+                            <input type="text" class="form-control" id="idServicio" name="Pk_IDServicio" value="${Pk_IDServicio}" readonly>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="estadoSolicitud" class="form-label"><strong>Estado de Solicitud:</strong></label>
+                            <select class="form-select" id="estadoSolicitud" name="EstadoSolicitud" required>
+                                <option selected disabled value="">Elige una opción</option>
+                                <option value="COMPLETADO" ${EstadoSolicitud === 'COMPLETADO' ? 'selected' : ''}>COMPLETADO</option>
+                                <option value="PENDIENTE" ${EstadoSolicitud === 'PENDIENTE' ? 'selected' : ''}>PENDIENTE</option>
+                                <option value="CANCELADO" ${EstadoSolicitud === 'CANCELADO' ? 'selected' : ''}>CANCELADO</option>
+                            </select>
+                            <div class="invalid-feedback">Por favor, selecciona un estado.</div>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label"><strong>Soporte Documental:</strong></label>
+                            ${SoporteDocumental ? `
+                                <br><a href="${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>
+                            ` : `
+                                <input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>
+                                <div class="invalid-feedback">Por favor, sube un documento.</div>
+                            `}
+                        </div>
+                    </div>  
+                </form>
+            `;
         }
     </script>
 

@@ -1,9 +1,5 @@
 <?php
 require_once __DIR__ . '/../../../config/conexion.php'; // Asegúrate de ajustar la ruta correcta
-header('Content-Type: application/json');
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
 
 class ServicioModel
 {
@@ -23,6 +19,19 @@ class ServicioModel
         $result = $this->db->query($query);
         $VistaDeServicios = $result->fetch_all(MYSQLI_ASSOC);
         return $VistaDeServicios;
+    }
+
+    public function consultarEstadoSolicitud($idServicio)
+    {
+        $query = "SELECT Pk_IDServicio, EstadoSolicitud, SoporteDocumental FROM Servicios WHERE Pk_IDServicio = ?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $idServicio);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $servicio = $result->fetch_assoc();
+
+        return $servicio;
     }
 
     public function obtenerServicioDetalles($idServicio)
@@ -182,7 +191,7 @@ class ServicioModel
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL ActualizarServicioTecnico(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_Tecnico_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Vincular los parámetros
             $stmt->bind_param("iiiissssi", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionTecnico, $datos->EvaluacionTecnico, $datos->IDActivo);
@@ -200,7 +209,7 @@ class ServicioModel
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL ActualizarServicioIncidencia(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_Incidencia_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Vincular los parámetros
             $stmt->bind_param("iiiisssss", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->ServicioSolicitado, $datos->DescripcionIncidencia, $datos->ObservacionesIncidencia);
@@ -218,10 +227,46 @@ class ServicioModel
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL ActualizarServicioVideo(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_Video_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Vincular los parámetros
             $stmt->bind_param("iiiisssissss", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionVideos, $datos->CantidadVideos, $datos->PVideos, $datos->PIVideos, $datos->PFVideos, $datos->Equipo);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Entrega de material fílmico actualizada exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    public function actualizarEstadoSolicitudCompleto($idServicio, $estadoSolicitud, $desth_path)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado
+            $stmt = $this->db->prepare("CALL Servicio_UPDATE_FileAndEstado(?, ?, ?)");
+
+            // Vincular los parámetros
+            $stmt->bind_param("iss", $idServicio, $estadoSolicitud, $desth_path);
+
+            // Ejecutar la consulta
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Entrega de material fílmico actualizada exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    public function actualizarEstadoSolicitud($idServicio, $estadoSolicitud)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado
+            $stmt = $this->db->prepare("CALL Servicio_UPDATE_EstadoSolicitud(?, ?)");
+
+            // Vincular los parámetros (i = integer, s = string)
+            $stmt->bind_param("is", $idServicio, $estadoSolicitud); // Solo 2 parámetros
 
             // Ejecutar la consulta
             $stmt->execute();
