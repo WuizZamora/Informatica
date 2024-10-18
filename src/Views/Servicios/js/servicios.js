@@ -434,22 +434,21 @@ function renderPagination(totalPages) {
   // Botón de página anterior
   pagination.innerHTML += `
     <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${currentPage - 1
-    })">Anterior</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Anterior</a>
     </li>
   `;
 
   // Determinar el rango de páginas a mostrar
   const maxVisiblePages = 5; // Número máximo de páginas visibles
-  const startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-  const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+  let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
 
   // Ajustar el rango si estamos cerca de los extremos
   if (endPage - startPage < maxVisiblePages - 1) {
     if (startPage === 1) {
-      endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+      endPage = Math.min(totalPages, startPage + maxVisiblePages - 1); // Cambiado a "endPage ="
     } else if (endPage === totalPages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+      startPage = Math.max(1, endPage - maxVisiblePages + 1); // Cambiado a "startPage ="
     }
   }
 
@@ -490,8 +489,7 @@ function renderPagination(totalPages) {
   // Botón de página siguiente
   pagination.innerHTML += `
     <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${currentPage + 1
-    })">Siguiente</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Siguiente</a>
     </li>
   `;
 }
