@@ -1,10 +1,11 @@
 <?php
 require_once __DIR__ . '/../../../vendor/autoload.php'; // Asegúrate de requerir el autoload de Composer
 use Dompdf\Dompdf;
+use Dompdf\Options;
 
 if (isset($_GET['IDServicio'])) {
     $idServicio = htmlspecialchars($_GET['IDServicio']);
-    
+
     // Aquí asumo que ya tienes una instancia de tu modelo
     require './ServicioModel.php';
     $servicioModel = new ServicioModel();
@@ -88,31 +89,33 @@ if (isset($_GET['IDServicio'])) {
 
         $html .= '</div></body></html>';
 
-       // Cargar el contenido HTML al Dompdf
-$dompdf->loadHtml($html);
+        // Crear opciones
+        $options = new Options();
+        $options->set('tempDir', '/tmp'); // Establece el directorio temporal
 
-// Configurar el tamaño y la orientación del papel
-$dompdf->setPaper('A4', 'portrait');
+        // Crear una nueva instancia de Dompdf con las opciones
+        $dompdf = new Dompdf($options);
 
-// Configurar el directorio temporal
-$dompdf->set_option('tempDir', '/tmp');
+        // Cargar el contenido HTML al Dompdf
+        $dompdf->loadHtml($html);
 
-// Renderizar el PDF
-$dompdf->render();
+        // Configurar el tamaño y la orientación del papel
+        $dompdf->setPaper('A4', 'portrait');
 
-// Cabeceras para enviar el PDF al navegador
-header('Content-Type: application/pdf');
-header('Content-Disposition: inline; filename="reporte_servicio.pdf"');
-header('Cache-Control: public, must-revalidate, max-age=0');
-header('Pragma: public');
+        // Renderizar el PDF
+        $dompdf->render();
 
-// Mostrar el PDF directamente en el navegador
-echo $dompdf->output();
+        // Cabeceras para enviar el PDF al navegador
+        header('Content-Type: application/pdf');
+        header('Content-Disposition: inline; filename="reporte_servicio.pdf"');
+        header('Cache-Control: public, must-revalidate, max-age=0');
+        header('Pragma: public');
 
+        // Mostrar el PDF directamente en el navegador
+        echo $dompdf->output();
     } else {
         echo "No se encontró el servicio.";
     }
 } else {
     echo "ID de servicio no proporcionado.";
 }
-?>
