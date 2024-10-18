@@ -276,4 +276,35 @@ class ServicioModel
             return ['success' => false, 'error' => $e->getMessage()];
         }
     }
+
+    public function obtenerRutaArchivo($idServicio) {
+        $query = "SELECT SoporteDocumental FROM Servicios WHERE Pk_IDServicio=?";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $idServicio);
+        $stmt->execute();
+    
+        $result = $stmt->get_result();
+        $data = $result->fetch_assoc();
+    
+        // Retorna solo la ruta del archivo o null si no existe
+        return $data['SoporteDocumental'] ?? null; // Maneja la posibilidad de que no exista
+    }     
+
+    public function eliminarSoporte($idServicio) {
+        // Consulta SQL para eliminar el servicio basado en idServicio
+        $query = "UPDATE Servicios SET SoporteDocumental = NULL WHERE Pk_IDServicio=?";
+        
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param('i', $idServicio);
+        
+        // Ejecutar la consulta y manejar errores
+        if (!$stmt->execute()) {
+            echo json_encode(['error' => 'Error en la consulta: ' . $stmt->error]);
+            exit; // Detiene la ejecución si hay un error
+        }
+    
+        // Devuelve verdadero si la consulta se ejecutó sin errores
+        return true; // Cambia esto según lo que necesites
+    }    
+
 }

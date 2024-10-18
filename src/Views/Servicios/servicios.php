@@ -84,7 +84,7 @@
                     <div class="col-md-4">
                         <label class="form-label" for="ServicioSolicitado">Servicio solicitado</label>
                         <select class="form-select text-center" id="ServicioSolicitado" name="ServicioSolicitado[]" size="9" multiple>
-                            <option value="">Elige una opción</option>
+                            <option value="default">Elige una opción</option>
                             <option value="GESTIÓN DE EQUIPOS">GESTIÓN DE EQUIPOS</option>
                             <option value="CONECTIVIDAD">CONECTIVIDAD</option>
                             <option value="GESTIÓN DE USUARIOS">GESTIÓN DE USUARIOS</option>

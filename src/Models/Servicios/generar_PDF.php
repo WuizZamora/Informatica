@@ -55,6 +55,7 @@ if (isset($_GET['IDServicio'])) {
                 <div class="row"><div class="col"><span class="label">Tipo de Servicio:</span> ' . $data['TipoServicio'] . '</div></div>
                 <div class="row"><div class="col"><span class="label">Fecha de Solicitud:</span> ' . $data['FechaSolicitud'] . '</div></div>
                 <div class="row"><div class="col"><span class="label">Atiende:</span> ' . $data['Atiende'] . '</div></div>
+                <div class="row"><div class="col"><span class="label">Folio:</span> ' . $data['Folio'] . '</div></div>
                 <div class="row"><div class="col"><span class="label">Fecha de Atención:</span> ' . $data['FechaAtencion'] . '</div></div>';
 
         // Mostrar campos adicionales según el tipo de servicio

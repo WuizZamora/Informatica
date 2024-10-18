@@ -34,39 +34,25 @@ if ($result->num_rows > 0) {
     $rol = $row['Pk_IDRol'];
 
     // Inicializar variable para el mensaje
-    $mensaje = '';
-
-    // Controlador y mensajes según el rol
-    switch ($rol) {
-        case 1:
-            $mensaje = $row['Nombre'];
-            $sudoPersonal = new PersonalController();
-            $sudoActivos = new ActivosController();
-            $sudoServicios = new ServicioController();
-            break;
-        case 2:
-            $mensaje = $row['Nombre'];
-            $encargadoServicios = new ServicioController();
-            break;
-        case 3:
-            $mensaje = $row['Nombre'];
-            $suActivos = new ActivosController();
-            $suServicios = new ServicioController();
-            break;
-        case 4:
-            $mensaje = $row['Nombre'];
-            // Aquí puedes agregar más lógica para el rol 4 si es necesario
-            break;
-        default:
-            $mensaje = "Hola usuario no identificado";
-            break;
-    }
-} else {
-    $mensaje = "Usuario no encontrado";
+    $nombrePersonal = $row['Nombre'];
 }
 
+$Activos = new ActivosController();
+$Personal = new PersonalController();
+$Servicios = new ServicioController();
+
+// Cerrar el statement y la conexión
 $stmt->close();
 $conn->close();
+
+// Establecer página predeterminada si el rol es 2
+$page = isset($_GET['page']) ? $_GET['page'] : '';
+
+if ($rol == 2 && empty($page)) {
+    $page = 'servicios';
+} elseif (empty($page)) {
+    $page = ''; // Mantenerlo vacío para mostrar el mensaje de selección
+}
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -79,19 +65,28 @@ $conn->close();
 
 <body>
     <?php include BASE_PATH . 'src/Views/partials/header.php'; ?>
-
     <?php
-    if ($rol == 1) {
-        $sudoActivos->index();
-        $sudoPersonal->index();
-        $sudoServicios->index($rol);
-    } else if ($rol == 2) {
-        $encargadoServicios->index($rol);
-    } else if ($rol == 3) {
-        $suActivos->index();
-        $suServicios->index($rol);
-    } else if ($rol == 4) {
-        echo "HOLA AMIGUITO: " . $row['Nombre'] . "<br>NO TIENES PERMISOS DE VER NADA CHIQUITIN";
+    if (!empty($page)) {
+        switch ($page) {
+            case 'activos':
+                $Activos->index();
+                break;
+            case 'personal':
+                $Personal->index();
+                break;
+            case 'servicios':
+                $Servicios->index($rol);
+                break;
+            default:
+                echo "<div class='alert alert-warning'>Página no encontrada.</div>";
+                break;
+        }
+    } else {
+        echo "
+            <div class='container text-center align-items-center justify-content-center d-flex mt-3'>
+                <div class='alert alert-info w-50'>Selecciona una opción del menú para continuar.</div>
+            </div>
+        ";
     }
     ?>
 </body>

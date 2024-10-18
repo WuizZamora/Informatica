@@ -72,22 +72,36 @@ document.addEventListener("DOMContentLoaded", function () {
   function fillFormDataReview() {
     const formDataReview = document.getElementById("formDataReview");
     let formDataHtml = "";
-
+  
     const inputs = servicioForm.querySelectorAll(
       'input:not([type="hidden"]), select, textarea'
     );
+  
     inputs.forEach((input) => {
       const label =
         document.querySelector(`label[for='${input.id}']`)?.textContent ||
         input.name;
-      const value = input.value;
-      if (value) {
+  
+      let value = input.value;
+  
+      // Verificamos si es el select múltiple de ServicioSolicitado
+      if (input.id === "ServicioSolicitado") {
+        const selectedOptions = Array.from(input.selectedOptions)
+          .filter((option) => option.value !== "default") // Ignora la opción "Elige una opción"
+          .map((option) => option.textContent); // Usa textContent para mostrar el texto
+  
+        value = selectedOptions.join(", "); // Une las selecciones por comas
+      }
+  
+      // Solo agregamos filas si hay un valor válido
+      if (value && value.trim() !== "") {
         formDataHtml += `<tr><td>${label}</td><td>${value}</td></tr>`;
       }
     });
-
+  
     formDataReview.innerHTML = formDataHtml;
   }
+  
 
   document
     .getElementById("confirmSubmit")
@@ -394,17 +408,24 @@ function renderTable(data, page) {
       }</td>
                 <td>${servicio.FechaAtencion}</td>
                 <td>${servicio.TipoServicio}</td>
-                <td>${servicio.EstadoSolicitud}</td>
-                <td>
-                  ${servicio.SoporteDocumental 
-                    ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
-                        <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
-                      </a>`
-                    : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
-                  }
+                <td class="${servicio.EstadoSolicitud === "CANCELADO"
+        ? "text-danger"
+        : servicio.EstadoSolicitud === "COMPLETADO"
+          ? "text-success"
+          : ""
+      }">
+                    ${servicio.EstadoSolicitud}
                 </td>
                 <td>
-                ${userRole == 1 ||
+                  ${servicio.SoporteDocumental
+        ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
+                        <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
+                      </a>`
+        : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
+      }
+                </td>
+                <td>
+                    ${userRole == 1 ||
         userRole == 2 ||
         userRole == 3 ||
         userRole == 4
@@ -415,7 +436,7 @@ function renderTable(data, page) {
         ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
         : ""
       }
-                    ${userRole == 1
+                    ${userRole == 1 || userRole == 2 || userRole == 3
         ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
         : ""
       }
@@ -434,7 +455,8 @@ function renderPagination(totalPages) {
   // Botón de página anterior
   pagination.innerHTML += `
     <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${currentPage - 1})">Anterior</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage - 1
+    })">Anterior</a>
     </li>
   `;
 
@@ -489,7 +511,8 @@ function renderPagination(totalPages) {
   // Botón de página siguiente
   pagination.innerHTML += `
     <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${currentPage + 1})">Siguiente</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage + 1
+    })">Siguiente</a>
     </li>
   `;
 }
@@ -513,7 +536,11 @@ function editServicio(id) {
     .then((response) => response.json())
     .then((data) => {
       if (data.error) {
-        alert(data.error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
       } else {
         // Construir el contenido del modal
         let modalContent = `
@@ -683,12 +710,20 @@ function editServicio(id) {
               try {
                 const result = JSON.parse(text); // Intenta parsear como JSON
                 if (result.success) {
-                  alert("Datos del servicio guardados exitosamente.");
+                  Swal.fire({
+                    title: "¡Éxito!",
+                    text: "Datos del servicio actualizados exitosamente.",
+                    icon: "success",
+                    timer: 3000, // Duración en milisegundos (3 segundos)
+                    showConfirmButton: false, // No mostrar botón de aceptar
+                  });
                   myModal.hide(); // Cierra el modal si estás usando uno
                 } else {
-                  alert(
-                    result.error || "Ocurrió un error al guardar los datos."
-                  );
+                  Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: result.error, // Aquí se pasa el mensaje del error
+                  });
                 }
               } catch (error) {
                 console.error("Respuesta inválida del servidor:", text); // Muestra el contenido
@@ -697,14 +732,22 @@ function editServicio(id) {
             })
             .catch((error) => {
               console.error("Error al guardar el servicio:", error);
-              alert("Ocurrió un error al guardar los datos.");
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Error al guardar el servicio",
+              });
             });
         };
       }
     })
     .catch((error) => {
       console.error("Error:", error);
-      alert("Ocurrió un error al cargar los datos.");
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error al cargar los datos",
+      });
     });
 }
 
@@ -844,7 +887,11 @@ function EstadoSolicitud(id) {
     })
     .then((data) => {
       if (data.error) {
-        alert(data.error);
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
       } else {
         mostrarDatos(data);
       }
@@ -873,7 +920,6 @@ function EstadoSolicitud(id) {
                       <option value="CANCELADO" ${EstadoSolicitud === "CANCELADO" ? "selected" : ""
       }>CANCELADO</option>
                   </select>
-                  <div class="invalid-feedback">Por favor, selecciona un estado.</div>
               </div>
               <div class="col-md-4">
                   <label class="form-label"><strong>Soporte Documental:</strong></label>
@@ -883,11 +929,16 @@ function EstadoSolicitud(id) {
                   `
         : `
                       <input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>
-                      <div class="invalid-feedback">Por favor, sube un documento.</div>
                   `
       }
               </div>
-          </div>  
+              <div class="col-md-4">
+              ${userRole == 1 || userRole == 3
+        ? `<button type="button" class="btn btn-danger" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>`
+        : ""
+      }  
+              </div>
+              </div>
       </form>
     `;
     // Mostrar contenido en el modal
@@ -918,10 +969,13 @@ function EstadoSolicitud(id) {
         formData.append("SoporteDocumental", soporteDocumental);
       }
       // Enviar los datos al backend usando fetch
-      fetch("/INFORMATICA/src/Models/Servicios/actualizar_estado_solicitud.php", {
-        method: "POST",
-        body: formData,
-      })
+      fetch(
+        "/INFORMATICA/src/Models/Servicios/actualizar_estado_solicitud.php",
+        {
+          method: "POST",
+          body: formData,
+        }
+      )
         .then((response) => {
           if (!response.ok) {
             throw new Error("Error en la solicitud al servidor");
@@ -931,9 +985,19 @@ function EstadoSolicitud(id) {
         .then((data) => {
           // Manejar la respuesta del servidor
           if (data.error) {
-            alert(data.error);
+            Swal.fire({
+              icon: "error",
+              title: "Oops...",
+              text: data.error,
+            });
           } else {
-            alert("Estado de solicitud actualizado exitosamente");
+            Swal.fire({
+              title: "¡Éxito!",
+              text: "Estado de solicitud actualizado exitosamente",
+              icon: "success",
+              timer: 3000, // Duración en milisegundos (3 segundos)
+              showConfirmButton: false, // No mostrar botón de aceptar
+            });
             // Aquí puedes cerrar el modal o actualizar la vista
             myModalEstado.hide();
           }
@@ -943,4 +1007,40 @@ function EstadoSolicitud(id) {
         });
     };
   }
+}
+
+function BorrarSoporteDocumental(idServicio) {
+  const url = "/INFORMATICA/src/Models/Servicios/borrar_soporte.php";
+  const myModalEstado = bootstrap.Modal.getInstance(
+    document.getElementById("servicioModal")
+  ); // Obtiene la instancia del modal
+
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ idServicio }), // Enviando el idServicio en el cuerpo de la solicitud
+  })
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error("Error en la solicitud: " + response.statusText);
+      }
+      return response.text(); // Cambia a .text() para ver el contenido de la respuesta
+    })
+    .then((text) => {
+      // Cierra el modal después de la eliminación exitosa
+      myModalEstado.hide();
+
+      Swal.fire({
+        title: "¡Éxito!",
+        text: "Soporte documental eliminado exitosamente.",
+        icon: "success",
+        timer: 3000, // Duración en milisegundos (3 segundos)
+        showConfirmButton: false, // No mostrar botón de aceptar
+      });
+    })
+    .catch((error) => {
+      console.error("Hubo un problema con la solicitud:", error);
+    });
 }
