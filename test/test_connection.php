@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/config/conexion.php'; // Asegúrate de que la ruta sea correcta
+require '../config/conexion.php'; // Asegúrate de que la ruta sea correcta
 
 $conn = Conexion::conectar();
 
