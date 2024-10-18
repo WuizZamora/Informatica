@@ -88,17 +88,27 @@ if (isset($_GET['IDServicio'])) {
 
         $html .= '</div></body></html>';
 
-        // Cargar el contenido HTML al Dompdf
-        $dompdf->loadHtml($html);
+       // Cargar el contenido HTML al Dompdf
+$dompdf->loadHtml($html);
 
-        // Configurar el tamaño y la orientación del papel
-        $dompdf->setPaper('A4', 'portrait');
+// Configurar el tamaño y la orientación del papel
+$dompdf->setPaper('A4', 'portrait');
 
-        // Renderizar el PDF
-        $dompdf->render();
+// Configurar el directorio temporal
+$dompdf->set_option('tempDir', '/tmp');
 
-        // Enviar el PDF al navegador
-        $dompdf->stream('reporte_servicio.pdf', array("Attachment" => false));
+// Renderizar el PDF
+$dompdf->render();
+
+// Cabeceras para enviar el PDF al navegador
+header('Content-Type: application/pdf');
+header('Content-Disposition: inline; filename="reporte_servicio.pdf"');
+header('Cache-Control: public, must-revalidate, max-age=0');
+header('Pragma: public');
+
+// Mostrar el PDF directamente en el navegador
+echo $dompdf->output();
+
     } else {
         echo "No se encontró el servicio.";
     }
