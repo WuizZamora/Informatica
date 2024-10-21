@@ -206,7 +206,7 @@ if (isset($_GET['IDServicio'])) {
                     </tr>
                     <tr>
                         <th>Descripción del Servicio</th>
-                        <td>' . $data['Descripcion'] . '</td>
+                        <td>' . $data['DescripcionTecnico'] . '</td>
                     </tr>
                     <tr>
                         <th>Resultado de la dictaminación</th>
@@ -230,7 +230,7 @@ if (isset($_GET['IDServicio'])) {
                     </tr>
                     <tr>
                         <th>Descripción</th>
-                        <td>' . $data['Descripcion'] . '</td>
+                        <td>' . $data['DescripcionIncidencia'] . '</td>
                     </tr>
                     <tr>
                         <th>Observaciones</th>
