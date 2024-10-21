@@ -280,7 +280,6 @@
         <br>
         <p id="mensaje" style="display:none;" class="alert alert-success text-center" role="alert"></p> <!-- Párrafo para mostrar mensajes -->
 
-
         <!--  -->
         <h3 class="text-center">SEGUIMIENTO DE SERVICIOS</h3>
         <hr>
@@ -290,7 +289,6 @@
                     <tr>
                         <th># Servicio</th>
                         <th>Personal Solicitante</th>
-                        <th>Personal Atiende</th>
                         <th>Fecha de solicitud</th>
                         <th>Oficio</th>
                         <th>Fecha de atención</th>

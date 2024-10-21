@@ -69,10 +69,10 @@ if ($rol == 2 && empty($page)) {
     if (!empty($page)) {
         switch ($page) {
             case 'activos':
-                $Activos->index();
+                $Activos->index($rol);
                 break;
             case 'personal':
-                $Personal->index();
+                $Personal->index($rol);
                 break;
             case 'servicios':
                 $Servicios->index($rol);

@@ -1,5 +1,8 @@
-    <div class="container">
+    <div class="container text-center">
+<h1>FORM PARA CREAR PERSONAL</h1>
+<hr>
         <h1 class="text-center">Personal</h1>
+        <hr>
         <p class="text-center">Contenido relacionado con el personal...</p>
 
         <!-- Tabla de Personal -->
@@ -11,6 +14,7 @@
                         <th>NOMBRE</th>
                         <th>RFC</th>
                         <th>Estatus</th>
+                        <th>Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="tablaPersonal"></tbody>
@@ -20,6 +24,7 @@
     </div>
 
     <script>
+        const userRole = <?php echo json_encode($rol); ?>; // Pasar el rol como variable JavaScript
         let paginaActual = 1;
         const registrosPorPagina = 10; // Número de registros por página
         let datosPersonal = []; // Almacena los datos de personal
@@ -62,6 +67,9 @@
                     <td>${persona.Nombre}</td>
                     <td>${persona.RFC}</td>
                     <td>${persona.Estatus}</td>
+                    <td> 
+                    ${userRole == 1 || userRole == 3  ? `<a href="/INFORMATICA/src/Models/" target="_blank" class="btn btn-success">Editar</a>` : ""}           
+                    </td>
                 `;
                 tablaBody.appendChild(fila);
             });

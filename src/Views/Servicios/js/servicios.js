@@ -400,12 +400,10 @@ function renderTable(data, page) {
     // Aquí creas la fila de la tabla
     const row = `
             <tr>
-                <td>${servicio.Pk_IDServicio}</td>
+                <td>${servicio.Folio}</td>
                 <td>${servicio.Solicitante}</td>
-                <td>${servicio.Atiende}</td>
                 <td>${servicio.FechaSolicitud}</td>
-                <td style="word-break: break-word; white-space: normal;">${servicio.Oficio
-      }</td>
+                <td style="word-break: break-word; white-space: normal;">${servicio.Oficio}</td>
                 <td>${servicio.FechaAtencion}</td>
                 <td>${servicio.TipoServicio}</td>
                 <td class="${servicio.EstadoSolicitud === "CANCELADO"
