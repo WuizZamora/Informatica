@@ -105,7 +105,7 @@ if (isset($_GET['IDServicio'])) {
         </head>
         <body>
             <div class="header">
-                <img src="http://localhost/INFORMATICA/public/images/logo_CDMX.png" alt="LOGO CDMX" width="120">
+                <img src="http://localhost/INFORMATICA/public/images/logo_cdmx.png" alt="LOGO CDMX" width="120">
                 <span class="texto">INSTITUTO DE VERIFICACIÓN ADMINISTRATIVA DE LA CDMX </span>
                 <img src="http://localhost/INFORMATICA/public/images/logo_identidad_gris.png" alt="LOGO INVEA" width="120">
             </div>
