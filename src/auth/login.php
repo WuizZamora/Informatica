@@ -30,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             header('Location: ' . BASE_URL . 'index.php'); // Redirigir a la página principal
             exit();
         } else {
-            echo '<div class="alert alert-danger">Credenciales incorrectas</div>'; 
+            echo '<div class="alert alert-danger">Credenciales incorrectas</div>';
         }
     } else {
         echo '<div class="alert alert-danger">Credenciales incorrectas</div>';
@@ -85,16 +85,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
             <div class="mb-3">
-                <div class="form-floating">
+                <div class="form-floating position-relative">
                     <input type="password" id="pass" name="pass" class="form-control" autocomplete="off" required>
                     <label for="pass" class="form-label">Contraseña:</label>
+
+                    <button type="button" id="togglePassword" class="btn position-absolute" style="right: 0; top: 50%; transform: translateY(-50%); background: transparent; border: none;">
+                        <i id="eyeIcon" class="bi bi-eye"></i>
+                    </button>
                 </div>
             </div>
+
             <div>
                 <button type="submit" class="btn btn-primary w-100 py-2">Iniciar sesión</button>
             </div>
         </form>
     </div>
+    <script>
+        const togglePassword = document.getElementById('togglePassword');
+        const passwordInput = document.getElementById('pass');
+        const eyeIcon = document.getElementById('eyeIcon');
+
+        togglePassword.addEventListener('click', function() {
+            const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            passwordInput.setAttribute('type', type);
+            eyeIcon.classList.toggle('bi-eye');
+            eyeIcon.classList.toggle('bi-eye-slash');
+        });
+    </script>
 </body>
 
 </html>

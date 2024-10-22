@@ -51,7 +51,10 @@ class ActivosModel
     public function obtenerAllActivos()
     {
         // Consulta base con orden alfabético por nombre
-        $query = "SELECT * FROM Activos
+        $query = "SELECT A.Pk_IDActivo, A.NumeroInventario, A.CABMS, A.Progresivo, A.Descripcion, A.Estatus, P.Nombre AS NombreResguardante
+        FROM Activos A
+        LEFT JOIN 
+            Personal P ON A.Fk_Resguardante_Personal = P.Pk_NumeroEmpleado
         ORDER BY Pk_IDActivo DESC";
 
         $result = mysqli_query($this->db, $query);

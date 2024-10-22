@@ -44,7 +44,6 @@
                             <option disabled value="">Selecciona el estatus del activo</option>
                             <option value="ACTIVO" selected>Activo</option>
                             <option value="PROCESO DE BAJA">Proceso de baja</option>
-                            <option value="BAJA">Baja</option>
                         </select>
                     </div>
                     <div class="col-md-12 mt-3">
@@ -120,6 +119,7 @@
                         </th>
                         <th>Descripción</th>
                         <th>Estado de Conservación</th>
+                        <th>Resguardante</th>
                         <?php if($rol!=2){?>
                         <th>Acciones</th>
                         <?php }else { ?>
@@ -220,6 +220,7 @@
                 <td>${activo.CABMS}-${activo.Progresivo}</td>
                 <td>${activo.Descripcion}</td>
                 <td>${activo.Estatus}</td>
+                <td>${activo.NombreResguardante}</td>
                 <td>
                 ${userRole == 1 || userRole == 3 ? `<button class="btn btn-primary" onclick="editActivo(${activo.Pk_IDActivo})">Editar</button>` : ""}
                 </td>
@@ -373,7 +374,6 @@
                                     <option disabled value="">Selecciona el estatus del activo</option>
                                     <option value="ACTIVO">Activo</option>
                                     <option value="PROCESO DE BAJA">Proceso de baja</option>
-                                    <option value="BAJA">Baja</option>
                                 </select>
                             </div>
                         `;
