@@ -150,7 +150,7 @@ if (isset($_GET['IDServicio'])) {
         // Mostrar campos adicionales según el tipo de servicio
         if ($data['TipoServicio'] === 'ENTREGA MATERIAL FÍLMICO') {
             $html .= '
-                <div class="section-title">DETALLES DEL MAETERIAL FÍLMICO</div>
+                <div class="section-title">DETALLES DEL MATERIAL FÍLMICO</div>
                 <table class="table">
                     <tr>
                         <th>Cantidad de videos</th>
@@ -176,7 +176,7 @@ if (isset($_GET['IDServicio'])) {
                         <th>Descripción</th>
                         <td>' . $data['DescripcionVideo'] . '</td>
                     </tr>
-                </table><br><br>
+                </table><br><br><br>
                 <div class="content-firma">
                 ___________________________________________<br>Firma del solicitante
                 </div>';

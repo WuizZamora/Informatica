@@ -1,6 +1,3 @@
-<script src="./src/Views/Servicios/js/servicios.js"></script>
-
-<body>
     <div class="container">
         <h3 class="text-center">ALTA DE SERVICIOS</h3>
         <hr>
@@ -283,7 +280,25 @@
         <!--  -->
         <h3 class="text-center">SEGUIMIENTO DE SERVICIOS</h3>
         <hr>
-        <div class="container mt-5 text-center">
+        <div class="container mt-3 text-center">
+            <div class="row justify-content-center">
+                <div class="col-md-6">
+                    <div class="input-group mb-3">
+                        <span class="input-group-text" id="search-icon">
+                            <i class="bi bi-search"></i> <!-- Ícono de búsqueda de Bootstrap Icons -->
+                        </span>
+                        <input
+                            type="text"
+                            id="searchInput"
+                            class="form-control text-center"
+                            placeholder="Buscar por Folio u Oficio"
+                            aria-label="Buscar por Folio u Oficio"
+                            aria-describedby="search-icon"
+                            oninput="actualizarServicios()" />
+                    </div>
+                </div>
+            </div>
+
             <table class="table table-striped-columns table-hover" id="serviciosTable">
                 <thead class="table-warning">
                     <tr>
@@ -302,6 +317,7 @@
                     <!-- Aquí se ven los registros -->
                 </tbody>
             </table>
+
             <nav class="d-flex justify-content-center align-items-center">
                 <ul class="pagination" id="pagination">
                     <!-- Aquí se generarán los botones de paginación -->
@@ -327,7 +343,7 @@
                 </div>
             </div>
         </div>
-        
+
         <!-- MODAL ESTADO SOLICITUD Y SOPORTE -->
         <div class="modal fade" id="servicioModal" tabindex="-1" aria-labelledby="servicioModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -348,4 +364,4 @@
         </div>
 
     </div>
-</body>
+    <script src="./src/Views/Servicios/js/servicios.js"></script>

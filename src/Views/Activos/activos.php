@@ -9,79 +9,100 @@
         }
     </style>
     <div class="container text-center">
-
-        <h1>FORM PARA CREAR ACTIVOS</h1>
-        <hr>
-        <form id="activosForm" class="needs-validation" autocomplete="off" novalidate>
-            <div class="row mb-3">
-                <div class="col-md-4">
-                    <label for="NumeroInventario" class="form-label">Número de inventario</label>
-                    <input type="text" class="form-control text-center" id="NumeroInventario" name="NumeroInventario" required>
+        <?php
+        if ($rol == 1 || $rol == 3) {
+        ?>
+            <h3 class="text-center">ALTA DE ACTIVOS</h3>
+            <hr>
+            <form id="activosForm" class="needs-validation" autocomplete="off" novalidate>
+                <div class="row mb-3">
+                    <div class="col-md-4">
+                        <label for="NumeroInventario" class="form-label">Número de inventario</label>
+                        <input type="text" class="form-control text-center" id="NumeroInventario" name="NumeroInventario" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="CABMSActivo" class="form-label">CABMS</label>
+                        <input type="number" min="0" class="form-control text-center" id="CABMSActivo" name="CABMSActivo" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ProgresivoActivo" class="form-label">Progresivo</label>
+                        <input type="number" min="0" class="form-control text-center" id="ProgresivoActivo" name="ProgresivoActivo" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="DescripcionActivo" class="form-label">Descripción</label>
+                        <input type="text" class="form-control text-center" id="DescripcionActivo" name="DescripcionActivo" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ResguardanteActivo" class="form-label">Resguardante</label>
+                        <select class="form-select text-center" id="ResguardanteActivo" name="ResguardanteActivo" required>
+                            <option disabled selected value="">Selecciona a un resguardante</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="EstatusActivo" class="form-label">Estatus</label>
+                        <select class="form-select text-center" id="EstatusActivo" name="EstatusActivo" required>
+                            <option disabled value="">Selecciona el estatus del activo</option>
+                            <option value="ACTIVO" selected>Activo</option>
+                            <option value="PROCESO DE BAJA">Proceso de baja</option>
+                            <option value="BAJA">Baja</option>
+                        </select>
+                    </div>
+                    <div class="col-md-12 mt-3">
+                        <button class="btn btn-danger" type="submit">Guardar</button>
+                    </div>
                 </div>
-                <div class="col-md-4">
-                    <label for="CABMSActivo" class="form-label">CABMS</label>
-                    <input type="number" min="0" class="form-control text-center" id="CABMSActivo" name="CABMSActivo" required>
-                </div>
-                <div class="col-md-4">
-                    <label for="ProgresivoActivo" class="form-label">Progresivo</label>
-                    <input type="number" min="0" class="form-control text-center" id="ProgresivoActivo" name="ProgresivoActivo" required>
-                </div>
-                <div class="col-md-4">
-                    <label for="DescripcionActivo" class="form-label">Descripción</label>
-                    <input type="text" class="form-control text-center" id="DescripcionActivo" name="DescripcionActivo" required>
-                </div>
-                <div class="col-md-4">
-                    <label for="ResguardanteActivo" class="form-label">Resguardante</label>
-                    <select class="form-select text-center" id="ResguardanteActivo" name="ResguardanteActivo" required>
-                        <option disabled selected value="">Selecciona a un resguardante</option>
-                    </select>
-                </div>
-                <div class="col-md-4">
-                    <label for="EstatusActivo" class="form-label">Estatus</label>
-                    <select class="form-select text-center" id="EstatusActivo" name="EstatusActivo" required>
-                        <option disabled value="">Selecciona el estatus del activo</option>
-                        <option value="ACTIVO" selected>Activo</option>
-                        <option value="PROCESO DE BAJA">Proceso de baja</option>
-                        <option value="BAJA">Baja</option>
-                    </select>
-                </div>
-                <div class="col-md-12 mt-3">
-                    <button class="btn btn-danger" type="submit">Guardar</button>
-                </div>
-            </div>
-            <!-- Modal de Confirmación -->
-            <div class="modal fade" id="confirmModalActivos" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="confirmModalLabel">Confirmación</h5>
-                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                            <p>Por favor, revisa la información antes de guardar:</p>
-                            <table class="table table-bordered table-striped">
-                                <thead>
-                                    <!-- <tr>
+                <!-- Modal de Confirmación -->
+                <div class="modal fade" id="confirmModalActivos" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="confirmModalLabel">Confirmación</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <p>Por favor, revisa la información antes de guardar:</p>
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                        <!-- <tr>
                                         <th>Campo</th>
                                         <th>Valor</th>
                                     </tr> -->
-                                </thead>
-                                <tbody id="formDataReviewActivos">
-                                    <!-- Los datos del formulario se llenarán aquí dinámicamente -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                            <button type="button" class="btn btn-primary" id="confirmSubmitActivos">Guardar</button>
+                                    </thead>
+                                    <tbody id="formDataReviewActivos">
+                                        <!-- Los datos del formulario se llenarán aquí dinámicamente -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                                <button type="button" class="btn btn-primary" id="confirmSubmitActivos">Guardar</button>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </form>
-        <h1 class="text-center">Activos</h1>
+            </form>
+            <p id="mensaje" style="display:none;" class="alert alert-success text-center" role="alert"></p> <!-- Párrafo para mostrar mensajes -->
+        <?php } ?>
+        <h3 class="text-center">DETALLES ACTIVOS</h3>
         <hr>
-        <p class="text-center">Contenido relacionado con los activos...</p>
+        <!-- Campo de búsqueda -->
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="input-group mb-3">
+                    <span class="input-group-text" id="search-icon">
+                        <i class="bi bi-search"></i> <!-- Ícono de búsqueda -->
+                    </span>
+                    <input
+                        type="text"
+                        id="buscarCABMS"
+                        class="form-control"
+                        placeholder="Buscar por CABMS-Progresivo"
+                        aria-label="Buscar por CABMS-Progresivo"
+                        aria-describedby="search-icon"
+                        oninput="actualizarActivos()" />
+                </div>
+            </div>
+        </div>
 
         <!-- Spinner de carga -->
         <div class="spinner-border text-primary spinner-activos" role="status" id="spinnerActivos">
@@ -99,7 +120,10 @@
                         </th>
                         <th>Descripción</th>
                         <th>Estado de Conservación</th>
+                        <?php if($rol!=2){?>
                         <th>Acciones</th>
+                        <?php }else { ?>
+                        <?php }?>
                     </tr>
                 </thead>
                 <tbody id="tablaActivos"></tbody>
@@ -112,6 +136,24 @@
         </nav>
     </div>
 
+    <!-- MODAL UPDATE -->
+    <div class="modal fade" id="editModalActivos" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editModalLabelActivos">Editar Activos</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center" id="modalBodyActivos">
+                    <!-- Aquí se mostrará la información del servicio -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-primary" id="saveButtonActivos">Guardar cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         const userRole = <?php echo json_encode($rol); ?>; // Pasar el rol como variable JavaScript
@@ -145,17 +187,29 @@
         // Llamada inicial para cargar los datos
         actualizarActivos();
 
-        // Actualizar la tabla cada 10 segundos
-        // setInterval(actualizarActivos, 10000);
+        const buscarCABMS = document.getElementById('buscarCABMS'); // Input de búsqueda
+        let datosFiltrados = []; // Datos filtrados por búsqueda
 
+        // Actualizar la búsqueda cuando el usuario escriba
+        buscarCABMS.addEventListener('input', () => {
+            const terminoBusqueda = buscarCABMS.value.toLowerCase();
+            datosFiltrados = datosActivos.filter(activo =>
+                `${activo.CABMS}-${activo.Progresivo}`.toLowerCase().includes(terminoBusqueda)
+            );
+            paginaActualActivos = 1; // Reiniciar a la primera página
+            renderTablaActivos();
+            renderPaginacionActivos();
+        });
+
+        // Modificar renderTablaActivos para usar los datos filtrados si existen
         function renderTablaActivos() {
             tablaActivos.innerHTML = '';
             const inicio = (paginaActualActivos - 1) * filasPorPagina;
             const fin = inicio + filasPorPagina;
-            const activosPagina = datosActivos.slice(inicio, fin);
+            const activosPagina = (datosFiltrados.length > 0 ? datosFiltrados : datosActivos).slice(inicio, fin);
 
             if (activosPagina.length === 0) {
-                tablaActivos.innerHTML = '<tr><td colspan="4">No hay activos disponibles</td></tr>';
+                tablaActivos.innerHTML = '<tr><td colspan="5">No hay activos disponibles</td></tr>';
                 return;
             }
 
@@ -166,12 +220,13 @@
                 <td>${activo.CABMS}-${activo.Progresivo}</td>
                 <td>${activo.Descripcion}</td>
                 <td>${activo.Estatus}</td>
-                <td> 
-                ${userRole == 1 || userRole == 3 ? `<a href="/INFORMATICA/src/Models/" target="_blank" class="btn btn-success">Editar</a>` : ""}           
+                <td>
+                ${userRole == 1 || userRole == 3 ? `<button class="btn btn-primary" onclick="editActivo(${activo.Pk_IDActivo})">Editar</button>` : ""}
                 </td>
             </tr>`;
             });
         }
+
 
         function renderPaginacionActivos() {
             const totalPaginas = Math.ceil(datosActivos.length / filasPorPagina);
@@ -253,7 +308,7 @@
             document.getElementById("confirmModalActivos")
         );
         const formDataReview = document.getElementById("formDataReviewActivos");
-        
+
         // Función para mostrar los datos del formulario en el modal
         function mostrarDatosEnModal() {
             formDataReview.innerHTML = ""; // Limpiamos cualquier contenido previo
@@ -270,35 +325,213 @@
             });
         }
 
+        function resetForm() {
+            const activosForm = document.getElementById("activosForm");
+            activosForm.reset(); // Restablece todos los campos del formulario
+            activosForm.classList.remove("was-validated"); // Remueve la clase de validación
+        }
+
+        function editActivo(id) {
+            fetch(`/INFORMATICA/src/Models/Activos/obtener_activo_detalles.php?IDActivo=${id}`)
+                .then((response) => response.json())
+                .then((data) => {
+                    if (data.error) {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: data.error,
+                        });
+                    } else {
+                        // Construir el contenido del modal
+                        let modalContent = `
+                            <strong># ${data.Pk_IDActivo}</strong>
+                            <div class="form-group">
+                                <label for="NumeroInventarioUpdate">Número de inventario:</label>
+                                <input class="form-control text-center" id="NumeroInventarioUpdate" name="NumeroInventarioUpdate" value="${data.NumeroInventario}">
+                            </div>
+                            <div class="form-group">
+                                <label for="CABMSUpdate">CABMS:</label>
+                                <input class="form-control text-center" id="CABMSUpdate" name="CABMSUpdate" value="${data.CABMS}">
+                            </div>
+                            <div class="form-group">
+                                <label for="ProgresivoUpdate">Progresivo:</label>
+                                <input type="text" class="form-control text-center" id="ProgresivoUpdate" name="ProgresivoUpdate" value="${data.Progresivo}">
+                            </div>
+                            <div class="form-group">
+                                <label for="DescripcionUpdate">Descripción:</label>
+                                <input type="text" class="form-control text-center" id="DescripcionUpdate" name="DescripcionUpdate" value="${data.Descripcion}">
+                            </div>
+                            <div class="form-group">
+                                <label for="ResguardanteUpdate">Resguardante:</label>
+                                <select class="form-select text-center" id="ResguardanteUpdate" name="ResguardanteUpdate" required>
+                                    <option disabled selected value="">Selecciona un empleado</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="EstatusUpdate">Estatus:</label>
+                                <select class="form-select text-center" id="EstatusUpdate" name="EstatusActivo" required>
+                                    <option disabled value="">Selecciona el estatus del activo</option>
+                                    <option value="ACTIVO">Activo</option>
+                                    <option value="PROCESO DE BAJA">Proceso de baja</option>
+                                    <option value="BAJA">Baja</option>
+                                </select>
+                            </div>
+                        `;
+
+                        // Mostrar contenido en el modal
+                        document.getElementById("modalBodyActivos").innerHTML = modalContent;
+
+                        // Llenar los selects de resguardante
+                        llenarSelectPersonal(
+                            "./src/Models/Personal/obtener_personal.php",
+                            "ResguardanteUpdate",
+                            data.Resguardante
+                        ).then(() => {
+                            const resguardanteSelect = document.getElementById("ResguardanteUpdate");
+                            resguardanteSelect.value = data.Fk_Resguardante_Personal; // Establecer el valor seleccionado aquí
+                        });
+
+                        // Establecer el valor del select de estatus
+                        const estatusSelect = document.getElementById("EstatusUpdate");
+                        estatusSelect.value = data.Estatus; // Aquí se asigna el valor que viene del backend
+
+                        let myModalActivos = new bootstrap.Modal(document.getElementById("editModalActivos"));
+                        myModalActivos.show();
+
+                        document.getElementById("saveButtonActivos").onclick = function() {
+                            // Obtener los valores de los campos
+                            const idActivo = data.Pk_IDActivo;
+                            const numeroInventario = document.getElementById("NumeroInventarioUpdate").value;
+                            const cabms = document.getElementById("CABMSUpdate").value;
+                            const progresivo = document.getElementById("ProgresivoUpdate").value;
+                            const descripcionActivo = document.getElementById("DescripcionUpdate").value;
+                            const reguardante = document.getElementById("ResguardanteUpdate").value;
+                            const estatusUpdate = document.getElementById("EstatusUpdate").value;
+
+                            // Inicializar un objeto para almacenar los datos del servicio
+                            const datosActivo = {
+                                idActivo,
+                                numeroInventario,
+                                cabms,
+                                progresivo,
+                                descripcionActivo,
+                                reguardante,
+                                estatusUpdate
+                            };
+
+                            console.log(datosActivo);
+                            // Enviar los datos al backend
+                            fetch("/INFORMATICA/src/Models/Activos/actualizar_activo.php", {
+                                    method: "POST",
+                                    headers: {
+                                        "Content-Type": "application/json",
+                                    },
+                                    body: JSON.stringify(datosActivo), // Convierte los datos a JSON
+                                })
+                                .then(async (response) => {
+                                    const text = await response.text(); // Lee la respuesta como texto
+                                    try {
+                                        const result = JSON.parse(text); // Intenta parsear como JSON
+                                        if (result.success) {
+                                            Swal.fire({
+                                                title: "¡Éxito!",
+                                                text: "Datos del servicio actualizados exitosamente.",
+                                                icon: "success",
+                                                timer: 3000, // Duración en milisegundos (3 segundos)
+                                                showConfirmButton: false, // No mostrar botón de aceptar
+                                            });
+                                            myModalActivos.hide(); // Cierra el modal si estás usando uno
+                                            actualizarActivos();
+                                        } else {
+                                            Swal.fire({
+                                                icon: "error",
+                                                title: "Oops...",
+                                                text: result.error, // Aquí se pasa el mensaje del error
+                                            });
+                                        }
+                                    } catch (error) {
+                                        console.error("Respuesta inválida del servidor:", text); // Muestra el contenido
+                                        alert("Error en la respuesta del servidor.");
+                                    }
+                                })
+                                .catch((error) => {
+                                    console.error("Error al guardar el servicio:", error);
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops...",
+                                        text: "Error al guardar el servicio",
+                                    });
+                                });
+                        };
+                    }
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Error al cargar los datos",
+                    });
+                });
+        }
+
+        // Función reutilizable para llenar los selects
+        function llenarSelectPersonal(url, selectId, valorSeleccionado) {
+            return fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                    const select = document.getElementById(selectId);
+                    data.forEach((persona) => {
+                        const option = document.createElement("option");
+                        option.value = persona.Pk_NumeroEmpleado;
+                        option.textContent = `${persona.Pk_NumeroEmpleado} - ${persona.Nombre}`;
+                        select.appendChild(option);
+                    });
+
+                    // Establecer el valor seleccionado después de llenar el select
+                    if (valorSeleccionado) {
+                        select.value = valorSeleccionado;
+                    }
+                })
+                .catch((error) => console.error(`Error fetching ${selectId} data:`, error));
+        }
+
         document.addEventListener("DOMContentLoaded", () => {
             cargarDatosInicialesActivo();
             const activosForm = document.getElementById("activosForm");
-
             const confirmSubmitButton = document.getElementById("confirmSubmitActivos");
+            let isSubmitting = false;
 
-            // Evento para confirmar el envío y hacer el fetch al backend
             confirmSubmitButton.addEventListener("click", () => {
-                const formData = new FormData(activosForm); // Capturamos los datos del formulario
+                if (isSubmitting) return; // Evita envíos duplicados
+                isSubmitting = true;
 
-                fetch("ruta/al/backend.php", {
+                confirmModal.hide();
+                const formData = new FormData(activosForm); // Captura los datos del formulario
+
+                fetch("/INFORMATICA/src/Models/Activos/guardar_activo.php", {
                         method: "POST",
                         body: formData,
                     })
-                    .then((response) => {
-                        if (response.ok) {
-                            return response.json(); // Asumimos que el backend responde con JSON
-                        } else {
-                            throw new Error("Error en la solicitud");
-                        }
-                    })
+                    .then((response) => response.json())
                     .then((data) => {
-                        console.log("Respuesta del servidor:", data);
-                        confirmModal.hide(); // Ocultamos el modal
-                        activosForm.reset(); // Reiniciamos el formulario
-                        activosForm.classList.remove("was-validated"); // Limpiamos la validación
+                        mensaje.textContent = data.message;
+                        mensaje.style.display = "block";
+
+                        resetForm(); // Llama al reseteo completo
+                        setTimeout(() => {
+                            mensaje.style.display = "none";
+                        }, 5000);
+
+                        actualizarActivos();
                     })
                     .catch((error) => {
                         console.error("Error:", error);
+                        mensaje.textContent = "Error al enviar los datos.";
+                        mensaje.style.display = "block";
+                    })
+                    .finally(() => {
+                        isSubmitting = false; // Restablece el estado de envío
                     });
             });
         });

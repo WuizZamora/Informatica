@@ -24,6 +24,7 @@
 })();
 
 document.addEventListener("DOMContentLoaded", function () {
+  fetchServicios();
   let isSubmitting = false; // Evita envíos múltiples
 
   const servicioForm = document.getElementById("servicioForm");
@@ -72,36 +73,35 @@ document.addEventListener("DOMContentLoaded", function () {
   function fillFormDataReview() {
     const formDataReview = document.getElementById("formDataReview");
     let formDataHtml = "";
-  
+
     const inputs = servicioForm.querySelectorAll(
       'input:not([type="hidden"]), select, textarea'
     );
-  
+
     inputs.forEach((input) => {
       const label =
         document.querySelector(`label[for='${input.id}']`)?.textContent ||
         input.name;
-  
+
       let value = input.value;
-  
+
       // Verificamos si es el select múltiple de ServicioSolicitado
       if (input.id === "ServicioSolicitado") {
         const selectedOptions = Array.from(input.selectedOptions)
           .filter((option) => option.value !== "default") // Ignora la opción "Elige una opción"
           .map((option) => option.textContent); // Usa textContent para mostrar el texto
-  
+
         value = selectedOptions.join(", "); // Une las selecciones por comas
       }
-  
+
       // Solo agregamos filas si hay un valor válido
       if (value && value.trim() !== "") {
         formDataHtml += `<tr><td>${label}</td><td>${value}</td></tr>`;
       }
     });
-  
+
     formDataReview.innerHTML = formDataHtml;
   }
-  
 
   document
     .getElementById("confirmSubmit")
@@ -377,17 +377,41 @@ setInterval(actualizarFechaHora, 1000);
 let currentPage = 1;
 const recordsPerPage = 10;
 let totalPages = 1;
+let allData = []; // Almacenar todos los datos al inicio
 
-function actualizarServicios() {
+function fetchServicios() {
   fetch("./src/Models/Servicios/obtener_servicios.php")
     .then((response) => response.json())
     .then((data) => {
-      totalPages = Math.ceil(data.length / recordsPerPage);
-      renderTable(data, currentPage);
-      renderPagination(totalPages);
+      allData = data; // Guardar los datos originales
+      actualizarServicios(); // Renderizar todos los servicios inicialmente
     })
     .catch((error) => console.error("Error:", error));
 }
+
+function actualizarServicios() {
+  const searchInput = document.getElementById("searchInput");
+  if (!searchInput) {
+    console.error("El elemento con ID 'searchInput' no se encontró en el DOM.");
+    return; // Salir de la función si el elemento no existe
+  }
+  
+  const searchTerm = searchInput.value.toLowerCase();
+  const filteredData = searchTerm
+    ? allData.filter(
+        (servicio) =>
+          servicio.Folio.toLowerCase().includes(searchTerm) ||
+          servicio.Oficio.toLowerCase().includes(searchTerm)
+      )
+    : allData;
+
+  totalPages = Math.ceil(filteredData.length / recordsPerPage);
+  renderTable(filteredData, currentPage);
+  renderPagination(totalPages);
+}
+
+// Llamar a fetchServicios al cargar la página para mostrar todos los resultados
+window.onload = fetchServicios;
 
 function renderTable(data, page) {
   const serviciosBody = document.getElementById("serviciosBody");
@@ -403,41 +427,48 @@ function renderTable(data, page) {
                 <td>${servicio.Folio}</td>
                 <td>${servicio.Solicitante}</td>
                 <td>${servicio.FechaSolicitud}</td>
-                <td style="word-break: break-word; white-space: normal;">${servicio.Oficio}</td>
+                <td style="word-break: break-word; white-space: normal;">${
+                  servicio.Oficio
+                }</td>
                 <td>${servicio.FechaAtencion}</td>
                 <td>${servicio.TipoServicio}</td>
-                <td class="${servicio.EstadoSolicitud === "CANCELADO"
-        ? "text-danger"
-        : servicio.EstadoSolicitud === "COMPLETADO"
-          ? "text-success"
-          : ""
-      }">
+                <td class="${
+                  servicio.EstadoSolicitud === "CANCELADO"
+                    ? "text-danger"
+                    : servicio.EstadoSolicitud === "COMPLETADO"
+                    ? "text-success"
+                    : ""
+                }">
                     ${servicio.EstadoSolicitud}
                 </td>
                 <td>
-                  ${servicio.SoporteDocumental
-        ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
+                  ${
+                    servicio.SoporteDocumental
+                      ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
                         <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
                       </a>`
-        : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
-      }
+                      : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
+                  }
                 </td>
                 <td>
-                    ${userRole == 1 ||
-        userRole == 2 ||
-        userRole == 3 ||
-        userRole == 4
-        ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" target="_blank" class="btn btn-success">Ver</a>`
-        : ""
-      }              
-                    ${userRole == 1 || userRole == 3
-        ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
-        : ""
-      }
-                    ${userRole == 1 || userRole == 2 || userRole == 3
-        ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
-        : ""
-      }
+                    ${
+                      userRole == 1 ||
+                      userRole == 2 ||
+                      userRole == 3 ||
+                      userRole == 4
+                        ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" target="_blank" class="btn btn-success">Ver</a>`
+                        : ""
+                    }              
+                    ${
+                      userRole == 1 || userRole == 3
+                        ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
+                        : ""
+                    }
+                    ${
+                      userRole == 1 || userRole == 2 || userRole == 3
+                        ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
+                        : ""
+                    }
                 </td>
             </tr>
         `;
@@ -453,8 +484,9 @@ function renderPagination(totalPages) {
   // Botón de página anterior
   pagination.innerHTML += `
     <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${currentPage - 1
-    })">Anterior</a>
+      <a class="page-link" href="#" onclick="changePage(${
+        currentPage - 1
+      })">Anterior</a>
     </li>
   `;
 
@@ -509,8 +541,9 @@ function renderPagination(totalPages) {
   // Botón de página siguiente
   pagination.innerHTML += `
     <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${currentPage + 1
-    })">Siguiente</a>
+      <a class="page-link" href="#" onclick="changePage(${
+        currentPage + 1
+      })">Siguiente</a>
     </li>
   `;
 }
@@ -807,22 +840,26 @@ function mostrarCamposAdicionales(tipoServicio, data) {
     <hr>
       <div class="form-group">
           <label for="cabms_Tecnico">ID ACTIVO:</label>
-          <input type="text" class="form-control" id="cabms_Tecnico" value="${data.Fk_IDActivo_Activos
-      }">
+          <input type="text" class="form-control" id="cabms_Tecnico" value="${
+            data.Fk_IDActivo_Activos
+          }">
       </div>
       <div class="form-group">
           <label for="descripcionTecnico_Tecnico">Descripción:</label>
-          <textarea class="form-control" id="descripcionTecnico_Tecnico">${data.DescripcionTecnico
-      }</textarea>
+          <textarea class="form-control" id="descripcionTecnico_Tecnico">${
+            data.DescripcionTecnico
+          }</textarea>
       </div>
       <div class="form-group">
           <label for="evaluacion_Tecnico">Evaluación:</label>
           <select class="form-select" id="evaluacion_Tecnico" name="evaluacion_Tecnico" required>
               <option selected disabled value="">Elige una opción</option>
-              <option value="FUNCIONAL" ${data.Evaluacion === "FUNCIONAL" ? "selected" : ""
-      }>Funcional</option>
-              <option value="NO FUNCIONAL" ${data.Evaluacion === "NO FUNCIONAL" ? "selected" : ""
-      }>Baja</option>
+              <option value="FUNCIONAL" ${
+                data.Evaluacion === "FUNCIONAL" ? "selected" : ""
+              }>Funcional</option>
+              <option value="NO FUNCIONAL" ${
+                data.Evaluacion === "NO FUNCIONAL" ? "selected" : ""
+              }>Baja</option>
           </select>
       </div>
     `;
@@ -838,22 +875,27 @@ function mostrarCamposAdicionales(tipoServicio, data) {
           <label for="ServicioSolicitadoUPDATE">Servicio Solicitado:</label>
           <select class="form-select text-center" id="ServicioSolicitadoUPDATE" name="ServicioSolicitadoUPDATE[]" size="9" multiple>
               <option value="">Elige una opción</option>
-              <option value="GESTIÓN DE EQUIPOS" ${serviciosSolicitados.includes("GESTIÓN DE EQUIPOS")
-        ? "selected"
-        : ""
-      }>GESTIÓN DE EQUIPOS</option>
-              <option value="CONECTIVIDAD" ${serviciosSolicitados.includes("CONECTIVIDAD") ? "selected" : ""
-      }>CONECTIVIDAD</option>
-              <option value="GESTIÓN DE USUARIOS" ${serviciosSolicitados.includes("GESTIÓN DE USUARIOS")
-        ? "selected"
-        : ""
-      }>GESTIÓN DE USUARIOS</option>
-              <option value="CAPACITACIÓN Y ASESORÍA" ${serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA")
-        ? "selected"
-        : ""
-      }>CAPACITACIÓN Y ASESORÍA</option>
-              <option value="OTROS" ${serviciosSolicitados.includes("OTROS") ? "selected" : ""
-      }>OTROS</option>
+              <option value="GESTIÓN DE EQUIPOS" ${
+                serviciosSolicitados.includes("GESTIÓN DE EQUIPOS")
+                  ? "selected"
+                  : ""
+              }>GESTIÓN DE EQUIPOS</option>
+              <option value="CONECTIVIDAD" ${
+                serviciosSolicitados.includes("CONECTIVIDAD") ? "selected" : ""
+              }>CONECTIVIDAD</option>
+              <option value="GESTIÓN DE USUARIOS" ${
+                serviciosSolicitados.includes("GESTIÓN DE USUARIOS")
+                  ? "selected"
+                  : ""
+              }>GESTIÓN DE USUARIOS</option>
+              <option value="CAPACITACIÓN Y ASESORÍA" ${
+                serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA")
+                  ? "selected"
+                  : ""
+              }>CAPACITACIÓN Y ASESORÍA</option>
+              <option value="OTROS" ${
+                serviciosSolicitados.includes("OTROS") ? "selected" : ""
+              }>OTROS</option>
           </select>
           <div class="invalid-feedback">
               Ingresa una opción
@@ -861,13 +903,15 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       </div>
       <div class="form-group">
           <label for="descripcionIncidencia_Incidencia">Descripción:</label>
-          <textarea class="form-control" id="descripcionIncidencia_Incidencia">${data.DescripcionIncidencia
-      }</textarea>
+          <textarea class="form-control" id="descripcionIncidencia_Incidencia">${
+            data.DescripcionIncidencia
+          }</textarea>
       </div>
       <div class="form-group">
           <label for="observaciones_Incidencia">Observaciones:</label>
-          <textarea class="form-control" id="observaciones_Incidencia">${data.Observaciones
-      }</textarea>
+          <textarea class="form-control" id="observaciones_Incidencia">${
+            data.Observaciones
+          }</textarea>
       </div>
     `;
   }
@@ -911,30 +955,35 @@ function EstadoSolicitud(id) {
                   <label for="estadoSolicitud" class="form-label"><strong>Estado de Solicitud:</strong></label>
                   <select class="form-select" id="estadoSolicitud" name="EstadoSolicitud" required>
                       <option selected disabled value="">Elige una opción</option>
-                      <option value="COMPLETADO" ${EstadoSolicitud === "COMPLETADO" ? "selected" : ""
-      }>COMPLETADO</option>
-                      <option value="PENDIENTE" ${EstadoSolicitud === "PENDIENTE" ? "selected" : ""
-      }>PENDIENTE</option>
-                      <option value="CANCELADO" ${EstadoSolicitud === "CANCELADO" ? "selected" : ""
-      }>CANCELADO</option>
+                      <option value="COMPLETADO" ${
+                        EstadoSolicitud === "COMPLETADO" ? "selected" : ""
+                      }>COMPLETADO</option>
+                      <option value="PENDIENTE" ${
+                        EstadoSolicitud === "PENDIENTE" ? "selected" : ""
+                      }>PENDIENTE</option>
+                      <option value="CANCELADO" ${
+                        EstadoSolicitud === "CANCELADO" ? "selected" : ""
+                      }>CANCELADO</option>
                   </select>
               </div>
               <div class="col-md-4">
                   <label class="form-label"><strong>Soporte Documental:</strong></label>
-                  ${SoporteDocumental
-        ? `
+                  ${
+                    SoporteDocumental
+                      ? `
                       <br><a href="/INFORMATICA/src/Models/Servicios/${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>
                   `
-        : `
+                      : `
                       <input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>
                   `
-      }
+                  }
               </div>
               <div class="col-md-4">
-              ${userRole == 1 || userRole == 3
-        ? `<button type="button" class="btn btn-danger" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>`
-        : ""
-      }  
+              ${
+                userRole == 1 || userRole == 3
+                  ? `<button type="button" class="btn btn-danger" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>`
+                  : ""
+              }  
               </div>
               </div>
       </form>
