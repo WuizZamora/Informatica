@@ -98,21 +98,20 @@ class ServicioModel
         }
 
         // Log para verificar los valores antes de la inserción
-        error_log("Antes de la inserción: ID Servicio: $idServicio, Servicios Solicitados: $serviciosConcatenados, Detalles: {$campos['DetallesServicioIncidencia']}, Observaciones: {$campos['ObservacionesServicioIncidencia']}");
+        error_log("Antes de la inserción: ID Servicio: $idServicio, Servicios Solicitados: $serviciosConcatenados, Detalles: {$campos['DetallesServicioIncidencia']}");
 
         // Guardar en tabla Servicios_Incidencias
-        $query = "INSERT INTO Servicios_Incidencias (Fk_IDServicio_Servicios, ServicioSolicitado, Descripcion, Observaciones) VALUES (?, ?, ?, ?)";
+        $query = "INSERT INTO Servicios_Incidencias (Fk_IDServicio_Servicios, ServicioSolicitado, Descripcion) VALUES (?, ?, ?)";
         $stmt = $this->db->prepare($query);
 
         $result = true; // Variable para rastrear errores
 
         // Ejecutar la consulta con la cadena concatenada
         $stmt->bind_param(
-            "isss",
+            "iss",
             $idServicio,
             $serviciosConcatenados, // Cadena concatenada de servicios solicitados
-            $campos['DetallesServicioIncidencia'],
-            $campos['ObservacionesServicioIncidencia']
+            $campos['DetallesServicioIncidencia']
         );
 
         // Ejecutar la consulta y manejar errores
@@ -209,10 +208,10 @@ class ServicioModel
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL Servicio_Incidencia_UPDATE(?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_Incidencia_UPDATE(?, ?, ?, ?, ?, ?, ?)");
 
             // Vincular los parámetros
-            $stmt->bind_param("iiisssss", $idServicio, $datos->solicitante, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->ServicioSolicitado, $datos->DescripcionIncidencia, $datos->ObservacionesIncidencia);
+            $stmt->bind_param("iiissss", $idServicio, $datos->solicitante, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->ServicioSolicitado, $datos->DescripcionIncidencia);
 
             // Ejecutar la consulta
             $stmt->execute();

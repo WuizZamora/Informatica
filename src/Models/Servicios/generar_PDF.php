@@ -84,13 +84,11 @@ if (isset($_GET['IDServicio'])) {
                 .table th, .table td {
                     border: none;
                     padding: 0.8rem;
-                    text-align: center;
                 }
 
                 .table td {
                     border: none;
                     padding: 0.8rem;
-                    text-align: center;
                     max-width: 30rem; /* Cambia este valor según sea necesario */
                     word-wrap: break-word; /* Permite que el texto se ajuste */
                     white-space: normal; /* Permite múltiples líneas */
@@ -121,16 +119,16 @@ if (isset($_GET['IDServicio'])) {
                         <td>' . $data['Solicitante'] . '</td>
                     </tr>';
 
-                    // Verificar si el valor de 'Oficio' no es 'S/O'
-                    if ($data['Oficio'] !== 'S/O') {
-                        $html .= '
+        // Verificar si el valor de 'Oficio' no es 'S/O'
+        if ($data['Oficio'] !== 'S/O') {
+            $html .= '
                             <tr>
                                 <th>Oficio</th>
                                 <td>' . $data['Oficio'] . '</td>
                             </tr>';
-                    }
+        }
 
-                    $html .= '<tr>
+        $html .= '<tr>
                         <th>Tipo de Servicio</th>
                         <td>' . $data['TipoServicio'] . '</td>
                     </tr>
@@ -173,12 +171,17 @@ if (isset($_GET['IDServicio'])) {
                     <tr>
                         <th>Equipo</th>
                         <td>' . $data['Equipo'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Descripción</th>
-                        <td>' . $data['DescripcionVideo'] . '</td>
-                    </tr>
-                </table><br><br><br>
+                    </tr>';
+            if (isset($data['DescripcionVideo']) && trim($data['DescripcionVideo']) !== '') {
+                $html .= '
+                            <tr>
+                                <th>Descripción</th>
+                                <td>' . $data['DescripcionVideo'] . '</td>
+                            </tr>
+                        ';
+            }
+            $html .= '<br><br><br>
+                </table>
                 <div class="content-firma">
                 ___________________________________________<br>Firma del solicitante
                 </div>';
@@ -214,10 +217,18 @@ if (isset($_GET['IDServicio'])) {
                         <th>Resultado de la dictaminación</th>
                         <td>' . $data['Evaluacion'] . '</td>
                     </tr>
-                </table><br>
+                </table><br><br><br>';
+            if ($data['Evaluacion'] === 'NO FUNCIONAL') {
+                $html .= '
                 <div class="content-firma">
                 ___________________________________________<br>LIC. ' . $data['Nombre_JUD_IT'] . '
                 </div>';
+            } else {
+                $html .= '
+                <div class="content-firma">
+                ___________________________________________<br>Firma del solicitante
+                </div>';
+            }
         } elseif ($data['TipoServicio'] === 'INCIDENCIA') {
             $html .= '
                 <div class="section-title">DETALLES DE LA INCIDENCIA</div>
@@ -234,11 +245,7 @@ if (isset($_GET['IDServicio'])) {
                         <th>Descripción</th>
                         <td>' . $data['DescripcionIncidencia'] . '</td>
                     </tr>
-                    <tr>
-                        <th>Observaciones</th>
-                        <td>' . $data['Observaciones'] . '</td>
-                    </tr>
-                </table><br>
+                </table><br><br><br>
                 <div class="content-firma">
                 ___________________________________________<br>Firma del solicitante
                 </div>';

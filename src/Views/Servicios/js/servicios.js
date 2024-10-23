@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       // Solo agregamos filas si hay un valor válido
       if (value && value.trim() !== "") {
-        formDataHtml += `<tr><td>${label}</td><td>${value}</td></tr>`;
+        formDataHtml += `<tr><td>${label}</td><td style="max-width: 20rem; word-break: break-all;">${value}</td></tr>`;
       }
     });
 
@@ -216,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
     data.forEach((item) => {
       const option = document.createElement("option");
       option.value = item[valueKey];
-      option.textContent = `${item[valueKey]} - ${item[textKey]}`;
+      option.textContent = `${item[textKey]}-${item[valueKey]}`;
       select.appendChild(option);
     });
   }
@@ -275,8 +275,8 @@ function mostrarFormulario() {
 
   // Limpiar valores de todos los campos y quitar el atributo "required"
   incidendenciaFields.forEach((field) => {
-    field.value = ""; // Limpiar valores
-    field.required = false; // Quitar el atributo required
+    field.value = "";
+    field.required = false;
   });
 
   videoFields.forEach((field) => {
@@ -293,50 +293,46 @@ function mostrarFormulario() {
   const campoConfirmacionOficio = document.getElementById(
     "ConfirmacionCampoOficio"
   );
-  campoConfirmacionOficio.value = ""; // Limpiar el valor del campo confirmación Oficio
-  campoConfirmacionOficio.style.display = "none"; // Ocultar el campo confirmación Oficio
+  const inputConfirmacionOficio = document.getElementById("ConfirmacionOficio"); // <== Asegúrate que este input exista
+  inputConfirmacionOficio.value = ""; // Limpiar valor
+  inputConfirmacionOficio.required = false; // Asegurarse que no sea requerido por defecto
+  campoConfirmacionOficio.style.display = "none"; // Ocultar contenedor
 
   // Limpiar y reiniciar el campo Oficio
   const campoOficio = document.getElementById("CampoOficio");
   const inputOficio = document.getElementById("Oficio");
-  inputOficio.value = ""; // Limpiar el valor del campo Oficio
-  inputOficio.removeAttribute("readonly"); // Quitar readonly para asegurarse de que sea editable
-  inputOficio.removeAttribute("required"); // Reiniciar el campo a no requerido
-  campoOficio.style.display = "none"; // Ocultar el campo Oficio
+  inputOficio.value = "";
+  inputOficio.removeAttribute("readonly");
+  inputOficio.required = false;
+  campoOficio.style.display = "none";
 
   // Mostrar el formulario correspondiente
   if (tipoServicio === "INCIDENCIA") {
     document.getElementById("formIncidencia").style.display = "block";
-    campoConfirmacionOficio.style.display = "block"; // Mostrar el campo confirmacion Oficio
-    incidendenciaFields.forEach((field) => (field.required = true)); // Hacer los campos requeridos
-    campoConfirmacionOficio.required = true; // Hacer el campo confirmación del oficio requerido
+    campoConfirmacionOficio.style.display = "block"; // Mostrar campo confirmacion
+    inputConfirmacionOficio.required = true; // <== Asegurarse que el input sea requerido
+    incidendenciaFields.forEach((field) => (field.required = true));
 
-    // Hacer que ServicioSolicitado sea requerido solo si es INCIDENCIA
     const servicioSolicitadoSelect =
       document.getElementById("ServicioSolicitado");
-    servicioSolicitadoSelect.required = true; // Hacer que el select múltiple sea requerido
+    servicioSolicitadoSelect.required = true; // Hacer el select múltiple requerido
   } else {
-    // Asegúrate de quitar el requisito del select cuando no sea INCIDENCIA
     const servicioSolicitadoSelect =
       document.getElementById("ServicioSolicitado");
-    servicioSolicitadoSelect.required = false; // Quitar el requisito del select
+    servicioSolicitadoSelect.required = false;
   }
 
-  // Manejo para otros tipos de servicios
   if (tipoServicio === "ENTREGA MATERIAL FÍLMICO") {
     document.getElementById("formVideos").style.display = "block";
-    campoOficio.style.display = "none"; // Ocultar el campo de oficio
-    inputOficio.removeAttribute("required"); // Eliminar el atributo requerido
-    inputOficio.value = "S/O"; // VALOR PREDETERMINADO
+    campoConfirmacionOficio.style.display = "block"; // Mostrar campo confirmacion
+    inputConfirmacionOficio.required = true; // <== Asegurar que sea requerido
     videoFields.forEach((field) => (field.required = true));
-    inputOficio.removeAttribute("readonly"); // Permitir la edición del campo Oficio
-    inputOficio.setAttribute("required", "required"); // Hacer el campo requerido
   } else if (tipoServicio === "TÉCNICO") {
     document.getElementById("formDictaminacion").style.display = "block";
-    campoOficio.style.display = "block"; // Mostrar el campo Oficio
+    campoOficio.style.display = "block";
     dictaminacionFields.forEach((field) => (field.required = true));
-    inputOficio.removeAttribute("readonly"); // Permitir la edición del campo Oficio
-    inputOficio.setAttribute("required", "required"); // Hacer el campo requerido
+    inputOficio.removeAttribute("readonly");
+    inputOficio.setAttribute("required", "required");
   }
 }
 
@@ -419,61 +415,68 @@ function renderTable(data, page) {
   const paginatedData = data.slice(start, end);
 
   paginatedData.forEach((servicio) => {
-    // Aquí creas la fila de la tabla
+    const isEntregaMaterial = servicio.TipoServicio === "ENTREGA MATERIAL FÍLMICO";
+    const isPendiente = servicio.EstadoSolicitud === "PENDIENTE";
+    const isCancelado = servicio.EstadoSolicitud === "CANCELADO";
+    const shouldDisable = (isEntregaMaterial && isPendiente) || isCancelado;
+
     const row = `
-            <tr>
-                <td>${servicio.Folio}</td>
-                <td>${servicio.Solicitante}</td>
-                <td>${servicio.FechaSolicitud}</td>
-                <td style="word-break: break-word; white-space: normal;">${
-                  servicio.Oficio
-                }</td>
-                <td>${servicio.FechaAtencion}</td>
-                <td>${servicio.TipoServicio}</td>
-                <td class="${
-                  servicio.EstadoSolicitud === "CANCELADO"
-                    ? "text-danger"
-                    : servicio.EstadoSolicitud === "COMPLETADO"
-                    ? "text-success"
-                    : ""
-                }">
-                    ${servicio.EstadoSolicitud}
-                </td>
-                <td>
-                  ${
-                    servicio.SoporteDocumental
-                      ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
-                        <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
-                      </a>`
-                      : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
-                  }
-                </td>
-                <td>
-                    ${
-                      userRole == 1 ||
-                      userRole == 2 ||
-                      userRole == 3 ||
-                      userRole == 4
-                        ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" target="_blank" class="btn btn-success">Ver</a>`
-                        : ""
-                    }              
-                    ${
-                      userRole == 1 || userRole == 3
-                        ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
-                        : ""
-                    }
-                    ${
-                      userRole == 1 || userRole == 2 || userRole == 3
-                        ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
-                        : ""
-                    }
-                </td>
-            </tr>
-        `;
+      <tr>
+        <td>${servicio.Folio}</td>
+        <td>${servicio.Solicitante}</td>
+        <td>${servicio.FechaSolicitud}</td>
+        <td style="word-break: break-word; white-space: normal;">
+          ${servicio.Oficio}
+        </td>
+        <td>${servicio.FechaAtencion}</td>
+        <td>${servicio.TipoServicio}</td>
+        <td class="${
+          servicio.EstadoSolicitud === "CANCELADO"
+            ? "text-danger"
+            : servicio.EstadoSolicitud === "COMPLETADO"
+            ? "text-success"
+            : ""
+        }">
+          ${servicio.EstadoSolicitud}
+        </td>
+        <td>
+          ${
+            servicio.SoporteDocumental
+              ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
+                  <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
+                </a>`
+              : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
+          }
+        </td>
+        <td>
+          ${
+            userRole == 1 || userRole == 2 || userRole == 3 || userRole == 4
+              ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" 
+                  target="_blank" 
+                  class="btn btn-success ${shouldDisable ? "disabled" : ""}"
+                  tabindex="${shouldDisable ? "-1" : "0"}">
+                  Ver
+                </a>`
+              : ""
+          }
+          ${
+            userRole == 1 || userRole == 3
+              ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
+              : ""
+          }
+          ${
+            userRole == 1 || userRole == 2 || userRole == 3
+              ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
+              : ""
+          }
+        </td>
+      </tr>
+    `;
 
     serviciosBody.innerHTML += row;
   });
 }
+
 
 function renderPagination(totalPages) {
   const pagination = document.getElementById("pagination");
@@ -676,13 +679,9 @@ function editServicio(id) {
             const DescripcionIncidencia = document.getElementById(
               "descripcionIncidencia_Incidencia"
             ).value;
-            const ObservacionesIncidencia = document.getElementById(
-              "observaciones_Incidencia"
-            ).value;
 
             datosServicio.ServicioSolicitado = selectedOptionsUPDATE;
             datosServicio.DescripcionIncidencia = DescripcionIncidencia;
-            datosServicio.ObservacionesIncidencia = ObservacionesIncidencia;
           } else if (tipoServicio === "ENTREGA MATERIAL FÍLMICO") {
             const CantidadVideos =
               document.getElementById("cantidadVideos").value;
@@ -769,7 +768,7 @@ function llenarSelectPersonal(url, selectId, valorSeleccionado) {
       data.forEach((persona) => {
         const option = document.createElement("option");
         option.value = persona.Pk_NumeroEmpleado;
-        option.textContent = `${persona.Pk_NumeroEmpleado} - ${persona.Nombre}`;
+        option.textContent = `${persona.Nombre}-${persona.Pk_NumeroEmpleado}`;
         select.appendChild(option);
       });
 
@@ -810,7 +809,7 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       </div>
       <div class="form-group">
           <label for="DescripcionVideosUpdate">Descripcion de los Videos:</label>
-          <textarea class="form-control" id="DescripcionVideosUpdate">${data.DescripcionVideo}</textarea>
+          <textarea class="form-control" rows="8" id="DescripcionVideosUpdate">${data.DescripcionVideo}</textarea>
       </div>
     `;
   } else if (tipoServicio === "TÉCNICO") {
@@ -824,7 +823,7 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       </div>
       <div class="form-group">
           <label for="descripcionTecnico_Tecnico">Descripción:</label>
-          <textarea class="form-control" id="descripcionTecnico_Tecnico">${
+          <textarea class="form-control" rows="8" id="descripcionTecnico_Tecnico">${
             data.DescripcionTecnico
           }</textarea>
       </div>
@@ -851,7 +850,7 @@ function mostrarCamposAdicionales(tipoServicio, data) {
     <hr>
       <div class="form-group">
           <label for="ServicioSolicitadoUPDATE">Servicio Solicitado:</label>
-          <select class="form-select text-center" id="ServicioSolicitadoUPDATE" name="ServicioSolicitadoUPDATE[]" size="9" multiple>
+          <select class="form-select text-center" id="ServicioSolicitadoUPDATE" name="ServicioSolicitadoUPDATE[]" size="6" multiple>
               <option value="">Elige una opción</option>
               <option value="GESTIÓN DE EQUIPOS" ${
                 serviciosSolicitados.includes("GESTIÓN DE EQUIPOS")
@@ -881,14 +880,8 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       </div>
       <div class="form-group">
           <label for="descripcionIncidencia_Incidencia">Descripción:</label>
-          <textarea class="form-control" id="descripcionIncidencia_Incidencia">${
+          <textarea class="form-control" rows="8" id="descripcionIncidencia_Incidencia">${
             data.DescripcionIncidencia
-          }</textarea>
-      </div>
-      <div class="form-group">
-          <label for="observaciones_Incidencia">Observaciones:</label>
-          <textarea class="form-control" id="observaciones_Incidencia">${
-            data.Observaciones
           }</textarea>
       </div>
     `;
@@ -932,15 +925,29 @@ function EstadoSolicitud(id) {
       <label for="estadoSolicitud" class="form-label">Estado de Solicitud:</label>
       <select class="form-select text-center" id="estadoSolicitud" name="EstadoSolicitud" required>
         <option selected disabled value="">Elige una opción</option>
-        <option value="PENDIENTE" ${EstadoSolicitud === "PENDIENTE" ? "selected disabled" : ""}>PENDIENTE</option>
-        <option value="COMPLETADO" ${EstadoSolicitud === "COMPLETADO" ? "selected" : ""}>COMPLETADO</option>
-        <option value="CANCELADO" ${EstadoSolicitud === "CANCELADO" ? "selected" : ""}>CANCELADO</option>
+        <option value="PENDIENTE" disabled ${
+          EstadoSolicitud === "PENDIENTE" ? "selected" : ""
+        }>PENDIENTE</option>
+        <option value="COMPLETADO" ${
+          EstadoSolicitud === "COMPLETADO" ? "selected" : ""
+        }>COMPLETADO</option>
+        <option value="CANCELADO" ${
+          EstadoSolicitud === "CANCELADO" ? "selected" : ""
+        }>CANCELADO</option>
       </select>
       
       <label class="form-label">Soporte Documental:</label>
-        ${SoporteDocumental ? `<br><a href="/INFORMATICA/src/Models/Servicios/${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>` : `<input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>`}
+        ${
+          SoporteDocumental
+            ? `<br><a href="/INFORMATICA/src/Models/Servicios/${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>`
+            : `<input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>`
+        }
         </form>
-        ${userRole == 1 || userRole == 3 ? `<button type="button" class="btn btn-danger btn-sm" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>` : ""}  
+        ${
+          userRole == 1 || userRole == 3
+            ? `<button type="button" class="btn btn-danger btn-sm" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>`
+            : ""
+        }  
         </div>
         </div>
     `;

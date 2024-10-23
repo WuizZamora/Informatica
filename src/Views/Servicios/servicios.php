@@ -3,6 +3,18 @@
         <hr>
         <form id="servicioForm" class="row g-3 needs-validation text-center" autocomplete="off" enctype="multipart/form-data" novalidate>
             <div class="col-md-4">
+                <label class="form-label" for="IDTipoServicio">Tipo de servicio</label>
+                <select class="form-select text-center" id="IDTipoServicio" name="IDTipoServicio" onchange="mostrarFormulario()" required>
+                    <option selected disabled value="">Elige una opción</option>
+                    <option value="INCIDENCIA">Incidencia</option>
+                    <option value="ENTREGA MATERIAL FÍLMICO">Entrega de Material Fílmico</option>
+                    <option value="TÉCNICO">Dictaminación/Mantenimiento</option>
+                </select>
+                <div class="invalid-feedback">
+                    Ingresa una opción
+                </div>
+            </div>
+            <div class="col-md-4">
                 <label class="form-label" for="PersonalSolicitante">Personal solicitante</label>
                 <select class="form-select" name="PersonalSolicitante" id="PersonalSolicitante" required>
                     <option disabled selected value="" class="text-center">Selecciona un empleado</option>
@@ -18,18 +30,6 @@
                 </select>
                 <div class="invalid-feedback">
                     Selecciona un empleado válido
-                </div>
-            </div>
-            <div class="col-md-4">
-                <label class="form-label" for="IDTipoServicio">Tipo de servicio</label>
-                <select class="form-select text-center" id="IDTipoServicio" name="IDTipoServicio" onchange="mostrarFormulario()" required>
-                    <option selected disabled value="">Elige una opción</option>
-                    <option value="INCIDENCIA">Incidencia</option>
-                    <option value="ENTREGA MATERIAL FÍLMICO">Entrega de Material Fílmico</option>
-                    <option value="TÉCNICO">Dictaminación/Mantenimiento</option>
-                </select>
-                <div class="invalid-feedback">
-                    Ingresa una opción
                 </div>
             </div>
 
@@ -85,11 +85,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label" for="DetallesServicioIncidencia">Detalles del servicio</label>
-                        <textarea class="form-control text-center" name="DetallesServicioIncidencia" id="DetallesServicioIncidencia" rows="8" required> </textarea>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label" for="ObservacionesServicioIncidencia">Observaciones del servicio</label>
-                        <textarea class="form-control text-center" name="ObservacionesServicioIncidencia" id="ObservacionesServicioIncidencia" rows="8" required> </textarea>
+                        <textarea class="form-control" name="DetallesServicioIncidencia" id="DetallesServicioIncidencia" rows="8" required> </textarea>
                     </div>
                 </div>
             </div>
