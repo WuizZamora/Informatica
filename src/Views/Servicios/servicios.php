@@ -12,15 +12,6 @@
                 </div>
             </div>
             <div class="col-md-4">
-                <label class="form-label" for="PersonalEntrega">Personal que entrega</label>
-                <select class="form-select" name="PersonalEntrega" id="PersonalEntrega" required>
-                    <option disabled selected value="" class="text-center">Selecciona un empleado</option>
-                </select>
-                <div class="invalid-feedback">
-                    Selecciona un empleado válido
-                </div>
-            </div>
-            <div class="col-md-4">
                 <label class="form-label" for="PersonalAtiende">Personal que atiende</label>
                 <select class="form-select" name="PersonalAtiende" id="PersonalAtiende" required>
                     <option disabled selected value="" class="text-center">Selecciona un empleado</option>
@@ -197,9 +188,9 @@
                         periodoInicial.addEventListener('change', calcularPeriodo);
                         periodoFinal.addEventListener('change', calcularPeriodo);
                     </script>
-                    <div class="col-md-3">
+                    <div class="col-md-6">
                         <label class="form-label" for="DescripcionVideos">Descripción</label>
-                        <textarea class="form-control text-center" name="DescripcionVideos" id="DescripcionVideos" rows="8" required> </textarea>
+                        <textarea class="form-control text-center" name="DescripcionVideos" id="DescripcionVideos" rows="8"> </textarea>
                     </div>
                 </div>
             </div>
@@ -208,7 +199,7 @@
             <div id="formDictaminacion" style="display:none;">
                 <h3>Datos del Activo</h3>
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label" for="CABMSDictaminacion">CABMS</label>
                         <select class="form-select text-center" name="CABMSDictaminacion" id="CABMSDictaminacion">
                             <option disabled selected value="">Selecciona un activo</option>
@@ -217,7 +208,7 @@
                             Selecciona un activo válido
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label" for="ProgresivoDictaminacion">Progresivo</label>
                         <select class="form-select text-center" name="ProgresivoDictaminacion" id="ProgresivoDictaminacion">
                             <option disabled selected value="">Selecciona un progresivo</option>
@@ -226,7 +217,7 @@
                             Selecciona un activo válido
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-4">
                         <label class="form-label" for="EstadoConservacion">Estado de conservación</label>
                         <select class="form-select text-center" id="EstadoConservacion" name="EstadoConservacion">
                             <option selected disabled value="">Elige una opción</option>

@@ -119,16 +119,18 @@ if (isset($_GET['IDServicio'])) {
                     <tr>
                         <th>Solicitante</th>
                         <td>' . $data['Solicitante'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Entrega</th>
-                        <td>' . $data['Entrega'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Oficio</th>
-                        <td>' . $data['Oficio'] . '</td>
-                    </tr>
-                    <tr>
+                    </tr>';
+
+                    // Verificar si el valor de 'Oficio' no es 'S/O'
+                    if ($data['Oficio'] !== 'S/O') {
+                        $html .= '
+                            <tr>
+                                <th>Oficio</th>
+                                <td>' . $data['Oficio'] . '</td>
+                            </tr>';
+                    }
+
+                    $html .= '<tr>
                         <th>Tipo de Servicio</th>
                         <td>' . $data['TipoServicio'] . '</td>
                     </tr>

@@ -4,11 +4,10 @@ header('Content-Type: application/json'); // Establecer encabezado
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verifica que todos los campos necesarios estén presentes
-    if (isset($_POST['PersonalSolicitante'], $_POST['PersonalEntrega'], $_POST['PersonalAtiende'], $_POST['IDTipoServicio'], $_POST['FechaAtencion'], $_POST['Oficio'], $_POST['FechaSolicitud'])) {
+    if (isset($_POST['PersonalSolicitante'], $_POST['PersonalAtiende'], $_POST['IDTipoServicio'], $_POST['FechaAtencion'], $_POST['Oficio'], $_POST['FechaSolicitud'])) {
         
         // Captura los datos
         $personalSolicitante = $_POST['PersonalSolicitante'];
-        $personalEntrega = $_POST['PersonalEntrega'];
         $personalAtiende = $_POST['PersonalAtiende'];
         $idTipoServicio = $_POST['IDTipoServicio'];
         $fechaAtencion = $_POST['FechaAtencion'];
@@ -18,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $servicioModel = new ServicioModel();
 
         // Guarda en la tabla Servicios
-        $idServicio = $servicioModel->guardarServicio($personalSolicitante, $personalEntrega, $personalAtiende, $idTipoServicio, $fechaAtencion, $oficio, $fechaSolicitud);
+        $idServicio = $servicioModel->guardarServicio($personalSolicitante, $personalAtiende, $idTipoServicio, $fechaAtencion, $oficio, $fechaSolicitud);
 
         if ($idServicio) {
             $camposDinamicos = $_POST; // Captura los campos adicionales

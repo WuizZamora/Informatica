@@ -66,13 +66,13 @@ class ServicioModel
         return $VistaServicio;
     }
 
-    public function guardarServicio($PersonalSolicitante, $personalEntrega, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud)
+    public function guardarServicio($PersonalSolicitante, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud)
     {
         // Inserta los datos en la tabla Servicios
-        $query = "INSERT INTO Servicios (Fk_Solicitante_Personal, Fk_Entrega_Personal, Fk_Atiende_Personal, TipoServicio, FechaAtencion, Oficio, FechaSolicitud)
-                  VALUES (?, ?, ?, ?, ?, ?, ?)";
+        $query = "INSERT INTO Servicios (Fk_Solicitante_Personal, Fk_Atiende_Personal, TipoServicio, FechaAtencion, Oficio, FechaSolicitud)
+                  VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
-        $stmt->bind_param("iiissss", $PersonalSolicitante, $personalEntrega, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud);
+        $stmt->bind_param("iissss", $PersonalSolicitante, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud);
 
         if ($stmt->execute()) {
             // Retorna el ID del servicio recién insertado
@@ -191,10 +191,10 @@ class ServicioModel
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL Servicio_Tecnico_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_Tecnico_UPDATE(?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Vincular los parámetros
-            $stmt->bind_param("iiiissssi", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionTecnico, $datos->EvaluacionTecnico, $datos->IDActivo);
+            $stmt->bind_param("iiissssi", $idServicio, $datos->solicitante, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionTecnico, $datos->EvaluacionTecnico, $datos->IDActivo);
 
             // Ejecutar la consulta
             $stmt->execute();
@@ -209,10 +209,10 @@ class ServicioModel
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL Servicio_Incidencia_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_Incidencia_UPDATE(?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Vincular los parámetros
-            $stmt->bind_param("iiiisssss", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->ServicioSolicitado, $datos->DescripcionIncidencia, $datos->ObservacionesIncidencia);
+            $stmt->bind_param("iiisssss", $idServicio, $datos->solicitante, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->ServicioSolicitado, $datos->DescripcionIncidencia, $datos->ObservacionesIncidencia);
 
             // Ejecutar la consulta
             $stmt->execute();
@@ -227,10 +227,10 @@ class ServicioModel
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL Servicio_Video_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_Video_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
 
             // Vincular los parámetros
-            $stmt->bind_param("iiiisssissss", $idServicio, $datos->solicitante, $datos->entrega, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionVideos, $datos->CantidadVideos, $datos->PVideos, $datos->PIVideos, $datos->PFVideos, $datos->Equipo);
+            $stmt->bind_param("iiisssissss", $idServicio, $datos->solicitante,  $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionVideos, $datos->CantidadVideos, $datos->PVideos, $datos->PIVideos, $datos->PFVideos, $datos->Equipo);
 
             // Ejecutar la consulta
             $stmt->execute();

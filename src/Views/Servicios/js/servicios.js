@@ -139,7 +139,7 @@ document.addEventListener("DOMContentLoaded", function () {
           mensaje.style.display = "none";
         }, 5000);
 
-        actualizarServicios();
+        fetchServicios();
         isSubmitting = false;
       })
       .catch((error) => {
@@ -183,7 +183,6 @@ document.addEventListener("DOMContentLoaded", function () {
       .then((response) => response.json())
       .then((data) => {
         llenarSelect(data, "PersonalSolicitante");
-        llenarSelect(data, "PersonalEntrega");
       })
       .catch((error) => console.error("Error fetching personal data:", error));
 
@@ -263,7 +262,7 @@ function mostrarFormulario() {
     "#formIncidencia input, #formIncidencia textarea, #formIncidencia select"
   );
   const videoFields = document.querySelectorAll(
-    "#formVideos input, #formVideos textarea, #formVideos select"
+    "#formVideos input, #formVideos select"
   );
   const dictaminacionFields = document.querySelectorAll(
     "#formDictaminacion input, #formDictaminacion textarea, #formDictaminacion select"
@@ -326,7 +325,9 @@ function mostrarFormulario() {
   // Manejo para otros tipos de servicios
   if (tipoServicio === "ENTREGA MATERIAL FÍLMICO") {
     document.getElementById("formVideos").style.display = "block";
-    campoOficio.style.display = "block"; // Mostrar el campo Oficio
+    campoOficio.style.display = "none"; // Ocultar el campo de oficio
+    inputOficio.removeAttribute("required"); // Eliminar el atributo requerido
+    inputOficio.value = "S/O"; // VALOR PREDETERMINADO
     videoFields.forEach((field) => (field.required = true));
     inputOficio.removeAttribute("readonly"); // Permitir la edición del campo Oficio
     inputOficio.setAttribute("required", "required"); // Hacer el campo requerido
@@ -395,7 +396,7 @@ function actualizarServicios() {
     console.error("El elemento con ID 'searchInput' no se encontró en el DOM.");
     return; // Salir de la función si el elemento no existe
   }
-  
+
   const searchTerm = searchInput.value.toLowerCase();
   const filteredData = searchTerm
     ? allData.filter(
@@ -409,9 +410,6 @@ function actualizarServicios() {
   renderTable(filteredData, currentPage);
   renderPagination(totalPages);
 }
-
-// Llamar a fetchServicios al cargar la página para mostrar todos los resultados
-window.onload = fetchServicios;
 
 function renderTable(data, page) {
   const serviciosBody = document.getElementById("serviciosBody");
@@ -555,10 +553,7 @@ function changePage(page) {
 }
 
 // Actualizar la tabla cada 10 segundos
-setInterval(actualizarServicios, 10000);
-
-// Llamar la función por primera vez para mostrar los datos iniciales
-actualizarServicios();
+setInterval(fetchServicios, 10000);
 
 function editServicio(id) {
   fetch(
@@ -579,12 +574,6 @@ function editServicio(id) {
           <div class="form-group">
               <label for="solicitante">Solicitante:</label>
               <select class="form-select" id="solicitante" name="solicitante" required>
-                <option disabled selected value="">Selecciona un empleado</option>
-              </select>
-          </div>
-          <div class="form-group">
-              <label for="entrega">Entrega:</label>
-              <select class="form-select" id="entrega" name="entrega" required>
                 <option disabled selected value="">Selecciona un empleado</option>
               </select>
           </div>
@@ -623,15 +612,6 @@ function editServicio(id) {
         });
 
         llenarSelectPersonal(
-          "./src/Models/Personal/obtener_personal.php",
-          "entrega",
-          data.Entrega
-        ).then(() => {
-          const entregaSelect = document.getElementById("entrega");
-          entregaSelect.value = data.Entrega; // Establecer el valor seleccionado aquí
-        });
-
-        llenarSelectPersonal(
           "./src/Models/Personal/obtener_personal.php?filtrar=true",
           "atiende",
           data.Atiende
@@ -655,7 +635,6 @@ function editServicio(id) {
           // Obtener los valores de los campos
           const idServicio = data.Pk_IDServicio;
           const solicitante = document.getElementById("solicitante").value;
-          const entrega = document.getElementById("entrega").value;
           const atiende = document.getElementById("atiende").value;
           const oficio = document.getElementById("OficioUpdate").value;
           const fechaSolicitud =
@@ -666,7 +645,6 @@ function editServicio(id) {
           const datosServicio = {
             idServicio,
             solicitante,
-            entrega,
             atiende,
             oficio,
             fechaSolicitud,
@@ -945,48 +923,26 @@ function EstadoSolicitud(id) {
   function mostrarDatos(servicio) {
     const { Pk_IDServicio, EstadoSolicitud, SoporteDocumental } = servicio;
     let ModalContentEstado = `
-      <form id="servicioForm" class="needs-validation" enctype="multipart/form-data">
-          <div class="row text-center">
-              <div class="col-md-4">
-                  <label for="idServicioEstado" class="form-label"><strong>ID Servicio:</strong></label>
-                  <input type="text" class="form-control" id="idServicioEstado" name="Pk_IDServicio" value="${Pk_IDServicio}" readonly>
-              </div>
-              <div class="col-md-4">
-                  <label for="estadoSolicitud" class="form-label"><strong>Estado de Solicitud:</strong></label>
-                  <select class="form-select" id="estadoSolicitud" name="EstadoSolicitud" required>
-                      <option selected disabled value="">Elige una opción</option>
-                      <option value="COMPLETADO" ${
-                        EstadoSolicitud === "COMPLETADO" ? "selected" : ""
-                      }>COMPLETADO</option>
-                      <option value="PENDIENTE" ${
-                        EstadoSolicitud === "PENDIENTE" ? "selected" : ""
-                      }>PENDIENTE</option>
-                      <option value="CANCELADO" ${
-                        EstadoSolicitud === "CANCELADO" ? "selected" : ""
-                      }>CANCELADO</option>
-                  </select>
-              </div>
-              <div class="col-md-4">
-                  <label class="form-label"><strong>Soporte Documental:</strong></label>
-                  ${
-                    SoporteDocumental
-                      ? `
-                      <br><a href="/INFORMATICA/src/Models/Servicios/${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>
-                  `
-                      : `
-                      <input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>
-                  `
-                  }
-              </div>
-              <div class="col-md-4">
-              ${
-                userRole == 1 || userRole == 3
-                  ? `<button type="button" class="btn btn-danger" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>`
-                  : ""
-              }  
-              </div>
-              </div>
-      </form>
+    <div class="row justify-content-center text-center">
+    <div class="col-md-8">
+    <form id="servicioForm" class="needs-validation" enctype="multipart/form-data">
+      <label for="idServicioEstado" class="form-label">ID Servicio:</label>
+      <input type="text" class="form-control text-center" id="idServicioEstado" name="Pk_IDServicio" value="${Pk_IDServicio}" readonly>
+      
+      <label for="estadoSolicitud" class="form-label">Estado de Solicitud:</label>
+      <select class="form-select text-center" id="estadoSolicitud" name="EstadoSolicitud" required>
+        <option selected disabled value="">Elige una opción</option>
+        <option value="PENDIENTE" ${EstadoSolicitud === "PENDIENTE" ? "selected disabled" : ""}>PENDIENTE</option>
+        <option value="COMPLETADO" ${EstadoSolicitud === "COMPLETADO" ? "selected" : ""}>COMPLETADO</option>
+        <option value="CANCELADO" ${EstadoSolicitud === "CANCELADO" ? "selected" : ""}>CANCELADO</option>
+      </select>
+      
+      <label class="form-label">Soporte Documental:</label>
+        ${SoporteDocumental ? `<br><a href="/INFORMATICA/src/Models/Servicios/${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>` : `<input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>`}
+        </form>
+        ${userRole == 1 || userRole == 3 ? `<button type="button" class="btn btn-danger btn-sm" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>` : ""}  
+        </div>
+        </div>
     `;
     // Mostrar contenido en el modal
     document.getElementById("resultadoModal").innerHTML = ModalContentEstado;
