@@ -120,10 +120,10 @@
                         <th>Descripción</th>
                         <th>Estado de Conservación</th>
                         <th>Resguardante</th>
-                        <?php if($rol!=2){?>
-                        <th>Acciones</th>
-                        <?php }else { ?>
-                        <?php }?>
+                        <?php if ($rol != 2) { ?>
+                            <th>Acciones</th>
+                        <?php } else { ?>
+                        <?php } ?>
                     </tr>
                 </thead>
                 <tbody id="tablaActivos"></tbody>
@@ -193,9 +193,11 @@
         // Actualizar la búsqueda cuando el usuario escriba
         buscarCABMS.addEventListener('input', () => {
             const terminoBusqueda = buscarCABMS.value.toLowerCase();
-            datosFiltrados = datosActivos.filter(activo =>
-                `${activo.CABMS}-${activo.Progresivo}`.toLowerCase().includes(terminoBusqueda)
-            );
+            datosFiltrados = datosActivos.filter(activo => {
+                // Formatear el Progresivo como un número de 6 dígitos
+                const progresivoFormateado = String(activo.Progresivo).padStart(6, '0');
+                return `${activo.CABMS}-${progresivoFormateado}`.toLowerCase().includes(terminoBusqueda);
+            });
             paginaActualActivos = 1; // Reiniciar a la primera página
             renderTablaActivos();
             renderPaginacionActivos();
@@ -214,19 +216,23 @@
             }
 
             activosPagina.forEach(activo => {
+                // Formatear el Progresivo como un número de 6 dígitos
+                const progresivoFormateado = String(activo.Progresivo).padStart(6, '0');
+
                 tablaActivos.innerHTML += `
-            <tr>
-                <td>${activo.Pk_IDActivo}</td>
-                <td>${activo.CABMS}-${activo.Progresivo}</td>
-                <td>${activo.Descripcion}</td>
-                <td>${activo.Estatus}</td>
-                <td>${activo.NombreResguardante}</td>
-                <td>
-                ${userRole == 1 || userRole == 3 ? `<button class="btn btn-primary" onclick="editActivo(${activo.Pk_IDActivo})">Editar</button>` : ""}
-                </td>
-            </tr>`;
+        <tr>
+            <td>${activo.Pk_IDActivo}</td>
+            <td>${activo.CABMS}-${progresivoFormateado}</td>
+            <td>${activo.Descripcion}</td>
+            <td>${activo.Estatus}</td>
+            <td>${activo.NombreResguardante}</td>
+            <td>
+            ${userRole == 1 || userRole == 3 ? `<button class="btn btn-primary" onclick="editActivo(${activo.Pk_IDActivo})">Editar</button>` : ""}
+            </td>
+        </tr>`;
             });
         }
+
 
 
         function renderPaginacionActivos() {

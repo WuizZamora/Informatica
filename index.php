@@ -32,27 +32,28 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $rol = $row['Pk_IDRol'];
-
-    // Inicializar variable para el mensaje
     $nombrePersonal = $row['Nombre'];
 }
-
-$Activos = new ActivosController();
-$Personal = new PersonalController();
-$Servicios = new ServicioController();
 
 // Cerrar el statement y la conexión
 $stmt->close();
 $conn->close();
 
-// Establecer página predeterminada si el rol es 2
+// Determinar la página a mostrar
 $page = isset($_GET['page']) ? $_GET['page'] : '';
 
+// Verificar si es la primera carga (sin la página especificada) y el rol es 2
 if ($rol == 2 && empty($page)) {
-    $page = 'servicios';
-} elseif (empty($page)) {
-    $page = ''; // Mantenerlo vacío para mostrar el mensaje de selección
+    header('Location: index.php?page=servicios');
+    exit();
+}elseif($rol == 1 && empty($page)){
+    header('Location: index.php?page=serviciosInforme');
 }
+
+// Controladores
+$Activos = new ActivosController();
+$Personal = new PersonalController();
+$Servicios = new ServicioController();
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -66,6 +67,7 @@ if ($rol == 2 && empty($page)) {
 <body>
     <?php include BASE_PATH . 'src/Views/partials/header.php'; ?>
     <?php
+    // Ejecutar el controlador correspondiente
     if (!empty($page)) {
         switch ($page) {
             case 'activos':
@@ -76,6 +78,9 @@ if ($rol == 2 && empty($page)) {
                 break;
             case 'servicios':
                 $Servicios->index($rol);
+                break;
+            case 'serviciosInforme':
+                $Servicios->informeServicios($rol);
                 break;
             default:
                 echo "<div class='alert alert-warning'>Página no encontrada.</div>";

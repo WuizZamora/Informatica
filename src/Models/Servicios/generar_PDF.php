@@ -109,43 +109,43 @@ if (isset($_GET['IDServicio'])) {
             </div>
             <div class="sub-texto">DIRECCIÓN DE ADMINISTRACIÓN</div>
             <hr>
-            <div class="content">
-                <div class="parent-container">
-                    <div class="content-folio">Folio:' . $data['Folio'] . '</div>
-                </div>
-                <table class="table">
-                    <tr>
-                        <th>Solicitante</th>
-                        <td>' . $data['Solicitante'] . '</td>
-                    </tr>';
+                <div class="content">
+            <div class="parent-container">
+                <div class="content-folio">Folio: ' . $data[0]['Folio'] . '</div>
+            </div>
+            <table class="table">
+                <tr>
+                    <th>Solicitante</th>
+                    <td>' . $data[0]['Solicitante'] . '</td>
+                </tr>';
 
         // Verificar si el valor de 'Oficio' no es 'S/O'
-        if ($data['Oficio'] !== 'S/O') {
+        if ($data[0]['Oficio'] !== 'S/O') {
             $html .= '
-                            <tr>
-                                <th>Oficio</th>
-                                <td>' . $data['Oficio'] . '</td>
-                            </tr>';
+                        <tr>
+                            <th>Oficio</th>
+                            <td>' . $data[0]['Oficio'] . '</td>
+                        </tr>';
         }
 
         $html .= '<tr>
-                        <th>Tipo de Servicio</th>
-                        <td>' . $data['TipoServicio'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Fecha de Solicitud</th>
-                        <td>' . $data['FechaSolicitud'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Atiende</th>
-                        <td>' . $data['Atiende'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Fecha de Atención</th>
-                        <td>' . $data['FechaAtencion'] . '</td>
-                    </tr>
-                </table>
-                <hr>';
+                    <th>Tipo de Servicio</th>
+                    <td>' . $data[0]['TipoServicio'] . '</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Solicitud</th>
+                    <td>' . $data[0]['FechaSolicitud'] . '</td>
+                </tr>
+                <tr>
+                    <th>Atiende</th>
+                    <td>' . $data[0]['Atiende'] . '</td>
+                </tr>
+                <tr>
+                    <th>Fecha de Atención</th>
+                    <td>' . $data[0]['FechaAtencion'] . '</td>
+                </tr>
+            </table>
+            <hr>';
 
         // Mostrar campos adicionales según el tipo de servicio
         if ($data['TipoServicio'] === 'ENTREGA MATERIAL FÍLMICO') {
@@ -185,43 +185,52 @@ if (isset($_GET['IDServicio'])) {
                 <div class="content-firma">
                 ___________________________________________<br>Firma del solicitante
                 </div>';
-        } elseif ($data['TipoServicio'] === 'TÉCNICO') {
+        } elseif ($data[0]['TipoServicio'] === 'TÉCNICO') {
             $html .= '
-                <div class="section-title">DETALLES DEL SERVICIO TÉCNICO</div>
-                <table class="table">
+            <div class="section-title">DETALLES DEL SERVICIO TÉCNICO</div>
+            <table style="width: 100%; border-collapse: collapse; text-align:center; margin:1rem;">
+                <thead>
                     <tr>
-                        <th>Área solicitante</th>
-                        <td>' . $data['Area'] . '</td>
+                        <th style="padding: 8px;background-color: #f2f2f2;">#</th>
+                        <th style="padding: 8px;background-color: #f2f2f2;">ID Activo</th>
+                        <th style="padding: 8px;background-color: #f2f2f2;">Descripción</th>
+                        <th style="padding: 8px;background-color: #f2f2f2;">Numero de Inventario</th>
+                        <th style="padding: 8px;background-color: #f2f2f2;">Estado</th>
                     </tr>
+                </thead>
+                <tbody>';
+        
+            // Inicializar el contador
+            $counter = 1;
+        
+            // Iterar sobre los datos del servicio técnico
+            foreach ($data as $item) {
+                // Formatear el Progresivo como un número de 6 dígitos
+                $progresivoFormateado = str_pad($item['Progresivo'], 6, '0', STR_PAD_LEFT);
+                
+                $html .= '
                     <tr>
-                        <th>Activo</th>
-                        <td>' . $data['Fk_IDActivo_Activos'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Descripción del Activo</th>
-                        <td>' . $data['DescripcionActivo'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>CABMS</th>
-                        <td>' . $data['CABMS'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Progresivo</th>
-                        <td>' . $data['Progresivo'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Descripción del Servicio</th>
-                        <td>' . $data['DescripcionTecnico'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Resultado de la dictaminación</th>
-                        <td>' . $data['Evaluacion'] . '</td>
-                    </tr>
-                </table><br><br><br>';
-            if ($data['Evaluacion'] === 'NO FUNCIONAL') {
+                        <td style="padding: 8px;">' . $counter . '</td>
+                        <td style="padding: 8px;">' . $item['Fk_IDActivo_Activos'] . '</td>
+                        <td style="padding: 8px;">' . $item['DescripcionActivo'] . '</td>
+                        <td style="padding: 8px;">' . $item['CABMS'] . '-' . $progresivoFormateado . '</td>
+                        <td style="padding: 8px;">' . $item['Evaluacion'] . '</td>
+                    </tr>';
+        
+                // Incrementar el contador
+                $counter++;
+            }
+        
+            $html .= '
+                    <th style="background-color: #f2f2f2;">Descripción del servicio:</th>
+                    <td colspan="5">' . $data[0]['DescripcionTecnico'] . '</td>
+                </tbody>
+            </table><br><br><br>';
+        
+            if ($data[0]['Evaluacion'] === 'NO FUNCIONAL') {
                 $html .= '
                 <div class="content-firma">
-                ___________________________________________<br>LIC. ' . $data['Nombre_JUD_IT'] . '
+                ___________________________________________<br>LIC. ' . $data[0]['Nombre_JUD_IT'] . '
                 </div>';
             } else {
                 $html .= '
@@ -229,7 +238,7 @@ if (isset($_GET['IDServicio'])) {
                 ___________________________________________<br>Firma del solicitante
                 </div>';
             }
-        } elseif ($data['TipoServicio'] === 'INCIDENCIA') {
+        }elseif ($data['TipoServicio'] === 'INCIDENCIA') {
             $html .= '
                 <div class="section-title">DETALLES DE LA INCIDENCIA</div>
                 <table class="table">

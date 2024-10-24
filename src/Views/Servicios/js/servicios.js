@@ -477,7 +477,6 @@ function renderTable(data, page) {
   });
 }
 
-
 function renderPagination(totalPages) {
   const pagination = document.getElementById("pagination");
   pagination.innerHTML = "";
@@ -919,8 +918,8 @@ function EstadoSolicitud(id) {
     <div class="row justify-content-center text-center">
     <div class="col-md-8">
     <form id="servicioForm" class="needs-validation" enctype="multipart/form-data">
-      <label for="idServicioEstado" class="form-label">ID Servicio:</label>
-      <input type="text" class="form-control text-center" id="idServicioEstado" name="Pk_IDServicio" value="${Pk_IDServicio}" readonly>
+      <label for="idServicioEstado" class="form-label" style="display:none;">ID Servicio:</label>
+      <input type="text" class="form-control text-center" style="display:none;" id="idServicioEstado" name="Pk_IDServicio" value="${Pk_IDServicio}" readonly>
       
       <label for="estadoSolicitud" class="form-label">Estado de Solicitud:</label>
       <select class="form-select text-center" id="estadoSolicitud" name="EstadoSolicitud" required>

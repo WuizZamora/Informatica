@@ -53,17 +53,24 @@ class ServicioModel
     public function consultarServicio($idServicio)
     {
         // Llamar al procedimiento almacenado
-        $query = "CALL 	Servicios_SELECT_Reporte(?)";
+        $query = "CALL Servicios_SELECT_Reporte(?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $idServicio);
         $stmt->execute();
 
         // Obtener los resultados
         $result = $stmt->get_result();
-        $VistaServicio = $result->fetch_assoc();
 
-        // Retornar los datos del servicio
-        return $VistaServicio;
+        // Inicializar un array para almacenar todos los servicios
+        $servicios = [];
+
+        // Iterar sobre los resultados y almacenar cada fila en el array
+        while ($row = $result->fetch_assoc()) {
+            $servicios[] = $row;
+        }
+
+        // Retornar todos los datos del servicio
+        return $servicios;
     }
 
     public function guardarServicio($PersonalSolicitante, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud)
@@ -276,34 +283,107 @@ class ServicioModel
         }
     }
 
-    public function obtenerRutaArchivo($idServicio) {
+    public function obtenerRutaArchivo($idServicio)
+    {
         $query = "SELECT SoporteDocumental FROM Servicios WHERE Pk_IDServicio=?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $idServicio);
         $stmt->execute();
-    
+
         $result = $stmt->get_result();
         $data = $result->fetch_assoc();
-    
+
         // Retorna solo la ruta del archivo o null si no existe
         return $data['SoporteDocumental'] ?? null; // Maneja la posibilidad de que no exista
-    }     
+    }
 
-    public function eliminarSoporte($idServicio) {
+    public function eliminarSoporte($idServicio)
+    {
         // Consulta SQL para eliminar el servicio basado en idServicio
         $query = "UPDATE Servicios SET SoporteDocumental = NULL WHERE Pk_IDServicio=?";
-        
+
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $idServicio);
-        
+
         // Ejecutar la consulta y manejar errores
         if (!$stmt->execute()) {
             echo json_encode(['error' => 'Error en la consulta: ' . $stmt->error]);
             exit; // Detiene la ejecución si hay un error
         }
-    
+
         // Devuelve verdadero si la consulta se ejecutó sin errores
         return true; // Cambia esto según lo que necesites
-    }    
+    }
 
+    public function ServicioFechas($dateInicial, $dateFinal)
+    {
+        // Llamar al procedimiento almacenado
+        $query = "CALL Servicios_SELECT_Date(?, ?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ss", $dateInicial, $dateFinal);
+        $stmt->execute();
+
+        // Obtener los resultados
+        $result = $stmt->get_result();
+        $servicios = [];
+
+        // Almacenar todos los resultados en un array
+        while ($row = $result->fetch_assoc()) {
+            $servicios[] = $row;
+        }
+
+        // Retornar los datos del servicio
+        return $servicios;
+    }
+
+    public function ObtenerReporteServiciosActivos($fechaInicio, $fechaFin)
+    {
+        $query = "CALL ObtenerReporteServiciosActivos(?, ?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ss", $fechaInicio, $fechaFin);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $reporte = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $reporte[] = $row;
+        }
+
+        return $reporte;
+    }
+
+    public function ObtenerIncidenciasPorPeriodo($fechaInicio, $fechaFin)
+    {
+        $query = "CALL ObtenerIncidenciasPorPeriodo(?, ?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ss", $fechaInicio, $fechaFin);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $incidencias = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $incidencias[] = $row;
+        }
+
+        return $incidencias;
+    }
+
+    public function ObtenerVideosPorPeriodo($fechaInicio, $fechaFin)
+    {
+        $query = "CALL ObtenerVideosPorPeriodo(?, ?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ss", $fechaInicio, $fechaFin);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $videos = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $videos[] = $row;
+        }
+
+        return $videos;
+    }
 }
