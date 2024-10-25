@@ -24,6 +24,145 @@
 })();
 
 document.addEventListener("DOMContentLoaded", function () {
+  let activosData = []; // Almacena los activos para reutilizar
+  let activeBlockCount = 1; // Contador para el número de bloques activos
+
+  // Función para inicializar la carga de activos cuando se muestra el formulario
+  function initDictaminacionForm() {
+    if (activosData.length === 0) {
+      // Solo cargar si no se ha hecho antes
+      fetch("./src/Models/Activos/obtener_activos.php")
+        .then((response) => response.json())
+        .then((data) => {
+          activosData = data; // Guardamos los datos globalmente
+          addActivoBlock(); // Agregamos un bloque inicial
+          updateRequiredFields(); // Actualiza los campos requeridos
+        })
+        .catch((error) => console.error("Error fetching activos data:", error));
+    }
+  }
+
+  // Función para agregar un bloque de activo
+  function addActivoBlock() {
+    const container = document.getElementById("activosContainer");
+    if (!container) return; // Verifica que el contenedor exista
+    const blockId = activeBlockCount; // Usa el contador para el ID del bloque
+
+    const activoBlock = document.createElement("div");
+    activoBlock.className = "row mb-3 activo-block";
+
+    activoBlock.innerHTML = `
+      <div class="row justify-content-center">
+          <div class="col-md-3">
+              Activo ${blockId}
+          </div>
+      </div>
+      <div class="col-md-4">
+          <label class="form-label" for="CABMSDictaminacion${blockId}">CABMS</label>
+          <select class="form-select text-center cabmsSelect" id="CABMSDictaminacion${blockId}" name="CABMSDictaminacion[]" required>
+              <option disabled selected value="">Selecciona un activo</option>
+          </select>
+          <div class="invalid-feedback">Selecciona un activo válido</div>
+      </div>
+      <div class="col-md-4">
+          <label class="form-label" for="ProgresivoDictaminacion${blockId}">Progresivo</label>
+          <select class="form-select text-center progresivoSelect" id="ProgresivoDictaminacion${blockId}" name="ProgresivoDictaminacion[]" required>
+              <option disabled selected value="">Selecciona un progresivo</option>
+          </select>
+          <div class="invalid-feedback">Selecciona un progresivo válido</div>
+      </div>
+      <div class="col-md-3">
+          <label class="form-label" for="EstadoConservacion${blockId}">Estado de conservación</label>
+          <select class="form-select text-center estadoSelect" id="EstadoConservacion${blockId}" name="EstadoConservacion[]" required>
+              <option disabled selected value="">Elige una opción</option>
+              <option value="Funcional">Funcional</option>
+              <option value="No funcional">Baja</option>
+          </select>
+      </div>
+      <div class="col-md-1 d-flex align-items-end">
+          <button type="button" class="btn btn-danger removeActivoBtn">-</button>
+      </div>
+    `;
+
+    const cabmsSelect = activoBlock.querySelector(".cabmsSelect");
+    fillCABMSSelect(cabmsSelect);
+
+    // Evento para manejar el cambio en el select de CABMS
+    cabmsSelect.addEventListener("change", (event) => {
+      const progresivoSelect = activoBlock.querySelector(".progresivoSelect");
+      fetchProgresivos(event.target.value, progresivoSelect);
+    });
+
+    const removeBtn = activoBlock.querySelector(".removeActivoBtn");
+    // Evento para manejar la eliminación del bloque de activo
+    removeBtn.addEventListener("click", () => {
+      // Verificar si es el primer bloque (blockId es 1)
+      if (blockId === 1) {
+        alert("No puedes eliminar el primer activo.");
+      } else {
+        container.removeChild(activoBlock);
+        activeBlockCount--; // Decrementar el contador de bloques activos
+        toggleRemoveButton(container); // Actualizar el estado del botón
+        updateRequiredFields(); // Actualiza campos requeridos
+      }
+    });
+
+    container.appendChild(activoBlock);
+    activeBlockCount++; // Incrementar el contador de bloques activos
+    toggleRemoveButton(container); // Actualizar el estado del botón
+    updateRequiredFields(); // Actualiza campos requeridos
+  }
+
+  // Llenar el select de CABMS
+  function fillCABMSSelect(select) {
+    activosData.forEach((activo) => {
+      const option = document.createElement("option");
+      option.value = activo.CABMS;
+      option.textContent = `${activo.CABMS} - ${activo.Descripcion}`;
+      select.appendChild(option);
+    });
+  }
+
+  // Obtener y llenar progresivos según el CABMS seleccionado
+  function fetchProgresivos(cabms, selectProgresivo) {
+    fetch(`./src/Models/Activos/obtener_progresivo.php?cabms=${cabms}`)
+      .then((response) => response.json())
+      .then((data) => {
+        selectProgresivo.innerHTML = `
+          <option disabled selected value="">Selecciona un progresivo</option>
+        `;
+
+        data.forEach((activo) => {
+          const option = document.createElement("option");
+          option.value = activo.Progresivo;
+          option.textContent = activo.Progresivo;
+          selectProgresivo.appendChild(option);
+        });
+      })
+      .catch((error) =>
+        console.error("Error fetching progresivos data:", error)
+      );
+  }
+
+  // Función para habilitar o deshabilitar el botón de eliminar
+  function toggleRemoveButton(container) {
+    const removeButtons = container.querySelectorAll(".removeActivoBtn");
+    removeButtons.forEach((button) => {
+      button.disabled = activeBlockCount === 1; // Deshabilitar si hay 1 o menos bloques
+    });
+  }
+
+  // Función para actualizar los campos requeridos
+  function updateRequiredFields() {
+    const activoBlocks = document.querySelectorAll(".activo-block");
+    const requiredFields = [...document.querySelectorAll("[required]")];
+    requiredFields.forEach((field) => (field.required = false)); // Quitar requerimiento a todos
+
+    if (activoBlocks.length > 0) {
+      requiredFields.forEach((field) => (field.required = true)); // Volver a requerir si hay bloques activos
+    }
+  }
+
   fetchServicios();
   let isSubmitting = false; // Evita envíos múltiples
 
@@ -175,6 +314,15 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("ConfirmacionCampoOficio").style.display = "none";
     document.getElementById("CampoOficio").style.display = "none";
     document.getElementById("Oficio").value = "";
+
+    // Reiniciar el bloque de activos a uno solo
+    const activosContainer = document.getElementById("activosContainer");
+    while (activosContainer.firstChild) {
+      activosContainer.removeChild(activosContainer.firstChild); // Elimina todos los bloques
+    }
+
+    activeBlockCount = 1; // Reinicia el contador a 1
+    addActivoBlock(); // Agrega un bloque inicial
   }
 
   // Carga de datos en los selects
@@ -192,18 +340,6 @@ document.addEventListener("DOMContentLoaded", function () {
         llenarSelect(data, "PersonalAtiende");
       })
       .catch((error) => console.error("Error fetching atiende data:", error));
-
-    fetch("./src/Models/Activos/obtener_activos.php")
-      .then((response) => response.json())
-      .then((data) => {
-        const selectCABMS = document.getElementById("CABMSDictaminacion");
-        llenarSelect(data, "CABMSDictaminacion", "CABMS", "Descripcion");
-
-        selectCABMS.addEventListener("change", (event) => {
-          fetchProgresivos(event.target.value);
-        });
-      })
-      .catch((error) => console.error("Error fetching activos data:", error));
   }
 
   function llenarSelect(
@@ -221,34 +357,12 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   }
 
-  function fetchProgresivos(cabms) {
-    fetch(`./src/Models/Activos/obtener_progresivo.php?cabms=${cabms}`)
-      .then((response) => response.json())
-      .then((data) => {
-        const selectProgresivo = document.getElementById(
-          "ProgresivoDictaminacion"
-        );
-        selectProgresivo.innerHTML = "";
-
-        const defaultOption = document.createElement("option");
-        defaultOption.value = "";
-        defaultOption.textContent = "Selecciona un progresivo";
-        defaultOption.selected = true;
-        defaultOption.disabled = true;
-        selectProgresivo.appendChild(defaultOption);
-
-        data.forEach((activos) => {
-          const option = document.createElement("option");
-          option.value = activos.Progresivo;
-          option.textContent = activos.Progresivo;
-          selectProgresivo.appendChild(option);
-        });
-      })
-      .catch((error) =>
-        console.error("Error fetching progresivos data:", error)
-      );
+  // Evento para agregar más bloques de activo
+  const addActivoBtn = document.getElementById("addActivoBtn");
+  if (addActivoBtn) {
+    addActivoBtn.addEventListener("click", addActivoBlock);
   }
-
+  initDictaminacionForm();
   // Inicializar carga de datos
   cargarDatosIniciales();
 });
@@ -265,7 +379,7 @@ function mostrarFormulario() {
     "#formVideos input, #formVideos select"
   );
   const dictaminacionFields = document.querySelectorAll(
-    "#formDictaminacion input, #formDictaminacion textarea, #formDictaminacion select"
+    "#formDictaminacion input, #formDictaminacion textarea, #formDictaminacion select, #activosContainer select"
   );
 
   // Ocultar todos los formularios
@@ -415,7 +529,8 @@ function renderTable(data, page) {
   const paginatedData = data.slice(start, end);
 
   paginatedData.forEach((servicio) => {
-    const isEntregaMaterial = servicio.TipoServicio === "ENTREGA MATERIAL FÍLMICO";
+    const isEntregaMaterial =
+      servicio.TipoServicio === "ENTREGA MATERIAL FÍLMICO";
     const isPendiente = servicio.EstadoSolicitud === "PENDIENTE";
     const isCancelado = servicio.EstadoSolicitud === "CANCELADO";
     const shouldDisable = (isEntregaMaterial && isPendiente) || isCancelado;
@@ -451,7 +566,9 @@ function renderTable(data, page) {
         <td>
           ${
             userRole == 1 || userRole == 2 || userRole == 3 || userRole == 4
-              ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}" 
+              ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${
+                  servicio.Pk_IDServicio
+                }" 
                   target="_blank" 
                   class="btn btn-success ${shouldDisable ? "disabled" : ""}"
                   tabindex="${shouldDisable ? "-1" : "0"}">
@@ -570,9 +687,8 @@ function editServicio(id) {
           text: data.error,
         });
       } else {
-        // Construir el contenido del modal
         let modalContent = `
-        <strong># ${data.Pk_IDServicio}</strong>
+        <strong># ${data[0].Pk_IDServicio}</strong>
           <div class="form-group">
               <label for="solicitante">Solicitante:</label>
               <select class="form-select" id="solicitante" name="solicitante" required>
@@ -587,15 +703,15 @@ function editServicio(id) {
           </div>
           <div class="form-group">
               <label for="tipoServicio">Tipo de servicio:</label>
-              <input type="text" class="form-control text-center" id="tipoServicio" value="${data.TipoServicio}" readonly>
+              <input type="text" class="form-control text-center" id="tipoServicio" value="${data[0].TipoServicio}" readonly>
           </div>
           <div class="form-group">
               <label for="OficioUpdate">Oficio:</label>
-              <input type="text" class="form-control" id="OficioUpdate" value="${data.Oficio}">
+              <input type="text" class="form-control" id="OficioUpdate" value="${data[0].Oficio}">
           </div>
           <div class="form-group">
               <label for="fechaSolicitud">Fecha de solicitud:</label>
-              <input type="date" class="form-control" id="fechaSolicitud" value="${data.FechaSolicitud}">
+              <input type="date" class="form-control" id="fechaSolicitud" value="${data[0].FechaSolicitud}">
           </div>
           <div id="camposAdicionales"></div>
         `;
@@ -607,19 +723,19 @@ function editServicio(id) {
         llenarSelectPersonal(
           "./src/Models/Personal/obtener_personal.php",
           "solicitante",
-          data.Solicitante
+          data[0].Solicitante
         ).then(() => {
           const solicitanteSelect = document.getElementById("solicitante");
-          solicitanteSelect.value = data.Solicitante; // Establecer el valor seleccionado aquí
+          solicitanteSelect.value = data[0].Solicitante; // Establecer el valor seleccionado aquí
         });
 
         llenarSelectPersonal(
           "./src/Models/Personal/obtener_personal.php?filtrar=true",
           "atiende",
-          data.Atiende
+          data[0].Atiende
         ).then(() => {
           const atiendeSelect = document.getElementById("atiende");
-          atiendeSelect.value = data.Atiende; // Establecer el valor seleccionado aquí
+          atiendeSelect.value = data[0].Atiende; // Establecer el valor seleccionado aquí
         });
 
         // Establecer el valor del select de tipo de servicio
@@ -635,7 +751,7 @@ function editServicio(id) {
 
         document.getElementById("saveButton").onclick = function () {
           // Obtener los valores de los campos
-          const idServicio = data.Pk_IDServicio;
+          const idServicio = data[0].Pk_IDServicio;
           const solicitante = document.getElementById("solicitante").value;
           const atiende = document.getElementById("atiende").value;
           const oficio = document.getElementById("OficioUpdate").value;
@@ -655,16 +771,33 @@ function editServicio(id) {
 
           // Agregar datos específicos según el tipo de servicio
           if (tipoServicio === "TÉCNICO") {
-            const IDActivo = document.getElementById("cabms_Tecnico").value;
             const DescripcionTecnico = document.getElementById(
-              "descripcionTecnico_Tecnico"
+              "descripcionTecnico_General"
             ).value;
-            const EvaluacionTecnico =
-              document.getElementById("evaluacion_Tecnico").value;
+            // Inicializar un arreglo para los ID Activos y sus evaluaciones
+            const activos = [];
 
-            datosServicio.IDActivo = IDActivo;
+            // Recorrer los datos para obtener ID Activos y Evaluaciones
+            const idActivosElements = document.querySelectorAll(
+              "[id^='cabms_Tecnico_']"
+            );
+            const evaluacionesElements = document.querySelectorAll(
+              "[id^='evaluacion_Tecnico_']"
+            );
+            const id = document.querySelectorAll("[id^='id_']");
+
+            idActivosElements.forEach((element, index) => {
+              const IDActivo = element.value;
+              const EvaluacionTecnico = evaluacionesElements[index].value;
+              const idPK = id[index].value;
+
+              // Agregar al arreglo de activos
+              activos.push({ IDActivo, EvaluacionTecnico, idPK });
+            });
+
+            // Asignar el arreglo de activos al objeto de datos del servicio
+            datosServicio.activos = activos;
             datosServicio.DescripcionTecnico = DescripcionTecnico;
-            datosServicio.EvaluacionTecnico = EvaluacionTecnico;
           } else if (tipoServicio === "INCIDENCIA") {
             const selectElement = document.getElementById(
               "ServicioSolicitadoUPDATE"
@@ -703,7 +836,6 @@ function editServicio(id) {
             datosServicio.Equipo = Equipo;
             datosServicio.DescripcionVideos = DescripcionVideos;
           }
-
           // Enviar los datos al backend
           fetch("/INFORMATICA/src/Models/Servicios/actualizar_servicio.php", {
             method: "POST",
@@ -788,60 +920,73 @@ function mostrarCamposAdicionales(tipoServicio, data) {
     <hr>
       <div class="form-group">
           <label for="cantidadVideos">Cantidad de Videos:</label>
-          <input type="number" class="form-control" id="cantidadVideos" value="${data.CantidadVideos}">
+          <input type="number" class="form-control" id="cantidadVideos" value="${data[0].CantidadVideos}">
       </div>
       <div class="form-group">
           <label for="periodoInicial_Videos">Periodo Inicial:</label>
-          <input type="date" class="form-control" id="periodoInicial_Videos" value="${data.PeriodoInicial}">
+          <input type="date" class="form-control" id="periodoInicial_Videos" value="${data[0].PeriodoInicial}">
       </div>
       <div class="form-group">
           <label for="periodoFinal_Videos">Periodo Final:</label>
-          <input type="date" class="form-control" id="periodoFinal_Videos" value="${data.PeriodoFinal}">
+          <input type="date" class="form-control" id="periodoFinal_Videos" value="${data[0].PeriodoFinal}">
       </div>
       <div class="form-group">
           <label for="periodo_Videos">Periodo:</label>
-          <input type="text" class="form-control" id="periodo_Videos" value="${data.Periodo}">
+          <input type="text" class="form-control" id="periodo_Videos" value="${data[0].Periodo}">
       </div>
       <div class="form-group">
           <label for="equipo_Videos">Equipo:</label>
-          <input type="text" class="form-control" id="equipo_Videos" value="${data.Equipo}">
+          <input type="text" class="form-control" id="equipo_Videos" value="${data[0].Equipo}">
       </div>
       <div class="form-group">
           <label for="DescripcionVideosUpdate">Descripcion de los Videos:</label>
-          <textarea class="form-control" rows="8" id="DescripcionVideosUpdate">${data.DescripcionVideo}</textarea>
+          <textarea class="form-control" rows="8" id="DescripcionVideosUpdate">${data[0].DescripcionVideo}</textarea>
       </div>
     `;
   } else if (tipoServicio === "TÉCNICO") {
-    camposAdicionalesDiv.innerHTML = `
-    <hr>
-      <div class="form-group">
-          <label for="cabms_Tecnico">ID ACTIVO:</label>
-          <input type="text" class="form-control" id="cabms_Tecnico" value="${
-            data.Fk_IDActivo_Activos
-          }">
-      </div>
-      <div class="form-group">
-          <label for="descripcionTecnico_Tecnico">Descripción:</label>
-          <textarea class="form-control" rows="8" id="descripcionTecnico_Tecnico">${
-            data.DescripcionTecnico
-          }</textarea>
-      </div>
-      <div class="form-group">
-          <label for="evaluacion_Tecnico">Evaluación:</label>
-          <select class="form-select" id="evaluacion_Tecnico" name="evaluacion_Tecnico" required>
-              <option selected disabled value="">Elige una opción</option>
-              <option value="FUNCIONAL" ${
-                data.Evaluacion === "FUNCIONAL" ? "selected" : ""
-              }>Funcional</option>
-              <option value="NO FUNCIONAL" ${
-                data.Evaluacion === "NO FUNCIONAL" ? "selected" : ""
-              }>Baja</option>
-          </select>
-      </div>
+    camposAdicionalesDiv.innerHTML = "";
+
+    // Mostrar la descripción general una vez
+    camposAdicionalesDiv.innerHTML += `
+    <div class="form-group">
+        <label for="descripcionTecnico_General">Descripción General:</label>
+        <textarea class="form-control" rows="4" id="descripcionTecnico_General">${data[0].DescripcionTecnico}</textarea>
+    </div>
     `;
+
+    // Iterar sobre los datos para crear campos de entrada para cada activo
+    data.forEach((item, index) => {
+      camposAdicionalesDiv.innerHTML += `
+        <hr>
+        <div class="form-group" style="display:none;">
+              <label for="id_${index}">ID:</label>
+              <input type="text" class="form-control" id="id_${index}" value="${
+        item.ID
+      }">
+          </div>
+          <div class="form-group">
+              <label for="cabms_Tecnico_${index}">ID ACTIVO:</label>
+              <input type="text" class="form-control" id="cabms_Tecnico_${index}" value="${
+        item.Fk_IDActivo_Activos
+      }">
+          </div>
+          <div class="form-group">
+              <label for="evaluacion_Tecnico_${index}">Evaluación:</label>
+              <select class="form-select" id="evaluacion_Tecnico_${index}" name="evaluacion_Tecnico_${index}" required>
+                  <option selected disabled value="">Elige una opción</option>
+                  <option value="FUNCIONAL" ${
+                    item.Evaluacion === "FUNCIONAL" ? "selected" : ""
+                  }>Funcional</option>
+                  <option value="NO FUNCIONAL" ${
+                    item.Evaluacion === "NO FUNCIONAL" ? "selected" : ""
+                  }>Baja</option>
+              </select>
+          </div>
+        `;
+    });
   } else if (tipoServicio === "INCIDENCIA") {
     // Suponiendo que data.ServicioSolicitado es una cadena concatenada
-    const serviciosSolicitados = data.ServicioSolicitado.split(", ").map(
+    const serviciosSolicitados = data[0].ServicioSolicitado.split(", ").map(
       (servicio) => servicio.trim()
     );
 
@@ -880,7 +1025,7 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       <div class="form-group">
           <label for="descripcionIncidencia_Incidencia">Descripción:</label>
           <textarea class="form-control" rows="8" id="descripcionIncidencia_Incidencia">${
-            data.DescripcionIncidencia
+            data[0].DescripcionIncidencia
           }</textarea>
       </div>
     `;

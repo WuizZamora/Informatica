@@ -3,7 +3,6 @@ require_once __DIR__ . '/ServicioModel.php'; // Incluir el modelo
 header('Content-Type: application/json'); // Establecer encabezado
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Verifica que todos los campos necesarios estén presentes
     if (isset($_POST['PersonalSolicitante'], $_POST['PersonalAtiende'], $_POST['IDTipoServicio'], $_POST['FechaAtencion'], $_POST['Oficio'], $_POST['FechaSolicitud'])) {
         
         // Captura los datos
@@ -21,15 +20,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if ($idServicio) {
             $camposDinamicos = $_POST; // Captura los campos adicionales
-            $resultadoAtencion = false;
+            $resultadoAtencion = true;
 
-            // Dependiendo del tipo de servicio, guarda en la tabla correspondiente
-            if ($idTipoServicio == "INCIDENCIA") {
-                $resultadoAtencion = $servicioModel->guardarIncidencia($idServicio, $camposDinamicos);
-            } elseif ($idTipoServicio == "ENTREGA MATERIAL FÍLMICO") {
-                $resultadoAtencion = $servicioModel->guardarVideos($idServicio, $camposDinamicos);
-            } elseif ($idTipoServicio == "TÉCNICO") {
-                $resultadoAtencion = $servicioModel->guardarTecnico($idServicio, $camposDinamicos);
+            // Asegúrate de que CABMSDictaminacion es un array
+            $cabmsDictaminacion = $camposDinamicos['CABMSDictaminacion'] ?? [];
+            $progresivoDictaminacion = $camposDinamicos['ProgresivoDictaminacion'] ?? [];
+            $estadoConservacion = $camposDinamicos['EstadoConservacion'] ?? [];
+
+            // Verifica que las longitudes de los arrays coincidan
+            $cantidadItems = count($cabmsDictaminacion);
+            if ($cantidadItems !== count($progresivoDictaminacion) || $cantidadItems !== count($estadoConservacion)) {
+                echo json_encode(['success' => false, 'message' => 'Los campos de dictaminación deben tener la misma cantidad de elementos.']);
+                exit;
+            }
+
+            // Iterar sobre los activos
+            for ($i = 0; $i < $cantidadItems; $i++) {
+                // Usar los índices para obtener valores
+                $camposDinamicos['CABMSDictaminacion'] = $cabmsDictaminacion[$i];
+                $camposDinamicos['ProgresivoDictaminacion'] = $progresivoDictaminacion[$i];
+                $camposDinamicos['EstadoConservacion'] = $estadoConservacion[$i];
+
+                // Dependiendo del tipo de servicio, guarda en la tabla correspondiente
+                if ($idTipoServicio == "TÉCNICO") {
+                    $resultadoAtencion = $servicioModel->guardarTecnico($idServicio, $camposDinamicos);
+                }
+                // Agregar más condiciones si es necesario para otros tipos de servicios
             }
 
             if ($resultadoAtencion) {
@@ -44,4 +60,3 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(['success' => false, 'message' => 'Faltan datos en el formulario.']);
     }
 }
-?>

@@ -60,10 +60,6 @@
                     Ingresa una fecha
                 </div>
             </div>
-            <div class="col-md-4" style="display: none;">
-                <label for="DocumentoSoporte" class="form-label">Documento soporte del servicio</label>
-                <input class="form-control" type="file" id="DocumentoSoporte" name="DocumentoSoporte">
-            </div>
 
             <!-- Formulario Incidencias -->
             <div id="formIncidencia" style="display:none;">
@@ -191,42 +187,20 @@
                 </div>
             </div>
 
-            <!-- Formulario Dictaminacion-->
-            <div id="formDictaminacion" style="display:none;">
+            <!-- Formulario Dictaminacion -->
+            <div id="formDictaminacion" style="display: none;">
                 <h3>Datos del Activo</h3>
-                <div class="row">
-                    <div class="col-md-4">
-                        <label class="form-label" for="CABMSDictaminacion">CABMS</label>
-                        <select class="form-select text-center" name="CABMSDictaminacion" id="CABMSDictaminacion">
-                            <option disabled selected value="">Selecciona un activo</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Selecciona un activo válido
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label" for="ProgresivoDictaminacion">Progresivo</label>
-                        <select class="form-select text-center" name="ProgresivoDictaminacion" id="ProgresivoDictaminacion">
-                            <option disabled selected value="">Selecciona un progresivo</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Selecciona un activo válido
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <label class="form-label" for="EstadoConservacion">Estado de conservación</label>
-                        <select class="form-select text-center" id="EstadoConservacion" name="EstadoConservacion">
-                            <option selected disabled value="">Elige una opción</option>
-                            <option value="Funcional">Funcional</option>
-                            <option value="No funcional">Baja</option>
-                        </select>
-                    </div>
-                    <div class="col-md-5">
-                        <label class="form-label" for="DescripcionEstado">Descripción del estado</label>
-                        <textarea class="form-control text-center" name="DescripcionEstado" id="DescripcionEstado" rows="8" required> </textarea>
-                    </div>
+                <!-- Contenedor para los bloques dinámicos -->
+                <div id="activosContainer"></div>
+                <!-- Botón para agregar un nuevo bloque de activo -->
+                <button type="button" id="addActivoBtn" class="btn btn-success mb-3">+</button>
+                <!-- Descripción del estado (solo una vez) -->
+                <div class="col-md-5 mt-3">
+                    <label class="form-label" for="DescripcionEstado">Descripción del estado</label>
+                    <textarea class="form-control text-center" name="DescripcionEstado" id="DescripcionEstado" rows="8" required></textarea>
                 </div>
             </div>
+
 
             <div class="col-12">
                 <button class="btn btn-danger" type="submit">Guardar</button>

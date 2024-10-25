@@ -44,11 +44,17 @@ class ServicioModel
 
         // Obtener los resultados
         $result = $stmt->get_result();
-        $VistaServicio = $result->fetch_assoc();
+        $serviciosDetalles = [];
 
-        // Retornar los datos del servicio
-        return $VistaServicio;
+        // Recorrer todos los resultados
+        while ($row = $result->fetch_assoc()) {
+            $serviciosDetalles[] = $row;
+        }
+
+        // Retornar todos los datos del servicio
+        return $serviciosDetalles;
     }
+
 
     public function consultarServicio($idServicio)
     {
@@ -196,20 +202,55 @@ class ServicioModel
     public function actualizarServicioTecnico($idServicio, $datos)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL Servicio_Tecnico_UPDATE(?, ?, ?, ?, ?, ?, ?, ?)");
-
-            // Vincular los parámetros
-            $stmt->bind_param("iiissssi", $idServicio, $datos->solicitante, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionTecnico, $datos->EvaluacionTecnico, $datos->IDActivo);
-
-            // Ejecutar la consulta
-            $stmt->execute();
-
+            // Iniciar la transacción para asegurar la consistencia de los datos
+            $this->db->begin_transaction();
+    
+            // Preparar y ejecutar el procedimiento principal
+            $stmt1 = $this->db->prepare("CALL Servicio_Tecnico_UPDATE(?, ?, ?, ?, ?, ?)");
+            $stmt1->bind_param(
+                "iiisss",
+                $idServicio,
+                $datos->solicitante,
+                $datos->atiende,
+                $datos->fechaSolicitud,
+                $datos->oficio,
+                $datos->DescripcionTecnico
+            );
+            $stmt1->execute();
+    
+            // Liberar resultados para evitar desincronización
+            $stmt1->free_result();
+            $stmt1->close();  // Cerrar la consulta principal
+    
+            // Verificar que hay activos y procesar cada uno
+            if (isset($datos->activos) && is_array($datos->activos)) {
+                foreach ($datos->activos as $activo) {
+                    $stmt2 = $this->db->prepare("CALL Servicios_Tecnicos_EachRegistro_UPDATE(?, ?, ?, ?)");
+                    $stmt2->bind_param(
+                        "iiis",
+                        $idServicio,
+                        $activo->idPK,
+                        $activo->IDActivo,
+                        $activo->EvaluacionTecnico
+                    );
+                    $stmt2->execute();
+    
+                    // Liberar los resultados y cerrar cada statement
+                    $stmt2->free_result();
+                    $stmt2->close();
+                }
+            }
+    
+            // Confirmar la transacción si todo salió bien
+            $this->db->commit();
+    
             return ['success' => true, 'message' => 'Servicio técnico actualizado exitosamente'];
         } catch (mysqli_sql_exception $e) {
+            // Revertir los cambios en caso de error
+            $this->db->rollback();
             return ['success' => false, 'error' => $e->getMessage()];
         }
-    }
+    }    
 
     public function actualizarServicioIncidencia($idServicio, $datos)
     {
