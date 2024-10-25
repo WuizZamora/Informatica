@@ -202,11 +202,20 @@ class ServicioModel
     public function actualizarServicioTecnico($idServicio, $datos)
     {
         try {
-            // Iniciar la transacción para asegurar la consistencia de los datos
+            // Iniciar la transacción
             $this->db->begin_transaction();
-    
+
+            // Validar datos
+            if (empty($datos->solicitante) || empty($datos->atiende)) {
+                throw new Exception('Los campos solicitante y atiende son obligatorios.');
+            }
+
             // Preparar y ejecutar el procedimiento principal
             $stmt1 = $this->db->prepare("CALL Servicio_Tecnico_UPDATE(?, ?, ?, ?, ?, ?)");
+            if (!$stmt1) {
+                throw new Exception('Error en la preparación de la consulta: ' . $this->db->error);
+            }
+
             $stmt1->bind_param(
                 "iiisss",
                 $idServicio,
@@ -216,16 +225,18 @@ class ServicioModel
                 $datos->oficio,
                 $datos->DescripcionTecnico
             );
-            $stmt1->execute();
-    
-            // Liberar resultados para evitar desincronización
-            $stmt1->free_result();
-            $stmt1->close();  // Cerrar la consulta principal
-    
-            // Verificar que hay activos y procesar cada uno
+
+            if (!$stmt1->execute()) {
+                throw new Exception('Error al ejecutar la consulta: ' . $stmt1->error);
+            }
+
+            // Procesar activos si existen
             if (isset($datos->activos) && is_array($datos->activos)) {
                 foreach ($datos->activos as $activo) {
                     $stmt2 = $this->db->prepare("CALL Servicios_Tecnicos_EachRegistro_UPDATE(?, ?, ?, ?)");
+                    if (!$stmt2) {
+                        throw new Exception('Error en la preparación de la consulta de activos: ' . $this->db->error);
+                    }
                     $stmt2->bind_param(
                         "iiis",
                         $idServicio,
@@ -233,24 +244,26 @@ class ServicioModel
                         $activo->IDActivo,
                         $activo->EvaluacionTecnico
                     );
-                    $stmt2->execute();
-    
-                    // Liberar los resultados y cerrar cada statement
-                    $stmt2->free_result();
+
+                    if (!$stmt2->execute()) {
+                        throw new Exception('Error al ejecutar la consulta de activos: ' . $stmt2->error);
+                    }
                     $stmt2->close();
                 }
             }
-    
-            // Confirmar la transacción si todo salió bien
+
+            // Confirmar la transacción
             $this->db->commit();
-    
+
             return ['success' => true, 'message' => 'Servicio técnico actualizado exitosamente'];
         } catch (mysqli_sql_exception $e) {
-            // Revertir los cambios en caso de error
+            $this->db->rollback();
+            return ['success' => false, 'error' => $e->getMessage(), 'trace' => $e->getTraceAsString()];
+        } catch (Exception $e) {
             $this->db->rollback();
             return ['success' => false, 'error' => $e->getMessage()];
         }
-    }    
+    }
 
     public function actualizarServicioIncidencia($idServicio, $datos)
     {
