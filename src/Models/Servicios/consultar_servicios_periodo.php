@@ -12,12 +12,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Llamar al primer procedimiento 'Servicios_SELECT_Date'
     $servicios = $servicioModel->ServicioFechas($fecha_inicio, $fecha_fin);
 
-    // Llamar al segundo procedimiento 'ObtenerReporteServiciosActivos'
-    $reporteActivos = $servicioModel->ObtenerReporteServiciosActivos($fecha_inicio, $fecha_fin);
+    // Llamar al segundo procedimiento 'ObtenerTecnicoPorPeriodo'
+    $reporteActivos = $servicioModel->ObtenerTecnicoPorPeriodo($fecha_inicio, $fecha_fin);
     
-    // Llamar al tercer procedimiento 'ObtenerReporteServiciosActivos'
+    // Llamar al tercer procedimiento 'ObtenerIncidenciasPorPeriodo'
     $reporteIncidencias = $servicioModel->ObtenerIncidenciasPorPeriodo($fecha_inicio, $fecha_fin);
-    // Llamar al tercer procedimiento 'ObtenerReporteServiciosActivos'
+    // Llamar al tercer procedimiento 'ObtenerVideosPorPeriodo'
     $reporteVideos = $servicioModel->ObtenerVideosPorPeriodo($fecha_inicio, $fecha_fin);
 
     // Combinar ambos resultados en un solo array

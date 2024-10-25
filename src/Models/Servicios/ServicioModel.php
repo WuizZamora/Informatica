@@ -336,9 +336,9 @@ class ServicioModel
         return $servicios;
     }
 
-    public function ObtenerReporteServiciosActivos($fechaInicio, $fechaFin)
+    public function ObtenerTecnicoPorPeriodo($fechaInicio, $fechaFin)
     {
-        $query = "CALL ObtenerReporteServiciosActivos(?, ?)";
+        $query = "CALL Servicios_Tecnicos_SELECT_Date(?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ss", $fechaInicio, $fechaFin);
         $stmt->execute();
@@ -355,7 +355,7 @@ class ServicioModel
 
     public function ObtenerIncidenciasPorPeriodo($fechaInicio, $fechaFin)
     {
-        $query = "CALL ObtenerIncidenciasPorPeriodo(?, ?)";
+        $query = "CALL Servicios_Incidencias_SELECT_Date(?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ss", $fechaInicio, $fechaFin);
         $stmt->execute();
@@ -372,7 +372,7 @@ class ServicioModel
 
     public function ObtenerVideosPorPeriodo($fechaInicio, $fechaFin)
     {
-        $query = "CALL ObtenerVideosPorPeriodo(?, ?)";
+        $query = "CALL Servicios_Videos_SELECT_Date(?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ss", $fechaInicio, $fechaFin);
         $stmt->execute();

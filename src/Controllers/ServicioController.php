@@ -10,7 +10,7 @@ class ServicioController
     public function informeServicios($rol)
     {
         // Lógica para obtener servicios
-        include './src/Views/Servicios/informe_servicios.php';
+        include './src/Views/Servicios/servicios_informe_periodos.php';
     }
 }
 
