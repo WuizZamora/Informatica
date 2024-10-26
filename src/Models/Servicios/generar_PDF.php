@@ -148,35 +148,35 @@ if (isset($_GET['IDServicio'])) {
             <hr>';
 
         // Mostrar campos adicionales según el tipo de servicio
-        if ($data['TipoServicio'] === 'ENTREGA MATERIAL FÍLMICO') {
+        if ($data[0]['TipoServicio'] === 'ENTREGA MATERIAL FÍLMICO') {
             $html .= '
                 <div class="section-title">DETALLES DEL MATERIAL FÍLMICO</div>
                 <table class="table">
                     <tr>
                         <th>Cantidad de videos</th>
-                        <td>' . $data['CantidadVideos'] . '</td>
+                        <td>' . $data[0]['CantidadVideos'] . '</td>
                     </tr>
                     <tr>
                         <th>Periodo</th>
-                        <td>' . $data['Periodo'] . '</td>
+                        <td>' . $data[0]['Periodo'] . '</td>
                     </tr>
                     <tr>
                         <th>Periodo Inicial</th>
-                        <td>' . $data['PeriodoInicial'] . '</td>
+                        <td>' . $data[0]['PeriodoInicial'] . '</td>
                     </tr>
                     <tr>
                         <th>Periodo Final</th>
-                        <td>' . $data['PeriodoFinal'] . '</td>
+                        <td>' . $data[0]['PeriodoFinal'] . '</td>
                     </tr>
                     <tr>
                         <th>Equipo</th>
-                        <td>' . $data['Equipo'] . '</td>
+                        <td>' . $data[0]['Equipo'] . '</td>
                     </tr>';
-            if (isset($data['DescripcionVideo']) && trim($data['DescripcionVideo']) !== '') {
+            if (isset($data[0]['DescripcionVideo']) && trim($data[0]['DescripcionVideo']) !== '') {
                 $html .= '
                             <tr>
                                 <th>Descripción</th>
-                                <td>' . $data['DescripcionVideo'] . '</td>
+                                <td>' . $data[0]['DescripcionVideo'] . '</td>
                             </tr>
                         ';
             }
@@ -238,21 +238,21 @@ if (isset($_GET['IDServicio'])) {
                 ___________________________________________<br>Firma del solicitante
                 </div>';
             }
-        }elseif ($data['TipoServicio'] === 'INCIDENCIA') {
+        }elseif ($data[0]['TipoServicio'] === 'INCIDENCIA') {
             $html .= '
                 <div class="section-title">DETALLES DE LA INCIDENCIA</div>
                 <table class="table">
                     <tr>
                         <th>Área solicitante</th>
-                        <td>' . $data['Area'] . '</td>
+                        <td>' . $data[0]['Area'] . '</td>
                     </tr>
                     <tr>
                         <th>Servicio solicitado</th>
-                        <td>' . $data['ServicioSolicitado'] . '</td>
+                        <td>' . $data[0]['ServicioSolicitado'] . '</td>
                     </tr>
                     <tr>
                         <th>Descripción</th>
-                        <td>' . $data['DescripcionIncidencia'] . '</td>
+                        <td>' . $data[0]['DescripcionIncidencia'] . '</td>
                     </tr>
                 </table><br><br><br>
                 <div class="content-firma">

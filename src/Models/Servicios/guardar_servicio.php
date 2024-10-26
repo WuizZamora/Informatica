@@ -22,30 +22,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $camposDinamicos = $_POST; // Captura los campos adicionales
             $resultadoAtencion = true;
 
-            // Asegúrate de que CABMSDictaminacion es un array
-            $cabmsDictaminacion = $camposDinamicos['CABMSDictaminacion'] ?? [];
-            $progresivoDictaminacion = $camposDinamicos['ProgresivoDictaminacion'] ?? [];
-            $estadoConservacion = $camposDinamicos['EstadoConservacion'] ?? [];
+            // Dependiendo del tipo de servicio, guarda en la tabla correspondiente
+            switch ($idTipoServicio) {
+                case "TÉCNICO":
+                    // Manejar la lógica para técnicos
+                    $cabmsDictaminacion = $camposDinamicos['CABMSDictaminacion'] ?? [];
+                    $progresivoDictaminacion = $camposDinamicos['ProgresivoDictaminacion'] ?? [];
+                    $estadoConservacion = $camposDinamicos['EstadoConservacion'] ?? [];
 
-            // Verifica que las longitudes de los arrays coincidan
-            $cantidadItems = count($cabmsDictaminacion);
-            if ($cantidadItems !== count($progresivoDictaminacion) || $cantidadItems !== count($estadoConservacion)) {
-                echo json_encode(['success' => false, 'message' => 'Los campos de dictaminación deben tener la misma cantidad de elementos.']);
-                exit;
-            }
+                    // Verifica que las longitudes de los arrays coincidan
+                    $cantidadItems = count($cabmsDictaminacion);
+                    if ($cantidadItems !== count($progresivoDictaminacion) || $cantidadItems !== count($estadoConservacion)) {
+                        echo json_encode(['success' => false, 'message' => 'Los campos de dictaminación deben tener la misma cantidad de elementos.']);
+                        exit;
+                    }
 
-            // Iterar sobre los activos
-            for ($i = 0; $i < $cantidadItems; $i++) {
-                // Usar los índices para obtener valores
-                $camposDinamicos['CABMSDictaminacion'] = $cabmsDictaminacion[$i];
-                $camposDinamicos['ProgresivoDictaminacion'] = $progresivoDictaminacion[$i];
-                $camposDinamicos['EstadoConservacion'] = $estadoConservacion[$i];
+                    // Iterar sobre los activos solo para el tipo de servicio TÉCNICO
+                    for ($i = 0; $i < $cantidadItems; $i++) {
+                        // Usar los índices para obtener valores
+                        $camposDinamicos['CABMSDictaminacion'] = $cabmsDictaminacion[$i];
+                        $camposDinamicos['ProgresivoDictaminacion'] = $progresivoDictaminacion[$i];
+                        $camposDinamicos['EstadoConservacion'] = $estadoConservacion[$i];
 
-                // Dependiendo del tipo de servicio, guarda en la tabla correspondiente
-                if ($idTipoServicio == "TÉCNICO") {
-                    $resultadoAtencion = $servicioModel->guardarTecnico($idServicio, $camposDinamicos);
-                }
-                // Agregar más condiciones si es necesario para otros tipos de servicios
+                        // Guarda la atención para técnicos
+                        $resultadoAtencion = $servicioModel->guardarTecnico($idServicio, $camposDinamicos);
+                    }
+                    break;
+                
+                case "INCIDENCIA":
+                    // Manejar el caso de incidencia
+                    $resultadoAtencion = $servicioModel->guardarIncidencia($idServicio, $camposDinamicos);
+                    break;
+
+                case "ENTREGA MATERIAL FÍLMICO":
+                    // Manejar el caso de entrega de material
+                    $resultadoAtencion = $servicioModel->guardarVideos($idServicio, $camposDinamicos);
+                    break;
+
+                // Agregar más casos si es necesario para otros tipos de servicios
+                default:
+                    echo json_encode(['success' => false, 'message' => 'Tipo de servicio no reconocido.']);
+                    exit;
             }
 
             if ($resultadoAtencion) {

@@ -1,3 +1,9 @@
+<?php
+// Pasar el rol como variable JavaScript
+echo "<script>const userRole = " . json_encode($rol) . ";</script>";
+
+if ($rol == 1) {?>
+
 <div class="container text-center">
     <h2>Consulta de Servicios por Fecha</h2>
     <form id="fechaForm">
@@ -18,7 +24,11 @@
     </form>
     <div id="resultado" class="mt-4"></div>
 </div>
-
+<?php } else { ?>
+    <div class="container text-center">
+        <h2>No tienes permiso para acceder a esta sección.</h2>
+    </div>
+<?php } ?>
 <script>
     const fechaInicioInput = document.getElementById('fechaInicio');
     const fechaFinInput = document.getElementById('fechaFin');

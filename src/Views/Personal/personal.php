@@ -1,7 +1,7 @@
 <div class="container text-center">
     <!-- <h3>ALTA DE PERSONAL</h3>
     <hr> -->
-    <h3 class="text-center">DETALLES DEL PERSONAL</h3>
+    <h3 class="text-center">DETALLES DEL PERSONAL ACTIVO</h3>
     <hr>
 
     <!-- Filtro de búsqueda -->
@@ -31,7 +31,6 @@
                     <th>NÚMERO DE EMPLEADO</th>
                     <th>NOMBRE</th>
                     <th>RFC</th>
-                    <th>Estatus</th>
                     <?php if ($rol != 2) { ?>
                         <th>Acciones</th>
                     <?php } else { ?>
@@ -97,7 +96,6 @@
                 <td>${persona.Pk_NumeroEmpleado}</td>
                 <td>${persona.Nombre}</td>
                 <td>${persona.RFC}</td>
-                <td>${persona.Estatus}</td>
                 <td> 
                 ${userRole == 1 || userRole == 3  ? `<a href="/INFORMATICA/src/Models/" target="_blank" class="btn btn-success">Editar</a>` : ""}           
                 </td>

@@ -47,7 +47,7 @@
 
             <div class="col-md-4" id="CampoOficio" style="display: none;">
                 <label for="Oficio" class="form-label">Oficio</label>
-                <input class="form-control" type="text" id="Oficio" name="Oficio" required>
+                <input class="form-control" type="text" id="Oficio" name="Oficio" maxlength="250" required>
             </div>
             <div class="col-md-4">
                 <label class="form-label" for="FechaSolicitud">Fecha de solicitud</label>
@@ -81,7 +81,7 @@
                     </div>
                     <div class="col-md-4">
                         <label class="form-label" for="DetallesServicioIncidencia">Detalles del servicio</label>
-                        <textarea class="form-control" name="DetallesServicioIncidencia" id="DetallesServicioIncidencia" rows="8" required> </textarea>
+                        <textarea class="form-control" name="DetallesServicioIncidencia" id="DetallesServicioIncidencia" rows="8" maxlength="400" required> </textarea>
                     </div>
                 </div>
             </div>
@@ -306,7 +306,7 @@
         </div>
 
         <!-- MODAL ESTADO SOLICITUD Y SOPORTE -->
-        <div class="modal fade" id="servicioModal" tabindex="-1" aria-labelledby="servicioModalLabel" aria-hidden="true">
+        <div class="modal fade" id="servicioModal" tabindex="-1" aria-labelledby="servicioModalLabel" >
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
