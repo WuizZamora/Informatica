@@ -46,7 +46,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : '';
 if ($rol == 2 && empty($page)) {
     header('Location: index.php?page=servicios');
     exit();
-}elseif($rol == 1 && empty($page)){
+}elseif(($rol == 1 || $rol == 3) && empty($page)){
     header('Location: index.php?page=serviciosInforme');
 }
 

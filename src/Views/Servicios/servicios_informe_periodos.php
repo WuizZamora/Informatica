@@ -2,7 +2,7 @@
 // Pasar el rol como variable JavaScript
 echo "<script>const userRole = " . json_encode($rol) . ";</script>";
 
-if ($rol == 1) {?>
+if ($rol == 1 || $rol == 3) {?>
 
 <div class="container text-center">
     <h2>Consulta de Servicios por Fecha</h2>
