@@ -98,7 +98,10 @@ document.addEventListener("DOMContentLoaded", function () {
     removeBtn.addEventListener("click", () => {
       // Verificar si es el primer bloque (blockId es 1)
       if (blockId === 1) {
-        alert("No puedes eliminar el primer activo.");
+        Swal.fire({
+          icon: "warning",
+          title: "No puedes eliminar el primer activo.",
+        });
       } else {
         container.removeChild(activoBlock);
         activeBlockCount--; // Decrementar el contador de bloques activos
@@ -532,8 +535,7 @@ function renderTable(data, page) {
     const isEntregaMaterial =
       servicio.TipoServicio === "ENTREGA MATERIAL FÍLMICO";
     const isPendiente = servicio.EstadoSolicitud === "PENDIENTE";
-    const isCancelado = servicio.EstadoSolicitud === "CANCELADO";
-    const shouldDisable = (isEntregaMaterial && isPendiente) || isCancelado;
+    const shouldDisable = (isEntregaMaterial&&isPendiente) ;
 
     const row = `
       <tr>
@@ -769,6 +771,8 @@ function editServicio(id) {
             tipoServicio,
           };
 
+          console.log(datosServicio);
+
           // Agregar datos específicos según el tipo de servicio
           if (tipoServicio === "TÉCNICO") {
             const DescripcionTecnico = document.getElementById(
@@ -778,21 +782,34 @@ function editServicio(id) {
             const activos = [];
 
             // Recorrer los datos para obtener ID Activos y Evaluaciones
-            const idActivosElements = document.querySelectorAll(
-              "[id^='cabms_Tecnico_']"
-            );
+            const idActivosElements =
+              document.querySelectorAll("[id^='id_activo_']");
             const evaluacionesElements = document.querySelectorAll(
               "[id^='evaluacion_Tecnico_']"
             );
             const id = document.querySelectorAll("[id^='id_']");
+            const cabmsActivo = document.querySelectorAll(
+              "[id^='cabms_Tecnico_']"
+            );
+            const progresivoActivo = document.querySelectorAll(
+              "[id^='progresivo_Tecnico_']"
+            );
 
             idActivosElements.forEach((element, index) => {
               const IDActivo = element.value;
               const EvaluacionTecnico = evaluacionesElements[index].value;
               const idPK = id[index].value;
+              const cabmsTecnico = cabmsActivo[index].value;
+              const progresivoTecnico = progresivoActivo[index].value;
 
               // Agregar al arreglo de activos
-              activos.push({ IDActivo, EvaluacionTecnico, idPK });
+              activos.push({
+                IDActivo,
+                EvaluacionTecnico,
+                idPK,
+                cabmsTecnico,
+                progresivoTecnico,
+              });
             });
 
             // Asignar el arreglo de activos al objeto de datos del servicio
@@ -959,29 +976,41 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       camposAdicionalesDiv.innerHTML += `
         <hr>
         <div class="form-group" style="display:none;">
-              <label for="id_${index}">ID:</label>
-              <input type="text" class="form-control" id="id_${index}" value="${
+          <label for="id_${index}">ID:</label>
+          <input type="text" class="form-control" id="id_${index}" value="${
         item.ID
       }">
-          </div>
-          <div class="form-group">
-              <label for="cabms_Tecnico_${index}">ID ACTIVO:</label>
-              <input type="text" class="form-control" id="cabms_Tecnico_${index}" value="${
+        </div>
+        <div class="form-group" style="display:none;">
+          <label for="id_activo_${index}">ID ACTIVO:</label>
+          <input type="text" class="form-control" id="id_activo_${index}" value="${
         item.Fk_IDActivo_Activos
       }">
-          </div>
-          <div class="form-group">
-              <label for="evaluacion_Tecnico_${index}">Evaluación:</label>
-              <select class="form-select" id="evaluacion_Tecnico_${index}" name="evaluacion_Tecnico_${index}" required>
-                  <option selected disabled value="">Elige una opción</option>
-                  <option value="FUNCIONAL" ${
-                    item.Evaluacion === "FUNCIONAL" ? "selected" : ""
-                  }>Funcional</option>
+        </div>
+        <div class="form-group">
+          <label for="cabms_Tecnico_${index}">CABMS:</label>
+          <input type="text" class="form-control" id="cabms_Tecnico_${index}" value="${
+        item.CABMS
+      }">
+        </div>
+        <div class="form-group">
+          <label for="progresivo_Tecnico_${index}">PROGRESIVO:</label>
+          <input type="text" class="form-control" id="progresivo_Tecnico_${index}" value="${
+        item.Progresivo
+      }">
+        </div>
+        <div class="form-group">
+          <label for="evaluacion_Tecnico_${index}">Evaluación:</label>
+          <select class="form-select" id="evaluacion_Tecnico_${index}" name="evaluacion_Tecnico_${index}" required>
+            <option selected disabled value="">Elige una opción</option>
+            <option value="FUNCIONAL" ${
+              item.Evaluacion === "FUNCIONAL" ? "selected" : ""
+            }>Funcional</option>
                   <option value="NO FUNCIONAL" ${
                     item.Evaluacion === "NO FUNCIONAL" ? "selected" : ""
                   }>Baja</option>
-              </select>
-          </div>
+          </select>
+        </div>
         `;
     });
   } else if (tipoServicio === "INCIDENCIA") {
@@ -1058,7 +1087,7 @@ function EstadoSolicitud(id) {
     });
 
   function mostrarDatos(servicio) {
-    const { Pk_IDServicio, EstadoSolicitud, SoporteDocumental } = servicio;
+    const { Pk_IDServicio, EstadoSolicitud, SoporteDocumental, Observaciones } = servicio;
     let ModalContentEstado = `
     <div class="row justify-content-center text-center">
     <div class="col-md-8">
@@ -1068,18 +1097,21 @@ function EstadoSolicitud(id) {
       
       <label for="estadoSolicitud" class="form-label">Estado de Solicitud:</label>
       <select class="form-select text-center" id="estadoSolicitud" name="EstadoSolicitud" required>
-        <option selected disabled value="">Elige una opción</option>
-        <option value="PENDIENTE" disabled ${
-          EstadoSolicitud === "PENDIENTE" ? "selected" : ""
-        }>PENDIENTE</option>
-        <option value="COMPLETADO" ${
-          EstadoSolicitud === "COMPLETADO" ? "selected" : ""
-        }>COMPLETADO</option>
-        <option value="CANCELADO" ${
-          EstadoSolicitud === "CANCELADO" ? "selected" : ""
-        }>CANCELADO</option>
+      <option selected disabled value="">Elige una opción</option>
+      <option value="PENDIENTE" disabled ${
+        EstadoSolicitud === "PENDIENTE" ? "selected" : ""
+      }>PENDIENTE</option>
+      <option value="COMPLETADO" ${
+        EstadoSolicitud === "COMPLETADO" ? "selected" : ""
+      }>COMPLETADO</option>
+      <option value="CANCELADO" ${
+        EstadoSolicitud === "CANCELADO" ? "selected" : ""
+      }>CANCELADO</option>
       </select>
-      
+
+      <label for="Observaciones" class="form-label">Observaciones:</label>
+      <textarea class="form-control text-center" id="Observaciones" name="Observaciones" maxlength="400" rows="8">${Observaciones !== null ? Observaciones : ""}</textarea>
+
       <label class="form-label">Soporte Documental:</label>
         ${
           SoporteDocumental
@@ -1106,6 +1138,7 @@ function EstadoSolicitud(id) {
       // Obtener los valores de los campos
       const idServicio = document.getElementById("idServicioEstado").value;
       const estadoSolicitud = document.getElementById("estadoSolicitud").value;
+      const observaciones = document.getElementById("Observaciones").value;
       // Verificar si el campo 'soporteDocumental' existe antes de acceder a su valor
       const soporteDocumentalInput =
         document.getElementById("soporteDocumental");
@@ -1117,11 +1150,18 @@ function EstadoSolicitud(id) {
       const formData = new FormData();
       formData.append("Pk_IDServicio", idServicio);
       formData.append("EstadoSolicitud", estadoSolicitud);
+      formData.append("Observaciones", observaciones);
 
       // Solo agregar soporteDocumental si existe
       if (soporteDocumental) {
         formData.append("SoporteDocumental", soporteDocumental);
       }
+
+        // Mostrar en consola el contenido de FormData
+  console.log("Contenido de FormData:");
+  for (let [key, value] of formData.entries()) {
+    console.log(`${key}:`, value);
+  }
       // Enviar los datos al backend usando fetch
       fetch(
         "/INFORMATICA/src/Models/Servicios/actualizar_estado_solicitud.php",

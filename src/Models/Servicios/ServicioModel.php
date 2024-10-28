@@ -23,7 +23,7 @@ class ServicioModel
 
     public function consultarEstadoSolicitud($idServicio)
     {
-        $query = "SELECT Pk_IDServicio, EstadoSolicitud, SoporteDocumental FROM Servicios WHERE Pk_IDServicio = ?";
+        $query = "SELECT Pk_IDServicio, EstadoSolicitud, SoporteDocumental, Observaciones FROM Servicios WHERE Pk_IDServicio = ?";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $idServicio);
         $stmt->execute();
@@ -54,7 +54,6 @@ class ServicioModel
         // Retornar todos los datos del servicio
         return $serviciosDetalles;
     }
-
 
     public function consultarServicio($idServicio)
     {
@@ -233,15 +232,16 @@ class ServicioModel
             // Procesar activos si existen
             if (isset($datos->activos) && is_array($datos->activos)) {
                 foreach ($datos->activos as $activo) {
-                    $stmt2 = $this->db->prepare("CALL Servicios_Tecnicos_EachRegistro_UPDATE(?, ?, ?, ?)");
+                    $stmt2 = $this->db->prepare("CALL Servicios_Tecnicos_EachRegistro_UPDATE(?, ?, ?, ?, ?)");
                     if (!$stmt2) {
                         throw new Exception('Error en la preparación de la consulta de activos: ' . $this->db->error);
                     }
                     $stmt2->bind_param(
-                        "iiis",
+                        "iisss",
                         $idServicio,
                         $activo->idPK,
-                        $activo->IDActivo,
+                        $activo->cabmsTecnico,
+                        $activo->progresivoTecnico,
                         $activo->EvaluacionTecnico
                     );
 
@@ -301,14 +301,14 @@ class ServicioModel
         }
     }
 
-    public function actualizarEstadoSolicitudCompleto($idServicio, $estadoSolicitud, $desth_path)
+    public function actualizarEstadoSolicitudCompleto($idServicio, $estadoSolicitud, $desth_path, $observaciones)
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL Servicio_UPDATE_FileAndEstado(?, ?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_UPDATE_FileAndEstado(?, ?, ?, ?)");
 
             // Vincular los parámetros
-            $stmt->bind_param("iss", $idServicio, $estadoSolicitud, $desth_path);
+            $stmt->bind_param("isss", $idServicio, $estadoSolicitud, $desth_path, $observaciones);
 
             // Ejecutar la consulta
             $stmt->execute();
@@ -319,14 +319,14 @@ class ServicioModel
         }
     }
 
-    public function actualizarEstadoSolicitud($idServicio, $estadoSolicitud)
+    public function actualizarEstadoSolicitud($idServicio, $estadoSolicitud, $observaciones)
     {
         try {
             // Preparar la llamada al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL Servicio_UPDATE_EstadoSolicitud(?, ?)");
+            $stmt = $this->db->prepare("CALL Servicio_UPDATE_EstadoSolicitud(?, ?, ?)");
 
             // Vincular los parámetros (i = integer, s = string)
-            $stmt->bind_param("is", $idServicio, $estadoSolicitud); // Solo 2 parámetros
+            $stmt->bind_param("iss", $idServicio, $estadoSolicitud, $observaciones); // Solo 2 parámetros
 
             // Ejecutar la consulta
             $stmt->execute();

@@ -144,9 +144,21 @@ if (isset($_GET['IDServicio'])) {
                     <th>Fecha de Atención</th>
                     <td>' . $data[0]['FechaAtencion'] . '</td>
                 </tr>
-            </table>
-            <hr>';
+        ';
 
+        // Agregar Observaciones solo si no está vacío
+        if (!empty($data[0]['Observaciones'])) {
+            $html .= '
+            <tr>
+                <th>Observaciones</th>
+                <td>' . $data[0]['Observaciones'] . '</td>
+            </tr>';
+        }
+
+        $html .= '
+        </table>
+        <hr>
+';
         // Mostrar campos adicionales según el tipo de servicio
         if ($data[0]['TipoServicio'] === 'ENTREGA MATERIAL FÍLMICO') {
             $html .= '
@@ -199,15 +211,15 @@ if (isset($_GET['IDServicio'])) {
                     </tr>
                 </thead>
                 <tbody>';
-        
+
             // Inicializar el contador
             $counter = 1;
-        
+
             // Iterar sobre los datos del servicio técnico
             foreach ($data as $item) {
                 // Formatear el Progresivo como un número de 6 dígitos
                 $progresivoFormateado = str_pad($item['Progresivo'], 6, '0', STR_PAD_LEFT);
-                
+
                 $html .= '
                     <tr>
                         <td style="padding: 8px;">' . $counter . '</td>
@@ -216,17 +228,19 @@ if (isset($_GET['IDServicio'])) {
                         <td style="padding: 8px;">' . $item['CABMS'] . '-' . $progresivoFormateado . '</td>
                         <td style="padding: 8px;">' . $item['Evaluacion'] . '</td>
                     </tr>';
-        
+
                 // Incrementar el contador
                 $counter++;
             }
-        
+
             $html .= '
-                    <th style="background-color: #f2f2f2;">Descripción del servicio:</th>
-                    <td colspan="5">' . $data[0]['DescripcionTecnico'] . '</td>
+                    <th">Descripción del servicio:</th>
+                    <td colspan="5" style="  max-width: 30rem; /* Cambia este valor según sea necesario */
+                    word-wrap: break-word; /* Permite que el texto se ajuste */
+                    white-space: normal; /* Permite múltiples líneas */;">' . $data[0]['DescripcionTecnico'] . '</td>
                 </tbody>
             </table><br><br><br>';
-        
+
             if ($data[0]['Evaluacion'] === 'NO FUNCIONAL') {
                 $html .= '
                 <div class="content-firma">
@@ -238,7 +252,7 @@ if (isset($_GET['IDServicio'])) {
                 ___________________________________________<br>Firma del solicitante
                 </div>';
             }
-        }elseif ($data[0]['TipoServicio'] === 'INCIDENCIA') {
+        } elseif ($data[0]['TipoServicio'] === 'INCIDENCIA') {
             $html .= '
                 <div class="section-title">DETALLES DE LA INCIDENCIA</div>
                 <table class="table">

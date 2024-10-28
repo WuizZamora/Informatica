@@ -6,6 +6,7 @@ $model = new ServicioModel(); // Crear una instancia del modelo
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $idServicio = $_POST['Pk_IDServicio'];
     $estadoSolicitud = $_POST['EstadoSolicitud'];
+    $observaciones = $_POST['Observaciones'];
 
     // Manejar el archivo de soporte documental si se ha subido
     if (isset($_FILES['SoporteDocumental']) && $_FILES['SoporteDocumental']['error'] == UPLOAD_ERR_OK) {
@@ -30,15 +31,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (move_uploaded_file($fileTmpPath, $dest_path)) {
             // Aquí puedes guardar la información en la base de datos
             // Por ejemplo: guardarEstadoSolicitud($idServicio, $estadoSolicitud, $dest_path);
-            $servicio = $model->actualizarEstadoSolicitudCompleto($idServicio, $estadoSolicitud, $dest_path);
+            $servicio = $model->actualizarEstadoSolicitudCompleto($idServicio, $estadoSolicitud, $dest_path, $observaciones);
             echo json_encode(['success' => true, 'message' => 'Solicitud guardada exitosamente.', 'fileName' => $nombreArchivo]);
         } else {
             echo json_encode(['error' => 'Error al mover el archivo subido.']);
         }
     } else {
-        // Aquí puedes guardar la información sin el archivo
-        // Por ejemplo: guardarEstadoSolicitudSinArchivo($idServicio, $estadoSolicitud);
-        $servicio = $model->actualizarEstadoSolicitud($idServicio, $estadoSolicitud);
+        $servicio = $model->actualizarEstadoSolicitud($idServicio, $estadoSolicitud, $observaciones);
         echo json_encode(['success' => true, 'message' => 'Solicitud guardada exitosamente sin archivo.']);
     }
 } else {

@@ -182,7 +182,7 @@
                     </script>
                     <div class="col-md-6">
                         <label class="form-label" for="DescripcionVideos">Descripción</label>
-                        <textarea class="form-control text-center" name="DescripcionVideos" id="DescripcionVideos" rows="8"> </textarea>
+                        <textarea class="form-control text-center" name="DescripcionVideos" id="DescripcionVideos" maxlength="400" rows="8"> </textarea>
                     </div>
                 </div>
             </div>
@@ -197,7 +197,7 @@
                 <!-- Descripción del estado (solo una vez) -->
                 <div class="col-md-5 mt-3">
                     <label class="form-label" for="DescripcionEstado">Descripción del estado</label>
-                    <textarea class="form-control text-center" name="DescripcionEstado" id="DescripcionEstado" rows="8" required></textarea>
+                    <textarea class="form-control text-center" name="DescripcionEstado" id="DescripcionEstado" rows="8" maxlength="400" required></textarea>
                 </div>
             </div>
 
