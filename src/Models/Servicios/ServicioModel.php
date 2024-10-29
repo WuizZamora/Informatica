@@ -443,7 +443,7 @@ class ServicioModel
 
     public function consultarDetallesEquipo($equipo, $fechaInicio, $fechaFin)
     {
-        $query = "CALL ObtenerServiciosVideos(?, ?, ?)";
+        $query = "CALL Servicios_Videos_SELECT_DetalleEquipo(?, ?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("sss", $fechaInicio, $fechaFin, $equipo);
         $stmt->execute();
