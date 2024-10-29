@@ -440,4 +440,21 @@ class ServicioModel
 
         return $videos;
     }
+
+    public function consultarDetallesEquipo($equipo, $fechaInicio, $fechaFin)
+    {
+        $query = "CALL ObtenerServiciosVideos(?, ?, ?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("sss", $fechaInicio, $fechaFin, $equipo);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $equipoDetalles = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $equipoDetalles[] = $row;
+        }
+
+        return $equipoDetalles;
+    }
 }
