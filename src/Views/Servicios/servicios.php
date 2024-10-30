@@ -65,11 +65,16 @@
             <div id="formIncidencia" style="display:none;">
                 <h3>Datos de incidencias</h3>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label" for="ServicioSolicitado">Servicio solicitado</label>
                         <select class="form-select text-center" id="ServicioSolicitado" name="ServicioSolicitado[]" size="9" multiple>
                             <option value="default">Elige una opción</option>
                             <option value="GESTIÓN DE EQUIPOS">GESTIÓN DE EQUIPOS</option>
+                            <option value="CARPETA COMPARTIDA">CARPETA COMPARTIDA</option>
+                            <option value="CREACIÓN DE USUARIO">CREACIÓN DE USUARIO</option>
+                            <option value="CORREO ELECTRÓNICO INSTITUCIONAL">CORREO ELECTRÓNICO INSTITUCIONAL</option>
+                            <option value="SOPORTE TÉCNICO">SOPORTE TÉCNICO</option>
+                            <option value="ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO">ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO</option>
                             <option value="CONECTIVIDAD">CONECTIVIDAD</option>
                             <option value="GESTIÓN DE USUARIOS">GESTIÓN DE USUARIOS</option>
                             <option value="CAPACITACIÓN Y ASESORÍA">CAPACITACIÓN Y ASESORÍA</option>
@@ -79,7 +84,7 @@
                             Ingresa una opción
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <label class="form-label" for="DetallesServicioIncidencia">Detalles del servicio</label>
                         <textarea class="form-control" name="DetallesServicioIncidencia" id="DetallesServicioIncidencia" rows="8" maxlength="400" required> </textarea>
                     </div>
@@ -263,7 +268,7 @@
             <table class="table table-striped-columns table-hover" id="serviciosTable">
                 <thead class="table-warning">
                     <tr>
-                        <th># Servicio</th>
+                        <th>FOLIO</th>
                         <th>Personal Solicitante</th>
                         <th>Fecha de solicitud</th>
                         <th>Oficio</th>

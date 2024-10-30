@@ -25,23 +25,23 @@ if ($rol == 1 || $rol == 3) { ?>
         <div id="resultado" class="mt-4"></div>
     </div>
 
-<!-- Modal Bootstrap -->
-<div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="equipoModalLabel">Información del Equipo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body container" id="modalBodyEquipo" style="max-height:80rem; overflow-y: auto;">
-                <!-- Aquí se mostrará la información del equipo -->
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+    <!-- Modal Bootstrap -->
+    <div class="modal fade" id="equipoModal" tabindex="-1" aria-labelledby="equipoModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="equipoModalLabel">Información del Equipo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body container" id="modalBodyEquipo" style="max-height:80rem; overflow-y: auto;">
+                    <!-- Aquí se mostrará la información del equipo -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                </div>
             </div>
         </div>
     </div>
-</div>
 
 
 <?php } else { ?>
@@ -113,6 +113,7 @@ if ($rol == 1 || $rol == 3) { ?>
             const {
                 Categoria,
                 TotalVideosPorCategoria,
+                TotalSolicitudesPorCategoria,
                 Equipo,
                 TotalSolicitudes,
                 CantidadVideosPorEquipo
@@ -121,6 +122,7 @@ if ($rol == 1 || $rol == 3) { ?>
             if (!categorias[Categoria]) {
                 categorias[Categoria] = {
                     TotalVideosPorCategoria,
+                    TotalSolicitudesPorCategoria,
                     equipos: [],
                 };
             }
@@ -143,10 +145,11 @@ if ($rol == 1 || $rol == 3) { ?>
             servicios,
             reporteActivos,
             incidencias,
+            detallesIncidencias,
             videos
         } = data;
 
-        if (servicios.length === 0 && reporteActivos.length === 0 && incidencias.length === 0 && videos.length === 0) {
+        if (servicios.length === 0 && reporteActivos.length === 0 && incidencias.length === 0 && videos.length === 0 && detallesIncidencias.length===0) {
             resultadoDiv.innerHTML = '<div class="alert alert-info">No se encontraron resultados.</div>';
             return;
         }
@@ -159,12 +162,12 @@ if ($rol == 1 || $rol == 3) { ?>
                 <thead class="table-secondary">
                     <tr><th>Tipo de Servicio</th><th>Número de solicitudes</th></tr>
                 </thead>
-        <tbody>`;
+            <tbody>`;
         servicios.forEach(item => {
             html += `<tr>
             <td>${item.TipoServicio}</td>
             <td>${item.TotalPorTipo}</td>
-        </tr>`;
+            </tr>`;
         });
         html += '</tbody></table>';
 
@@ -181,15 +184,20 @@ if ($rol == 1 || $rol == 3) { ?>
         const totalActivos = reporteActivos.length;
 
         html += `
-    <h3>Reporte de Activos</h3><hr>
-    <table class="table table-striped-columns table-hover">
-        <thead class="table-secondary">
-            <tr><th>Número de inventario</th><th>Activo</th><th>Estado</th></tr>
-        </thead>
-        <tbody>`;
-        reporteActivos.forEach(item => {
+            <h3>Reporte de Activos</h3><hr>
+            <table class="table table-striped-columns table-hover">
+                <thead class="table-secondary">
+                    <tr>
+                    <th>#</th>
+                    <th>Número de inventario</th><th>Activo</th>
+                    <th>Estado</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+        reporteActivos.forEach((item, index) => {
             const progresivo = item.Progresivo.toString().padStart(6, '0');
             html += `<tr>
+            <td>${index + 1}</td> <!-- Contador -->
             <td>${item.CABMS}-${progresivo}</td>
             <td>${item.NombreActivo}</td>
             <td>${item.Estado}</td>
@@ -198,33 +206,62 @@ if ($rol == 1 || $rol == 3) { ?>
         html += '</tbody></table>';
 
         html += `
-    <div class="row justify-content-center">
-        <div class="alert alert-success col-md-4">Activos revisados: ${totalActivos}</div>
-        <div class="alert alert-success col-md-4">Activos dictaminados como  No Funcionales: ${totalActivosNoFuncionales}</div>
-        <div class="alert alert-success col-md-4">Activos Funcionales: ${totalActivosFuncionales}</div>
-    </div>`;
+            <div class="row justify-content-center">
+                <div class="alert alert-success col-md-4">Activos revisados: ${totalActivos}</div>
+                <div class="alert alert-success col-md-4">Activos dictaminados como  No Funcionales: ${totalActivosNoFuncionales}</div>
+                <div class="alert alert-success col-md-4">Activos Funcionales: ${totalActivosFuncionales}</div>
+            </div>`;
 
         // Sección de Incidencias
         const totalIncidencias = incidencias[0]?.TotalIncidencias || 0;
 
         html += `
-    <h3>Reporte de Incidencias</h3><hr>
-    <table class="table table-striped-columns table-hover">
-        <thead class="table-secondary">
-            <tr><th>Servicios Solicitados</th></tr>
-        </thead>
-        <tbody>`;
-        incidencias.forEach(item => {
-            html += `<tr>
-            <td>${item.ServicioSolicitado}</td>
-        </tr>`;
+        <h3>Reporte de Incidencias</h3><hr>
+        <table class="table table-striped-columns table-hover">
+            <thead class="table-secondary">
+                <tr>
+                    <th>#</th>
+                    <th>Servicios Solicitados</th>
+                </tr>
+            </thead>
+            <tbody>`;
+
+        incidencias.forEach((item, index) => {
+            html += `
+            <tr>
+                <td>${index + 1}</td> <!-- Contador -->
+                <td>${item.ServicioSolicitado}</td>
+            </tr>`;
         });
+
         html += '</tbody></table>';
 
         html += `  
-    <div class="row justify-content-center">
-        <div class="alert alert-success col-md-3">Total de Incidencias: ${totalIncidencias}</div>
-    </div>`;
+        <div class="row justify-content-center">
+            <div class="alert alert-success col-md-3">Total de Incidencias: ${totalIncidencias}</div>
+        </div>`;
+
+        const incidenciaDetalles = detallesIncidencias.length;
+
+html += `
+    <h3>Detalle de las incidencias</h3><hr>
+    <table class="table table-striped-columns table-hover">
+        <thead class="table-secondary">
+            <tr>
+            <th>#</th>
+            <th>Tipo de servicio solicitado</th><th>Total</th>
+            </tr>
+        </thead>
+        <tbody>`;
+detallesIncidencias.forEach((item, index) => {
+    html += `<tr>
+    <td>${index + 1}</td> <!-- Contador -->
+    <td>${item.Servicio}</td>
+    <td>${item.Total}</td>
+</tr>`;
+});
+html += '</tbody></table>';
+
 
         // Sección de Videos - Agrupación por Categoría
         html += '<h3>Reporte de Videos</h3><hr>';
@@ -234,16 +271,18 @@ if ($rol == 1 || $rol == 3) { ?>
             html += `
         <h4>${categoria}</h4>
         <div class="row justify-content-center">
-            <div class="alert alert-info col-md-3">Total de Videos en la Categoría: ${datos.TotalVideosPorCategoria}</div>
+            <div class="alert alert-info col-md-3">Total de Videos por ${categoria}: ${datos.TotalVideosPorCategoria}</div>
+            <div class="alert alert-info col-md-3">Total de Solicitudes por ${categoria}: ${datos.TotalSolicitudesPorCategoria}</div>
         </div>
         <table class="table table-striped-columns table-hover">
             <thead class="table-secondary">
-                <tr><th>Equipo</th><th>Total de Solicitudes</th><th>Cantidad de Videos</th></tr>
+                <tr><th>#</th><th>Equipo</th><th>Total de Solicitudes</th><th>Cantidad de Videos</th></tr>
             </thead>
             <tbody>`;
-            datos.equipos.forEach(equipo => {
+            datos.equipos.forEach((equipo, index) => {
                 html += `
                     <tr>
+                    <td>${index + 1}</td> <!-- Contador -->
                         <td>
                             <a href="#" class="link-equipo" data-equipo="${equipo.Equipo}">
                                 ${equipo.Equipo}
@@ -258,9 +297,9 @@ if ($rol == 1 || $rol == 3) { ?>
 
         const totalVideosPeriodo = videos[0]?.TotalVideosPeriodo || 0;
         html += `
-    <div class="row justify-content-center">
-        <div class="alert alert-success col-md-3">Total de Videos en el período: ${totalVideosPeriodo}</div>
-    </div>`;
+        <div class="row justify-content-center">
+            <div class="alert alert-success col-md-3">Total de Videos en el período: ${totalVideosPeriodo}</div>
+        </div>`;
 
         // Renderizar el resultado final
         resultadoDiv.innerHTML = html;
@@ -276,8 +315,6 @@ if ($rol == 1 || $rol == 3) { ?>
         const equipo = linkEquipo.dataset.equipo;
         const fechaInicio = fechaInicioInput.value; // Asegúrate de tener estos inputs definidos
         const fechaFin = fechaFinInput.value;
-
-        console.log(equipo, fechaInicio, fechaFin);
 
         try {
             const response = await fetch('./src/Models/Servicios/consultar_detalle_equipo.php', {
@@ -310,30 +347,30 @@ if ($rol == 1 || $rol == 3) { ?>
     });
 
     function mostrarDetallesEquipo(data) {
-    let html = `
+        let html = `
         <h4 class="text-center">Detalles del Equipo: ${data[0]['Equipo']}</h4>`;
 
-    // Verificar si hay datos
-    if (data.length === 0) {
-        html += `<p>No se encontraron detalles para el equipo.</p>`;
-    } else {
-        html += `
-        <table class="table table-striped table-hover table-responsive text-center">
-            <thead class="table-warning">
-                <tr>
-                    <th>Solicitante</th>
-                    <th>Cantidad de videos</th>
-                    <th>Fecha de Solicitud</th>
-                    <th>Periodo Inicial</th>
-                    <th>Periodo Final</th>
-                    <th>Mes</th>
-                    <th>Periodo</th>
-                </tr>
-            </thead>
-            <tbody>`;
-        
-        data.forEach(detalle => {
+        // Verificar si hay datos
+        if (data.length === 0) {
+            html += `<p>No se encontraron detalles para el equipo.</p>`;
+        } else {
             html += `
+            <table class="table table-striped table-hover table-responsive text-center">
+                <thead class="table-warning">
+                    <tr>
+                        <th>Solicitante</th>
+                        <th>Cantidad de videos</th>
+                        <th>Fecha de Solicitud</th>
+                        <th>Periodo Inicial</th>
+                        <th>Periodo Final</th>
+                        <th>Mes</th>
+                        <th>Periodo</th>
+                    </tr>
+                </thead>
+                <tbody>`;
+
+            data.forEach(detalle => {
+                html += `
                 <tr>
                     <td>${detalle.Solicitante}</td>
                     <td>${detalle.CantidadVideos}</td>
@@ -343,14 +380,13 @@ if ($rol == 1 || $rol == 3) { ?>
                     <td>${detalle.Mes}</td>
                     <td>${detalle.Periodo}</td>
                 </tr>`;
-        });
+            });
 
-        html += `
-            </tbody>
-        </table>`;
+            html += `
+                </tbody>
+            </table>`;
+        }
+
+        document.getElementById('modalBodyEquipo').innerHTML = html; // Asegúrate de usar el ID correcto
     }
-
-    document.getElementById('modalBodyEquipo').innerHTML = html; // Asegúrate de usar el ID correcto
-}
-
 </script>

@@ -1025,27 +1025,36 @@ function mostrarCamposAdicionales(tipoServicio, data) {
           <label for="ServicioSolicitadoUPDATE">Servicio Solicitado:</label>
           <select class="form-select text-center" id="ServicioSolicitadoUPDATE" name="ServicioSolicitadoUPDATE[]" size="6" multiple>
               <option value="">Elige una opción</option>
-              <option value="GESTIÓN DE EQUIPOS" ${
-                serviciosSolicitados.includes("GESTIÓN DE EQUIPOS")
-                  ? "selected"
-                  : ""
-              }>GESTIÓN DE EQUIPOS</option>
-              <option value="CONECTIVIDAD" ${
+            <option value="GESTIÓN DE EQUIPOS" ${
+                serviciosSolicitados.includes("GESTIÓN DE EQUIPOS") ? "selected" : ""
+            }>GESTIÓN DE EQUIPOS</option>
+            <option value="CARPETA COMPARTIDA" ${
+                serviciosSolicitados.includes("CARPETA COMPARTIDA") ? "selected" : ""
+            }>CARPETA COMPARTIDA</option>
+            <option value="CREACIÓN DE USUARIO" ${
+                serviciosSolicitados.includes("CREACIÓN DE USUARIO") ? "selected" : ""
+            }>CREACIÓN DE USUARIO</option>
+            <option value="CORREO ELECTRÓNICO INSTITUCIONAL" ${
+                serviciosSolicitados.includes("CORREO ELECTRÓNICO INSTITUCIONAL") ? "selected" : ""
+            }>CORREO ELECTRÓNICO INSTITUCIONAL</option>
+            <option value="SOPORTE TÉCNICO" ${
+                serviciosSolicitados.includes("SOPORTE TÉCNICO") ? "selected" : ""
+            }>SOPORTE TÉCNICO</option>
+            <option value="ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO" ${
+                serviciosSolicitados.includes("ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO") ? "selected" : ""
+            }>ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO</option>
+            <option value="CONECTIVIDAD" ${
                 serviciosSolicitados.includes("CONECTIVIDAD") ? "selected" : ""
-              }>CONECTIVIDAD</option>
-              <option value="GESTIÓN DE USUARIOS" ${
-                serviciosSolicitados.includes("GESTIÓN DE USUARIOS")
-                  ? "selected"
-                  : ""
-              }>GESTIÓN DE USUARIOS</option>
-              <option value="CAPACITACIÓN Y ASESORÍA" ${
-                serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA")
-                  ? "selected"
-                  : ""
-              }>CAPACITACIÓN Y ASESORÍA</option>
-              <option value="OTROS" ${
+            }>CONECTIVIDAD</option>
+            <option value="GESTIÓN DE USUARIOS" ${
+                serviciosSolicitados.includes("GESTIÓN DE USUARIOS") ? "selected" : ""
+            }>GESTIÓN DE USUARIOS</option>
+            <option value="CAPACITACIÓN Y ASESORÍA" ${
+                serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA") ? "selected" : ""
+            }>CAPACITACIÓN Y ASESORÍA</option>
+            <option value="OTROS" ${
                 serviciosSolicitados.includes("OTROS") ? "selected" : ""
-              }>OTROS</option>
+            }>OTROS</option>
           </select>
           <div class="invalid-feedback">
               Ingresa una opción

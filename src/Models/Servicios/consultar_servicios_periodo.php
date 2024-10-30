@@ -15,17 +15,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Llamar al segundo procedimiento 'ObtenerTecnicoPorPeriodo'
     $reporteActivos = $servicioModel->ObtenerTecnicoPorPeriodo($fecha_inicio, $fecha_fin);
     
-    // Llamar al tercer procedimiento 'ObtenerIncidenciasPorPeriodo'
+    // Llamar al tercer procedimiento 'ObtenerIncidenciasPorPeriodo' (actualizado)
     $reporteIncidencias = $servicioModel->ObtenerIncidenciasPorPeriodo($fecha_inicio, $fecha_fin);
-    // Llamar al tercer procedimiento 'ObtenerVideosPorPeriodo'
+    
+    // Llamar al cuarto procedimiento 'ObtenerVideosPorPeriodo'
     $reporteVideos = $servicioModel->ObtenerVideosPorPeriodo($fecha_inicio, $fecha_fin);
 
     // Combinar ambos resultados en un solo array
     $resultado = [
         'servicios' => $servicios,
         'reporteActivos' => $reporteActivos,
-        'incidencias' => $reporteIncidencias,
-        'videos' =>$reporteVideos
+        'incidencias' => $reporteIncidencias['incidencias'], // Accede al array de incidencias
+        'detallesIncidencias' => $reporteIncidencias['detalles'], // Accede al array de detalles
+        'videos' => $reporteVideos
     ];
 
     // Devolver los resultados en formato JSON
@@ -34,4 +36,5 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     echo json_encode(['error' => 'Método no permitido']);
 }
 ?>
+
 

@@ -23,126 +23,79 @@ if (isset($_GET['IDServicio'])) {
             <meta charset="UTF-8">
             <title>Reporte de Servicio</title>
             <style>
-                body {
-                    font-family: Arial, sans-serif;
-                    margin: 0;
-                    padding: 0;
-                }
+                body {font-family: Arial, sans-serif; margin: 0; padding: 0;}
 
-                .header {
-                    display: flex;
-                    align-items: center; /* Centra verticalmente los elementos */
-                }
+                .header img{margin:0 0.5rem 0;}
 
-                .header img{
-                    margin:0 0.5rem 0;     
-                }
+                .texto {font-size: 0.8rem; padding:1rem; font-weight: bold; align-items: center;}
 
-                .texto {
-                    font-size: 0.8rem; /* Ajusta el tamaño de la fuente según sea necesario */
-                    padding:1rem;
-                    font-weight: bold;
-                    align-items: center;
-                }
+                .sub-texto{text-align: center;font-size: 0.7rem;}
 
-                .sub-texto{
-                    text-align: center;
-                    font-size: 0.7rem;
-                }
+                .content {padding: 0.8rem;font-size: 1rem;}
 
-                .content {
-                    padding: 0.8rem;
-                    font-size: 1rem;
-                }
-
-                .content-firma {
-                    padding: 1rem;
-                    font-size: 1rem;
-                    font-weight: bold;
-                    text-align: center;
-
-                }
-                .section-title {
-                    font-weight: bold;
-                    text-align: center;
-                }
+                .content-firma {padding: 1rem; font-size: 1rem; font-weight: bold; text-align: center;}
+                
+                .section-title {font-weight: bold; text-align: center;}
                     
-                .parent-container {
-                    text-align: right; /* Alinea el contenido hijo a la derecha */
-                }
+                .parent-container {display: flex; align-items: center; text-align: right;}
 
-                .content-folio {
-                    font-weight: bold;
-                    border: solid;
-                    display: inline-block; /* Ajusta el borde al texto */
-                }
+                .content-folio {font-weight: bold; border: solid;display: inline-block;}
 
-                .table {
-                    border:none;
-                }
+                .table th{text-align: justify;}
 
-                .table th, .table td {
-                    border: none;
-                    padding: 0.8rem;
-                }
+                .table td {padding: 0.8rem; max-width: 30rem; word-wrap: break-word; white-space: normal; vertical-align: top;}
+                
+                .footer {position: fixed; bottom: 0; left: 0; width: 100%; height: 3rem; display: flex; align-items: center; padding: 0 1rem; box-sizing: border-box;}
 
-                .table td {
-                    border: none;
-                    padding: 0.8rem;
-                    max-width: 30rem; /* Cambia este valor según sea necesario */
-                    word-wrap: break-word; /* Permite que el texto se ajuste */
-                    white-space: normal; /* Permite múltiples líneas */
-                    vertical-align: top; /* Alinea el texto en la parte superior de la celda */
-                }
-
-
-                .table th {
-                    background-color: #f2f2f2;
-                }
+                .footer img {position: absolute; right: 1rem; bottom: 1rem; height: 1rem; object-fit: contain;}
             </style>
         </head>
         <body>
             <div class="header">
-                <img src="http://localhost/INFORMATICA/public/images/logo_cdmx.png" alt="LOGO CDMX" width="120">
+                <img src="http://localhost/INFORMATICA/public/images/logo_cdmx_new.png" alt="LOGO CDMX" width="120">
                 <span class="texto">INSTITUTO DE VERIFICACIÓN ADMINISTRATIVA DE LA CDMX </span>
                 <img src="http://localhost/INFORMATICA/public/images/logo_identidad_gris.png" alt="LOGO INVEA" width="120">
             </div>
-            <div class="sub-texto">DIRECCIÓN DE ADMINISTRACIÓN</div>
+            <div class="sub-texto">DIRECCIÓN DE ADMINISTRACIÓN Y FINANZAS</div>
             <hr>
-                <div class="content">
+            <div class="content">
             <div class="parent-container">
-                <div class="content-folio">Folio: ' . $data[0]['Folio'] . '</div>
+            <div class="content-folio">Folio: ' . $data[0]['Folio'] . '</div>
             </div>
+            <div><strong>Área:</strong> Unidad Departamental de Tecnologías de la información</div>
             <table class="table">
                 <tr>
                     <th>Solicitante</th>
-                    <td>' . $data[0]['Solicitante'] . '</td>
+                    <td colspan="3">' . $data[0]['Solicitante'] . '</td>
                 </tr>';
-
+        if ($data[0]['TipoServicio'] != 'ENTREGA MATERIAL FÍLMICO') {
+            $html .= '<tr>
+                    <th>Área solicitante</th>
+                    <td colspan="3">' . $data[0]['Area'] . '</td>
+                </tr>';
+        }
         // Verificar si el valor de 'Oficio' no es 'S/O'
         if ($data[0]['Oficio'] !== 'S/O') {
             $html .= '
                         <tr>
                             <th>Oficio</th>
-                            <td>' . $data[0]['Oficio'] . '</td>
+                            <td colspan="3">' . $data[0]['Oficio'] . '</td>
                         </tr>';
         }
 
         $html .= '<tr>
                     <th>Tipo de Servicio</th>
-                    <td>' . $data[0]['TipoServicio'] . '</td>
+                    <td colspan="3">' . $data[0]['TipoServicio'] . '</td>
                 </tr>
                 <tr>
                     <th>Fecha de Solicitud</th>
                     <td>' . $data[0]['FechaSolicitud'] . '</td>
+                    <th>Fecha de Atención</th>
+                    <td>' . $data[0]['FechaAtencion'] . '</td>
                 </tr>
                 <tr>
                     <th>Atiende</th>
-                    <td>' . $data[0]['Atiende'] . '</td>
-                </tr>
-                <tr>
-                    <th>Fecha de Atención</th>
-                    <td>' . $data[0]['FechaAtencion'] . '</td>
+                    <td colspan="3">' . $data[0]['Atiende'] . '</td>
                 </tr>
         ';
 
@@ -151,11 +104,12 @@ if (isset($_GET['IDServicio'])) {
             $html .= '
             <tr>
                 <th>Observaciones</th>
-                <td>' . $data[0]['Observaciones'] . '</td>
-            </tr>';
+                <td colspan="3">' . $data[0]['Observaciones'] . '</td>
+            </tr>
+            ';
         }
 
-        $html .= '
+        $html .= '</tbody>
         </table>
         <hr>
 ';
@@ -167,17 +121,13 @@ if (isset($_GET['IDServicio'])) {
                     <tr>
                         <th>Cantidad de videos</th>
                         <td>' . $data[0]['CantidadVideos'] . '</td>
-                    </tr>
-                    <tr>
                         <th>Periodo</th>
                         <td>' . $data[0]['Periodo'] . '</td>
                     </tr>
                     <tr>
                         <th>Periodo Inicial</th>
                         <td>' . $data[0]['PeriodoInicial'] . '</td>
-                    </tr>
-                    <tr>
-                        <th>Periodo Final</th>
+                            <th>Periodo Final</th>
                         <td>' . $data[0]['PeriodoFinal'] . '</td>
                     </tr>
                     <tr>
@@ -234,11 +184,11 @@ if (isset($_GET['IDServicio'])) {
             }
 
             $html .= '
-                    <th">Descripción del servicio:</th>
-                    <td colspan="5" style="  max-width: 30rem; /* Cambia este valor según sea necesario */
-                    word-wrap: break-word; /* Permite que el texto se ajuste */
-                    white-space: normal; /* Permite múltiples líneas */;">' . $data[0]['DescripcionTecnico'] . '</td>
-                </tbody>
+            <tr style="text-align: justify;">
+                <th style="text-align: justify;" colspan="2">Descripción del servicio:</th>
+                <td colspan="4" style="max-width: 30rem; word-wrap: break-word; white-space: normal;">' . $data[0]['DescripcionTecnico'] . '</td>
+            </tr>
+            </tbody>
             </table><br><br><br>';
 
             if ($data[0]['Evaluacion'] === 'NO FUNCIONAL') {
@@ -257,10 +207,6 @@ if (isset($_GET['IDServicio'])) {
                 <div class="section-title">DETALLES DE LA INCIDENCIA</div>
                 <table class="table">
                     <tr>
-                        <th>Área solicitante</th>
-                        <td>' . $data[0]['Area'] . '</td>
-                    </tr>
-                    <tr>
                         <th>Servicio solicitado</th>
                         <td>' . $data[0]['ServicioSolicitado'] . '</td>
                     </tr>
@@ -275,6 +221,20 @@ if (isset($_GET['IDServicio'])) {
         }
 
         $html .= '</div>
+        <script type="text/php">
+            if (isset($pdf)) {
+                $x = 20;
+                $y = 800;
+                $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
+                $font = null;
+                $size = 9;
+                $color = array(0,0,0);
+                $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+            }
+        </script>
+        <div class="footer"> 
+            <img src="http://localhost/INFORMATICA/public/images/Ciudad_Innovadora.jpg" alt="Logo Footer">
+        </div>
         </body>
         </html>';
 
@@ -282,6 +242,8 @@ if (isset($_GET['IDServicio'])) {
         $options = new Options();
         $options->set('isRemoteEnabled', true);
         $options->set('tempDir', '/tmp');
+
+        $options->set('isPhpEnabled', TRUE);
 
         // Crear la instancia de Dompdf con opciones
         $dompdf = new Dompdf($options);

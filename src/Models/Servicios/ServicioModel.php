@@ -409,20 +409,42 @@ class ServicioModel
 
     public function ObtenerIncidenciasPorPeriodo($fechaInicio, $fechaFin)
     {
-        $query = "CALL Servicios_Incidencias_SELECT_Date(?, ?)";
-        $stmt = $this->db->prepare($query);
-        $stmt->bind_param("ss", $fechaInicio, $fechaFin);
-        $stmt->execute();
-
-        $result = $stmt->get_result();
+        // Llamar al primer procedimiento
+        $query1 = "CALL Servicios_Incidencias_SELECT_Date(?, ?)";
+        $stmt1 = $this->db->prepare($query1);
+        $stmt1->bind_param("ss", $fechaInicio, $fechaFin);
+        $stmt1->execute();
+        $result1 = $stmt1->get_result();
+    
         $incidencias = [];
-
-        while ($row = $result->fetch_assoc()) {
+        while ($row = $result1->fetch_assoc()) {
             $incidencias[] = $row;
         }
-
-        return $incidencias;
-    }
+    
+        // Liberar el resultset
+        $stmt1->close(); // Cerrar el statement
+    
+        // Llamar al segundo procedimiento
+        $query2 = "CALL Servicios_Incidencias_SELECT_Detalle_Date(?, ?)";
+        $stmt2 = $this->db->prepare($query2);
+        $stmt2->bind_param("ss", $fechaInicio, $fechaFin);
+        $stmt2->execute();
+        $result2 = $stmt2->get_result();
+    
+        $detalles = [];
+        while ($row = $result2->fetch_assoc()) {
+            $detalles[] = $row;
+        }
+    
+        // Liberar el resultset
+        $stmt2->close(); // Cerrar el statement
+    
+        // Combinar ambos resultados
+        return [
+            'incidencias' => $incidencias,
+            'detalles' => $detalles
+        ];
+    }    
 
     public function ObtenerVideosPorPeriodo($fechaInicio, $fechaFin)
     {
