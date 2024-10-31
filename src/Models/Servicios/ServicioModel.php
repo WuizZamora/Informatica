@@ -409,22 +409,6 @@ class ServicioModel
 
     public function ObtenerIncidenciasPorPeriodo($fechaInicio, $fechaFin)
     {
-        // Llamar al primer procedimiento
-        $query1 = "CALL Servicios_Incidencias_SELECT_Date(?, ?)";
-        $stmt1 = $this->db->prepare($query1);
-        $stmt1->bind_param("ss", $fechaInicio, $fechaFin);
-        $stmt1->execute();
-        $result1 = $stmt1->get_result();
-    
-        $incidencias = [];
-        while ($row = $result1->fetch_assoc()) {
-            $incidencias[] = $row;
-        }
-    
-        // Liberar el resultset
-        $stmt1->close(); // Cerrar el statement
-    
-        // Llamar al segundo procedimiento
         $query2 = "CALL Servicios_Incidencias_SELECT_Detalle_Date(?, ?)";
         $stmt2 = $this->db->prepare($query2);
         $stmt2->bind_param("ss", $fechaInicio, $fechaFin);
@@ -439,9 +423,7 @@ class ServicioModel
         // Liberar el resultset
         $stmt2->close(); // Cerrar el statement
     
-        // Combinar ambos resultados
         return [
-            'incidencias' => $incidencias,
             'detalles' => $detalles
         ];
     }    

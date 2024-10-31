@@ -144,12 +144,11 @@ if ($rol == 1 || $rol == 3) { ?>
         const {
             servicios,
             reporteActivos,
-            incidencias,
             detallesIncidencias,
             videos
         } = data;
 
-        if (servicios.length === 0 && reporteActivos.length === 0 && incidencias.length === 0 && videos.length === 0 && detallesIncidencias.length===0) {
+        if (servicios.length === 0 && reporteActivos.length === 0 && incidencias.length === 0 && videos.length === 0 && detallesIncidencias.length === 0) {
             resultadoDiv.innerHTML = '<div class="alert alert-info">No se encontraron resultados.</div>';
             return;
         }
@@ -212,56 +211,33 @@ if ($rol == 1 || $rol == 3) { ?>
                 <div class="alert alert-success col-md-4">Activos Funcionales: ${totalActivosFuncionales}</div>
             </div>`;
 
-        // Sección de Incidencias
-        const totalIncidencias = incidencias[0]?.TotalIncidencias || 0;
+        const incidenciaDetalles = detallesIncidencias.length;
+        const totalSolicitudes = detallesIncidencias.length > 0 ? detallesIncidencias[0].TotalSolicitudes || 0 : 0;
+        const totalGeneralIncidencias = detallesIncidencias.length > 0 ? detallesIncidencias[0].TotalGeneral || 0 : 0;
 
         html += `
         <h3>Reporte de Incidencias</h3><hr>
         <table class="table table-striped-columns table-hover">
             <thead class="table-secondary">
                 <tr>
-                    <th>#</th>
-                    <th>Servicios Solicitados</th>
+                <th>#</th>
+                <th>Tipo de servicio solicitado</th><th>Total</th>
                 </tr>
             </thead>
             <tbody>`;
-
-        incidencias.forEach((item, index) => {
-            html += `
-            <tr>
+        detallesIncidencias.forEach((item, index) => {
+            html += `<tr>
                 <td>${index + 1}</td> <!-- Contador -->
-                <td>${item.ServicioSolicitado}</td>
+                <td>${item.Servicio}</td>
+                <td>${item.Total}</td>
             </tr>`;
         });
-
         html += '</tbody></table>';
-
         html += `  
         <div class="row justify-content-center">
-            <div class="alert alert-success col-md-3">Total de Incidencias: ${totalIncidencias}</div>
+            <div class="alert alert-success col-md-3">Total de Solicitudes de Incidencias: ${totalSolicitudes}</div>
+            <div class="alert alert-success col-md-3">Total de Servicios solicitados: ${totalGeneralIncidencias}</div>
         </div>`;
-
-        const incidenciaDetalles = detallesIncidencias.length;
-
-html += `
-    <h3>Detalle de las incidencias</h3><hr>
-    <table class="table table-striped-columns table-hover">
-        <thead class="table-secondary">
-            <tr>
-            <th>#</th>
-            <th>Tipo de servicio solicitado</th><th>Total</th>
-            </tr>
-        </thead>
-        <tbody>`;
-detallesIncidencias.forEach((item, index) => {
-    html += `<tr>
-    <td>${index + 1}</td> <!-- Contador -->
-    <td>${item.Servicio}</td>
-    <td>${item.Total}</td>
-</tr>`;
-});
-html += '</tbody></table>';
-
 
         // Sección de Videos - Agrupación por Categoría
         html += '<h3>Reporte de Videos</h3><hr>';

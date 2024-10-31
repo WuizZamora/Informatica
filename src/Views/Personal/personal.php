@@ -1,6 +1,73 @@
 <div class="container text-center">
-    <!-- <h3>ALTA DE PERSONAL</h3>
-    <hr> -->
+    <h3>ALTA DE PERSONAL</h3>
+    <hr>
+    <form id="personalForm" class="needs-validation" autocomplete="off" novalidate>
+        <div class="row">
+            <div class="col-md-4">
+                <label for="NumeroEmpleado" class="form-label">Número de empleado</label>
+                <input type="number" class="form-control text-center" id="NumeroEmpleado" name="NumeroEmpleado" min=0 required>
+            </div>
+            <div class="col-md-4">
+                <label for="NombreEmpleado" class="form-label">Nombre completo</label>
+                <input type="text" class="form-control text-center" id="NombreEmpleado" name="NombreEmpleado" maxlength="150" required>
+            </div>
+            <div class="col-md-4">
+                <label for="RFCEmpleado" class="form-label">RFC</label>
+                <input type="text" class="form-control text-center" id="RFCEmpleado" name="RFCEmpleado" maxlength="15" required>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label" for="PlazaEmpleado">Plaza</label>
+                <select class="form-select" name="PlazaEmpleado" id="PlazaEmpleado" required>
+                    <option disabled selected value="" class="text-center">Selecciona una plaza</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="FechaInicial" class="form-label">Fecha inicial</label>
+                <input type="date" class="form-control text-center" id="FechaInicial" name="FechaInicial" required>
+            </div>
+            <div class="col-md-4">
+                <label for="EstatusEmpleado" class="form-label">Estatus</label>
+                <select class="form-select text-center" id="EstatusEmpleado" name="EstatusEmpleado" required>
+                    <option disabled value="">Selecciona el estatus del activo</option>
+                    <option value="1" selected>Vigente</option>
+                    <option value="0">No vigente</option>
+                </select>
+            </div>
+            <div class="col-md-12 mt-3">
+                <button class="btn btn-danger" type="submit">Guardar</button>
+            </div>
+        </div>
+        <!-- Modal de Confirmación -->
+        <div class="modal fade" id="confirmModalPersonal" tabindex="-1" role="dialog" aria-labelledby="confirmModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="confirmModalLabel">Confirmación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Por favor, revisa la información antes de guardar:</p>
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <!-- <tr>
+                                        <th>Campo</th>
+                                        <th>Valor</th>
+                                    </tr> -->
+                            </thead>
+                            <tbody id="formDataReviewPersonal">
+                                <!-- Los datos del formulario se llenarán aquí dinámicamente -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                        <button type="button" class="btn btn-primary" id="confirmSubmitPersonal">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+    <p id="mensaje" style="display:none;" class="alert alert-success text-center" role="alert"></p> <!-- Párrafo para mostrar mensajes -->
     <h3 class="text-center">DETALLES DEL PERSONAL ACTIVO</h3>
     <hr>
 
@@ -42,8 +109,137 @@
     </div>
     <nav id="navegacionPaginas" aria-label="Page navigation" class="mt-4"></nav>
 </div>
-
+<!-- MODAL UPDATE -->
+<div class="modal fade" id="editModalPersonal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabelPersonal">Editar Personal</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center" id="modalBodyPersonal">
+                <!-- Aquí se mostrará la información del personal -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <button type="button" class="btn btn-primary" id="saveButtonPersonal">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script>
+    // VALIDACIÓN BOOTSTRAP
+    (() => {
+        "use strict";
+        const forms = document.querySelectorAll(".needs-validation");
+
+        Array.from(forms).forEach((form) => {
+            form.addEventListener("submit", (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                } else {
+                    event.preventDefault(); // Prevenimos el envío por ahora
+                    mostrarDatosEnModalPersonal(); // Llenamos el modal con los datos del formulario
+                    confirmModalPersonal.show(); // Mostramos el modal
+                }
+                form.classList.add("was-validated");
+            }, false);
+        });
+    })();
+
+    const confirmModalPersonal = new bootstrap.Modal(
+        document.getElementById("confirmModalPersonal")
+    );
+    const formDataReview = document.getElementById("formDataReviewPersonal");
+
+    // Función para mostrar los datos del formulario en el modal
+    function mostrarDatosEnModalPersonal() {
+        formDataReview.innerHTML = ""; // Limpiamos cualquier contenido previo
+        const formData = new FormData(personalForm);
+
+        // Iteramos sobre los campos del formulario y los añadimos a la tabla
+        formData.forEach((value, key) => {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td><strong>${key}</strong></td>
+                <td>${value}</td>
+            `;
+            formDataReview.appendChild(row);
+        });
+    }
+
+    function resetForm() {
+        const personalForm = document.getElementById("personalForm");
+        personalForm.reset(); // Restablece todos los campos del formulario
+        personalForm.classList.remove("was-validated"); // Remueve la clase de validación
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+        cargarDatosIniciales();
+        const personalForm = document.getElementById("personalForm");
+        const confirmSubmitButton = document.getElementById("confirmSubmitPersonal");
+        let isSubmitting = false;
+
+        confirmSubmitButton.addEventListener("click", () => {
+            if (isSubmitting) return; // Evita envíos duplicados
+            isSubmitting = true;
+
+            confirmModalPersonal.hide();
+            const formData = new FormData(personalForm); // Captura los datos del formulario
+
+            fetch("/INFORMATICA/src/Models/Personal/guardar_personal.php", {
+                    method: "POST",
+                    body: formData,
+                })
+                .then((response) => response.json())
+                .then((data) => {
+                    mensaje.textContent = data.message;
+                    mensaje.style.display = "block";
+
+                    resetForm(); // Llama al reseteo completo
+                    setTimeout(() => {
+                        mensaje.style.display = "none";
+                    }, 5000);
+
+                    obtenerPersonal(); 
+                    cargarDatosIniciales();
+                })
+                .catch((error) => {
+                    console.error("Error:", error);
+                    mensaje.textContent = "Error al enviar los datos.";
+                    mensaje.style.display = "block";
+                })
+                .finally(() => {
+                    isSubmitting = false; // Restablece el estado de envío
+                });
+        });
+    });
+
+    function cargarDatosIniciales() {
+        fetch("./src/Models/Personal/obtener_plaza.php")
+            .then((response) => response.json())
+            .then((data) => {
+                llenarSelect(data, "PlazaEmpleado");
+            })
+            .catch((error) => console.error("Error fetching personal data:", error));
+    }
+
+    function llenarSelect(
+        data,
+        selectId,
+        valueKey = "Pk_IDPlaza",
+        textKey = "Puesto"
+    ) {
+        const select = document.getElementById(selectId);
+        data.forEach((item) => {
+            const option = document.createElement("option");
+            option.value = item[valueKey];
+            option.textContent = `${item[textKey]}`;
+            select.appendChild(option);
+        });
+    }
+
     const userRole = <?php echo json_encode($rol); ?>; // Pasar el rol como variable JavaScript
     let paginaActual = 1;
     const registrosPorPagina = 10; // Número de registros por página
@@ -97,7 +293,7 @@
                 <td>${persona.Nombre}</td>
                 <td>${persona.RFC}</td>
                 <td> 
-                ${userRole == 1 || userRole == 3  ? `<a href="/INFORMATICA/src/Models/" target="_blank" class="btn btn-success">Editar</a>` : ""}           
+                ${userRole == 1 || userRole == 3  ? `<button class="btn btn-primary" onclick="editPersonal(${persona.Pk_NumeroEmpleado})">Editar</button>` : ""}           
                 </td>
             `;
             tablaBody.appendChild(fila);
@@ -129,9 +325,8 @@
                 <td>${persona.Pk_NumeroEmpleado}</td>
                 <td>${persona.Nombre}</td>
                 <td>${persona.RFC}</td>
-                <td>${persona.Estatus}</td>
                 <td> 
-                ${userRole == 1 || userRole == 3  ? `<a href="/INFORMATICA/src/Models/" target="_blank" class="btn btn-success">Editar</a>` : ""}           
+                ${userRole == 1 || userRole == 3  ? `<button class="btn btn-primary" onclick="editPersonal(${persona.Pk_NumeroEmpleado})">Editar</button>` : ""}           
                 </td>
             `;
             tablaBody.appendChild(fila);
@@ -228,4 +423,121 @@
 
     // Cargar los datos de personal al iniciar
     obtenerPersonal();
+
+    function editPersonal(id) {
+        fetch(`/INFORMATICA/src/Models/Personal/obtener_personal_detalles.php?NumeroEmpleado=${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+                if (data.error) {
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: data.error,
+                    });
+                } else {
+                    // Construir el contenido del modal
+                    let modalContent = `
+                            <strong># ${data.Pk_NumeroEmpleado}</strong>
+                            <div class="form-group">
+                                <label for="NombreUpdate">Nombre:</label>
+                                <input class="form-control text-center" id="NombreUpdate" name="NombreUpdate" value="${data.Nombre}">
+                            </div>
+                            <div class="form-group">
+                                <label for="RFCUpdate">RFC:</label>
+                                <input class="form-control text-center" id="RFCUpdate" name="RFCUpdate" value="${data.RFC}">
+                            </div>
+                            <div class="form-group">
+                                <label for="PlazaUpdate">Plaza:</label>
+                                <input type="text" class="form-control text-center" id="PlazaUpdate" name="PlazaUpdate" value="${data.Fk_IDPlaza_Plaza}">
+                            </div>
+                            <div class="form-group">
+                                <label for="FechaInicialUpdate">Fecha inicial:</label>
+                                <input type="date" class="form-control text-center" id="FechaInicialUpdate" name="FechaInicialUpdate" value="${data.FechaInicial}">
+                                </div>
+                                <div class="form-group">
+                                <label for="EstatusUpdate">Estatus:</label>
+                                <input type="text" class="form-control text-center" id="EstatusUpdate" name="EstatusUpdate" value="${data.Estatus}">
+                            </div>
+                        `;
+
+                    // Mostrar contenido en el modal
+                    document.getElementById("modalBodyPersonal").innerHTML = modalContent;
+
+                    let myModalPersonal = new bootstrap.Modal(document.getElementById("editModalPersonal"));
+                    myModalPersonal.show();
+
+                    document.getElementById("saveButtonPersonal").onclick = function() {
+                        // Obtener los valores de los campos
+                        const numeroEmpleado = data.Pk_NumeroEmpleado;
+                        const nombre = document.getElementById("NombreUpdate").value;
+                        const rfc = document.getElementById("RFCUpdate").value;
+                        const plaza = document.getElementById("PlazaUpdate").value;
+                        const fechaInicial = document.getElementById("FechaInicialUpdate").value;
+                        const estatusUpdate = document.getElementById("EstatusUpdate").value;
+
+                        // Inicializar un objeto para almacenar los datos del servicio
+                        const datosPersonal = {
+                            numeroEmpleado,
+                            nombre,
+                            rfc,
+                            plaza,
+                            fechaInicial,
+                            estatusUpdate
+                        };
+
+                        // Enviar los datos al backend
+                        fetch("/INFORMATICA/src/Models/Personal/actualizar_personal.php", {
+                                method: "POST",
+                                headers: {
+                                    "Content-Type": "application/json",
+                                },
+                                body: JSON.stringify(datosPersonal), // Convierte los datos a JSON
+                            })
+                            .then(async (response) => {
+                                const text = await response.text(); // Lee la respuesta como texto
+                                try {
+                                    const result = JSON.parse(text); // Intenta parsear como JSON
+                                    if (result.success) {
+                                        Swal.fire({
+                                            title: "¡Éxito!",
+                                            text: "Datos del servicio actualizados exitosamente.",
+                                            icon: "success",
+                                            timer: 3000, // Duración en milisegundos (3 segundos)
+                                            showConfirmButton: false, // No mostrar botón de aceptar
+                                        });
+                                        myModalPersonal.hide(); // Cierra el modal si estás usando uno
+                                        obtenerPersonal();
+                                    } else {
+                                        Swal.fire({
+                                            icon: "error",
+                                            title: "Oops...",
+                                            text: result.error, // Aquí se pasa el mensaje del error
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.error("Respuesta inválida del servidor:", text); // Muestra el contenido
+                                    alert("Error en la respuesta del servidor.");
+                                }
+                            })
+                            .catch((error) => {
+                                console.error("Error al guardar al personal:", error);
+                                Swal.fire({
+                                    icon: "error",
+                                    title: "Oops...",
+                                    text: "Error al guardar el servicio",
+                                });
+                            });
+
+                    };
+                }
+            })
+            .catch((error) => {
+                console.error("Error:", error);
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: "Error al cargar los datos",
+                });
+            });
+    }
 </script>

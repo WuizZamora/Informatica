@@ -233,8 +233,6 @@
             });
         }
 
-
-
         function renderPaginacionActivos() {
             const totalPaginas = Math.ceil(datosActivos.length / filasPorPagina);
             paginacionActivos.innerHTML = '';
@@ -286,7 +284,7 @@
             data.forEach((item) => {
                 const option = document.createElement("option");
                 option.value = item[valueKey];
-                option.textContent = `${item[valueKey]} - ${item[textKey]}`;
+                option.textContent = `${item[textKey]} - ${item[valueKey]}`;
                 select.appendChild(option);
             });
         }
@@ -490,7 +488,7 @@
                     data.forEach((persona) => {
                         const option = document.createElement("option");
                         option.value = persona.Pk_NumeroEmpleado;
-                        option.textContent = `${persona.Pk_NumeroEmpleado} - ${persona.Nombre}`;
+                        option.textContent = `${persona.Nombre}- ${persona.Pk_NumeroEmpleado}`;
                         select.appendChild(option);
                     });
 

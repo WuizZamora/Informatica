@@ -25,7 +25,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $resultado = [
         'servicios' => $servicios,
         'reporteActivos' => $reporteActivos,
-        'incidencias' => $reporteIncidencias['incidencias'], // Accede al array de incidencias
         'detallesIncidencias' => $reporteIncidencias['detalles'], // Accede al array de detalles
         'videos' => $reporteVideos
     ];

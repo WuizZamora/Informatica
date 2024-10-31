@@ -43,8 +43,7 @@ class PersonalModel
     public function obtenerAllPersonal()
     {
         // Consulta base con orden alfabético por nombre
-        $query = "SELECT * FROM Personal WHERE Estatus = 1
-        ORDER BY Nombre ASC";
+        $query = "SELECT * FROM Personal ORDER BY Nombre ASC";
 
         $result = mysqli_query($this->db, $query);
 
@@ -58,5 +57,76 @@ class PersonalModel
         return $personal;
     }
 
-    // Otros métodos (si lo necesitas)
+    public function obtenerPersonalDetalles($numeroEmpleado)
+    {
+        $query = "SELECT * FROM Personal WHERE Pk_NumeroEmpleado = ?";
+        $stmt = $this->db->prepare($query);
+
+        // Verifica si la preparación del statement fue exitosa
+        if ($stmt === false) {
+            return ['error' => 'Error al preparar la consulta: ' . $this->db->error];
+        }
+
+        $stmt->bind_param('i', $numeroEmpleado);
+        $stmt->execute();
+
+        // Obtener los resultados
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $personal = $result->fetch_assoc();
+            return $personal;
+        } else {
+            return ['error' => 'Activo no encontrado.']; // Mensaje de error si no se encuentra
+        }
+    }
+
+    public function actualizarPersonal($numeroEmpleado, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado unificado
+            $stmt = $this->db->prepare("CALL Personal_UPDATE_PersonalAndPlaza(?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ississ", $numeroEmpleado, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate);
+
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Personal actualizado exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    public function obtenerPlaza()
+    {
+        // Consulta base con orden alfabético por nombre
+        $query = "SELECT Pk_IDPlaza, Puesto FROM Plaza
+        WHERE EstatusPlaza = 1
+        ORDER BY Puesto ASC";
+
+        $result = mysqli_query($this->db, $query);
+
+        if (!$result) {
+            throw new Exception("Error en la consulta: " . mysqli_error($this->db));
+        }
+        $plazas = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $plazas[] = $row;
+        }
+        return $plazas;
+    }
+
+    public function guardarPersonal($numeroEmpleado, $nombreEmpleado,  $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
+    {
+        try {
+            // Preparar la llamada al procedimiento almacenado unificado
+            $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ississ",$numeroEmpleado, $nombreEmpleado,  $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Personal registrado exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
 }
