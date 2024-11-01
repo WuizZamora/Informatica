@@ -5,8 +5,15 @@
         <div class="row">
             <div class="col-md-4">
                 <label for="NumeroEmpleado" class="form-label">Número de empleado</label>
-                <input type="number" class="form-control text-center" id="NumeroEmpleado" name="NumeroEmpleado" min=0 required>
+                <input type="number" class="form-control text-center" id="NumeroEmpleado" name="NumeroEmpleado" min="0" max="214748364" required oninput="checkLength(this)">
             </div>
+            <script>
+                function checkLength(element) {
+                    if (element.value.length > 9) {
+                        element.value = element.value.slice(0, 9);
+                    }
+                }
+            </script>
             <div class="col-md-4">
                 <label for="NombreEmpleado" class="form-label">Nombre completo</label>
                 <input type="text" class="form-control text-center" id="NombreEmpleado" name="NombreEmpleado" maxlength="150" required>
@@ -67,7 +74,6 @@
             </div>
         </div>
     </form>
-    <p id="mensaje" style="display:none;" class="alert alert-success text-center" role="alert"></p> <!-- Párrafo para mostrar mensajes -->
     <h3 class="text-center">DETALLES DEL PERSONAL ACTIVO</h3>
     <hr>
 
@@ -163,7 +169,7 @@
             const row = document.createElement("tr");
             row.innerHTML = `
                 <td><strong>${key}</strong></td>
-                <td>${value}</td>
+                <td style="max-width: 20rem; word-break: break-all;">${value}</td>
             `;
             formDataReview.appendChild(row);
         });
@@ -173,6 +179,7 @@
         const personalForm = document.getElementById("personalForm");
         personalForm.reset(); // Restablece todos los campos del formulario
         personalForm.classList.remove("was-validated"); // Remueve la clase de validación
+        cargarDatosIniciales();
     }
 
     document.addEventListener("DOMContentLoaded", function() {
@@ -194,21 +201,31 @@
                 })
                 .then((response) => response.json())
                 .then((data) => {
-                    mensaje.textContent = data.message;
-                    mensaje.style.display = "block";
-
-                    resetForm(); // Llama al reseteo completo
-                    setTimeout(() => {
-                        mensaje.style.display = "none";
-                    }, 5000);
-
-                    obtenerPersonal(); 
-                    cargarDatosIniciales();
+                    // Verifica si la respuesta fue exitosa
+                    if (data.success) {
+                        Swal.fire({
+                            title: "¡Éxito!",
+                            text: "Datos del personal guardados exitosamente.",
+                            icon: "success",
+                            timer: 3000, // Duración en milisegundos (3 segundos)
+                            showConfirmButton: false, // No mostrar botón de aceptar
+                        });
+                        resetForm(); // Resetea el formulario
+                        obtenerPersonal(); // Obtiene el personal actualizado
+                    } else {
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: data.message, // Aquí se pasa el mensaje del error
+                        });
+                    }
                 })
                 .catch((error) => {
-                    console.error("Error:", error);
-                    mensaje.textContent = "Error al enviar los datos.";
-                    mensaje.style.display = "block";
+                    Swal.fire({
+                        icon: "error",
+                        title: "Oops...",
+                        text: "Error al enviar los datos", // Aquí se pasa el mensaje del error
+                    });
                 })
                 .finally(() => {
                     isSubmitting = false; // Restablece el estado de envío
@@ -225,17 +242,18 @@
             .catch((error) => console.error("Error fetching personal data:", error));
     }
 
-    function llenarSelect(
-        data,
-        selectId,
-        valueKey = "Pk_IDPlaza",
-        textKey = "Puesto"
-    ) {
+    // Función para llenar el select con los datos
+    function llenarSelect(data, selectId, valueKey = "Pk_IDPlaza", textKey = "Puesto") {
         const select = document.getElementById(selectId);
+
+        // Limpiar opciones previas
+        select.innerHTML = '<option disabled selected value="" class="text-center">Selecciona una plaza</option>';
+
+        // Añadir opciones actualizadas
         data.forEach((item) => {
             const option = document.createElement("option");
             option.value = item[valueKey];
-            option.textContent = `${item[textKey]}`;
+            option.textContent = item[textKey];
             select.appendChild(option);
         });
     }
@@ -435,36 +453,53 @@
                         text: data.error,
                     });
                 } else {
-                    // Construir el contenido del modal
+                    // Construir el contenido del modal con el campo Plaza como select
                     let modalContent = `
-                            <strong># ${data.Pk_NumeroEmpleado}</strong>
-                            <div class="form-group">
-                                <label for="NombreUpdate">Nombre:</label>
-                                <input class="form-control text-center" id="NombreUpdate" name="NombreUpdate" value="${data.Nombre}">
-                            </div>
-                            <div class="form-group">
-                                <label for="RFCUpdate">RFC:</label>
-                                <input class="form-control text-center" id="RFCUpdate" name="RFCUpdate" value="${data.RFC}">
-                            </div>
-                            <div class="form-group">
-                                <label for="PlazaUpdate">Plaza:</label>
-                                <input type="text" class="form-control text-center" id="PlazaUpdate" name="PlazaUpdate" value="${data.Fk_IDPlaza_Plaza}">
-                            </div>
-                            <div class="form-group">
-                                <label for="FechaInicialUpdate">Fecha inicial:</label>
-                                <input type="date" class="form-control text-center" id="FechaInicialUpdate" name="FechaInicialUpdate" value="${data.FechaInicial}">
-                                </div>
-                                <div class="form-group">
-                                <label for="EstatusUpdate">Estatus:</label>
-                                <input type="text" class="form-control text-center" id="EstatusUpdate" name="EstatusUpdate" value="${data.Estatus}">
-                            </div>
-                        `;
+                        <strong># ${data.Pk_NumeroEmpleado}</strong>
+                        <div class="form-group">
+                            <label for="NombreUpdate">Nombre:</label>
+                            <input class="form-control text-center" id="NombreUpdate" name="NombreUpdate" value="${data.Nombre}">
+                        </div>
+                        <div class="form-group">
+                            <label for="RFCUpdate">RFC:</label>
+                            <input class="form-control text-center" id="RFCUpdate" name="RFCUpdate" value="${data.RFC}">
+                        </div>
+                        <div class="form-group">
+                            <label for="PlazaUpdate">Plaza:</label>
+                            <select class="form-select text-center" id="PlazaUpdate" name="PlazaUpdate">
+                                <option disabled selected value="" class="text-center">Selecciona una plaza</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="FechaInicialUpdate">Fecha inicial:</label>
+                            <input type="date" class="form-control text-center" id="FechaInicialUpdate" name="FechaInicialUpdate" value="${data.FechaInicial}">
+                        </div>
+                        <div class="form-group">
+                            <label for="EstatusUpdate">Estatus:</label>
+                            <select class="form-select text-center" id="EstatusUpdate" name="EstatusUpdate">
+                                <option disabled value="">Selecciona el estatus del personal</option>
+                                <option value="1" ${data.Estatus == 1 ? 'selected' : ''}>Vigente</option>
+                                <option value="0" ${data.Estatus == 0 ? 'selected' : ''}>No Vigente</option>
+                            </select>
+                        </div>
+                    `;
 
                     // Mostrar contenido en el modal
                     document.getElementById("modalBodyPersonal").innerHTML = modalContent;
 
                     let myModalPersonal = new bootstrap.Modal(document.getElementById("editModalPersonal"));
                     myModalPersonal.show();
+
+                    // Llenar el select con las opciones de plazas
+                    fetch("./src/Models/Personal/obtener_plaza.php?todas=true") // Agregar el parámetro
+                        .then((response) => response.json())
+                        .then((plazas) => {
+                            llenarSelect(plazas, "PlazaUpdate");
+                            // Seleccionar la plaza actual del empleado después de llenar el select
+                            document.getElementById("PlazaUpdate").value = data.Fk_IDPlaza_Plaza; // Asegúrate que este valor coincide con los valores en el select
+                        })
+                        .catch((error) => console.error("Error fetching plazas data:", error));
+
 
                     document.getElementById("saveButtonPersonal").onclick = function() {
                         // Obtener los valores de los campos
@@ -494,28 +529,29 @@
                                 body: JSON.stringify(datosPersonal), // Convierte los datos a JSON
                             })
                             .then(async (response) => {
-                                const text = await response.text(); // Lee la respuesta como texto
+                                const text = await response.text();
                                 try {
-                                    const result = JSON.parse(text); // Intenta parsear como JSON
+                                    const result = JSON.parse(text);
                                     if (result.success) {
                                         Swal.fire({
                                             title: "¡Éxito!",
-                                            text: "Datos del servicio actualizados exitosamente.",
+                                            text: "Datos del personal actualizados exitosamente.",
                                             icon: "success",
-                                            timer: 3000, // Duración en milisegundos (3 segundos)
-                                            showConfirmButton: false, // No mostrar botón de aceptar
+                                            timer: 3000,
+                                            showConfirmButton: false,
                                         });
-                                        myModalPersonal.hide(); // Cierra el modal si estás usando uno
+                                        cargarDatosIniciales();
+                                        myModalPersonal.hide();
                                         obtenerPersonal();
                                     } else {
                                         Swal.fire({
                                             icon: "error",
                                             title: "Oops...",
-                                            text: result.error, // Aquí se pasa el mensaje del error
+                                            text: result.error,
                                         });
                                     }
                                 } catch (error) {
-                                    console.error("Respuesta inválida del servidor:", text); // Muestra el contenido
+                                    console.error("Respuesta inválida del servidor:", text);
                                     alert("Error en la respuesta del servidor.");
                                 }
                             })
@@ -524,10 +560,9 @@
                                 Swal.fire({
                                     icon: "error",
                                     title: "Oops...",
-                                    text: "Error al guardar el servicio",
+                                    text: "Error al guardar al personal",
                                 });
                             });
-
                     };
                 }
             })

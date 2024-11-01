@@ -17,13 +17,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $personalModel = new PersonalModel();
 
         // Guarda en la tabla Servicios
-        $personalInsert = $personalModel->guardarPersonal($numeroEmpleado, $nombreEmpleado,  $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+        $personalInsert = $personalModel->guardarPersonal($numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
 
         // Verifica si el servicio se guardó correctamente
-        if ($personalInsert) {
-            echo json_encode(['success' => true, 'message' => 'Personal guardado exitosamente.', 'PersonalInsert' => $personalInsert]);
+        if ($personalInsert['success']) { // Cambia aquí para comprobar 'success'
+            echo json_encode(['success' => true, 'message' => 'Personal guardado exitosamente.']);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Error al guardar al personal.']);
+            echo json_encode(['success' => false, 'message' => 'Error al guardar al personal.', 'error' => $personalInsert['error']]);
         }
     } else {
         echo json_encode(['success' => false, 'message' => 'Faltan datos en el formulario.']);

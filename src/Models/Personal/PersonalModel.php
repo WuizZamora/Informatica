@@ -96,12 +96,12 @@ class PersonalModel
         }
     }
 
-    public function obtenerPlaza()
+    public function obtenerPlaza($todas = false)
     {
-        // Consulta base con orden alfabético por nombre
-        $query = "SELECT Pk_IDPlaza, Puesto FROM Plaza
-        WHERE EstatusPlaza = 1
-        ORDER BY Puesto ASC";
+        // Si $todas es verdadero, obtener todas las plazas; si no, solo las activas
+        $query = $todas ?
+            "SELECT Pk_IDPlaza, Puesto FROM Plaza ORDER BY Pk_IDPlaza ASC" :
+            "SELECT Pk_IDPlaza, Puesto FROM Plaza WHERE EstatusPlaza = 1 ORDER BY Pk_IDPlaza ASC";
 
         $result = mysqli_query($this->db, $query);
 
@@ -115,17 +115,18 @@ class PersonalModel
         return $plazas;
     }
 
-    public function guardarPersonal($numeroEmpleado, $nombreEmpleado,  $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
+    public function guardarPersonal($numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
     {
         try {
             // Preparar la llamada al procedimiento almacenado unificado
             $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ississ",$numeroEmpleado, $nombreEmpleado,  $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+            $stmt->bind_param("ississ", $numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
 
             $stmt->execute();
 
             return ['success' => true, 'message' => 'Personal registrado exitosamente'];
         } catch (mysqli_sql_exception $e) {
+            // Captura el error y devuelve un mensaje adecuado
             return ['success' => false, 'error' => $e->getMessage()];
         }
     }

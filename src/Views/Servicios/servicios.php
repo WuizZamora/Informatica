@@ -241,8 +241,6 @@
             </div>
         </form>
         <br>
-        <p id="mensaje" style="display:none;" class="alert alert-success text-center" role="alert"></p> <!-- Párrafo para mostrar mensajes -->
-
         <!--  -->
         <h3 class="text-center">SEGUIMIENTO DE SERVICIOS</h3>
         <hr>
@@ -311,7 +309,7 @@
         </div>
 
         <!-- MODAL ESTADO SOLICITUD Y SOPORTE -->
-        <div class="modal fade" id="servicioModal" tabindex="-1" aria-labelledby="servicioModalLabel" >
+        <div class="modal fade" id="servicioModal" tabindex="-1" aria-labelledby="servicioModalLabel">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">

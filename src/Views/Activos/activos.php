@@ -18,19 +18,19 @@
                 <div class="row mb-3">
                     <div class="col-md-4">
                         <label for="NumeroInventario" class="form-label">Número de inventario</label>
-                        <input type="text" class="form-control text-center" id="NumeroInventario" name="NumeroInventario" required>
+                        <input type="text" class="form-control text-center" id="NumeroInventario" name="NumeroInventario" maxlength="100" required>
                     </div>
                     <div class="col-md-4">
                         <label for="CABMSActivo" class="form-label">CABMS</label>
-                        <input type="number" min="0" class="form-control text-center" id="CABMSActivo" name="CABMSActivo" required>
+                        <input type="number" min="0" class="form-control text-center" id="CABMSActivo" name="CABMSActivo" oninput="checkLength(this)" required>
                     </div>
                     <div class="col-md-4">
                         <label for="ProgresivoActivo" class="form-label">Progresivo</label>
-                        <input type="number" min="0" class="form-control text-center" id="ProgresivoActivo" name="ProgresivoActivo" required>
+                        <input type="number" min="0" class="form-control text-center" id="ProgresivoActivo" name="ProgresivoActivo" oninput="checkLengthProgresivo(this)" required>
                     </div>
                     <div class="col-md-4">
                         <label for="DescripcionActivo" class="form-label">Descripción</label>
-                        <input type="text" class="form-control text-center" id="DescripcionActivo" name="DescripcionActivo" required>
+                        <input type="text" class="form-control text-center" id="DescripcionActivo" name="DescripcionActivo" maxlength="150" required>
                     </div>
                     <div class="col-md-4">
                         <label for="ResguardanteActivo" class="form-label">Resguardante</label>
@@ -60,7 +60,7 @@
                             </div>
                             <div class="modal-body">
                                 <p>Por favor, revisa la información antes de guardar:</p>
-                                <table class="table table-bordered table-striped">
+                                <table class="table table-bordered table-striped table-responsive">
                                     <thead>
                                         <!-- <tr>
                                         <th>Campo</th>
@@ -80,7 +80,6 @@
                     </div>
                 </div>
             </form>
-            <p id="mensaje" style="display:none;" class="alert alert-success text-center" role="alert"></p> <!-- Párrafo para mostrar mensajes -->
         <?php } ?>
         <h3 class="text-center">DETALLES ACTIVOS</h3>
         <hr>
@@ -156,6 +155,17 @@
     </div>
 
     <script>
+        function checkLength(element) {
+            if (element.value.length > 11) {
+                element.value = element.value.slice(0, 11);
+            }
+        }
+
+        function checkLengthProgresivo(element) {
+            if (element.value.length > 10) {
+                element.value = element.value.slice(0, 10);
+            }
+        }
         const userRole = <?php echo json_encode($rol); ?>; // Pasar el rol como variable JavaScript
         const tablaActivos = document.getElementById('tablaActivos');
         const spinnerActivos = document.getElementById('spinnerActivos');
@@ -223,7 +233,7 @@
         <tr>
             <td>${activo.Pk_IDActivo}</td>
             <td>${activo.CABMS}-${progresivoFormateado}</td>
-            <td>${activo.Descripcion}</td>
+            <td style="word-break: break-word; white-space: normal;">${activo.Descripcion}</td>
             <td>${activo.Estatus}</td>
             <td>${activo.NombreResguardante}</td>
             <td>
@@ -324,7 +334,7 @@
                 const row = document.createElement("tr");
                 row.innerHTML = `
                 <td><strong>${key}</strong></td>
-                <td>${value}</td>
+                <td style="max-width: 20rem; word-break: break-all;">${value}</td>
             `;
                 formDataReview.appendChild(row);
             });
@@ -439,7 +449,7 @@
                                         if (result.success) {
                                             Swal.fire({
                                                 title: "¡Éxito!",
-                                                text: "Datos del servicio actualizados exitosamente.",
+                                                text: "Datos del activo actualizados exitosamente.",
                                                 icon: "success",
                                                 timer: 3000, // Duración en milisegundos (3 segundos)
                                                 showConfirmButton: false, // No mostrar botón de aceptar
@@ -459,11 +469,11 @@
                                     }
                                 })
                                 .catch((error) => {
-                                    console.error("Error al guardar el servicio:", error);
+                                    console.error("Error al guardar el activo:", error);
                                     Swal.fire({
                                         icon: "error",
                                         title: "Oops...",
-                                        text: "Error al guardar el servicio",
+                                        text: "Error al guardar el activo",
                                     });
                                 });
                         };
@@ -519,20 +529,24 @@
                     })
                     .then((response) => response.json())
                     .then((data) => {
-                        mensaje.textContent = data.message;
-                        mensaje.style.display = "block";
 
+                        Swal.fire({
+                            title: "¡Éxito!",
+                            text: "Datos del activo guardados exitosamente.",
+                            icon: "success",
+                            timer: 3000, // Duración en milisegundos (3 segundos)
+                            showConfirmButton: false, // No mostrar botón de aceptar
+                        });
                         resetForm(); // Llama al reseteo completo
-                        setTimeout(() => {
-                            mensaje.style.display = "none";
-                        }, 5000);
 
                         actualizarActivos();
                     })
                     .catch((error) => {
-                        console.error("Error:", error);
-                        mensaje.textContent = "Error al enviar los datos.";
-                        mensaje.style.display = "block";
+                        Swal.fire({
+                            icon: "error",
+                            title: "Oops...",
+                            text: error, // Aquí se pasa el mensaje del error
+                        });
                     })
                     .finally(() => {
                         isSubmitting = false; // Restablece el estado de envío

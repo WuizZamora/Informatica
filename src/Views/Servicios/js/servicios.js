@@ -173,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const confirmModal = new bootstrap.Modal(
     document.getElementById("confirmModal")
   );
-  const mensaje = document.getElementById("mensaje");
+ 
 
   // Validación y envío del formulario
   servicioForm.addEventListener("submit", function (event) {
@@ -273,21 +273,24 @@ document.addEventListener("DOMContentLoaded", function () {
     })
       .then((response) => response.json())
       .then((data) => {
-        mensaje.textContent = data.message;
-        mensaje.style.display = "block";
+        Swal.fire({
+          title: "¡Éxito!",
+          text: "Datos del servicio guardados exitosamente.",
+          icon: "success",
+          timer: 3000, // Duración en milisegundos (3 segundos)
+          showConfirmButton: false, // No mostrar botón de aceptar
+      });
 
         resetForm(); // Llamar al reseteo completo
-        setTimeout(() => {
-          mensaje.style.display = "none";
-        }, 5000);
-
         fetchServicios();
         isSubmitting = false;
       })
       .catch((error) => {
-        console.error("Error:", error);
-        mensaje.textContent = "Error al enviar los datos.";
-        mensaje.style.display = "block";
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: error, // Aquí se pasa el mensaje del error
+      });
         isSubmitting = false;
       });
   }

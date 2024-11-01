@@ -4,8 +4,11 @@ require_once __DIR__ . '/PersonalModel.php'; // Incluir el modelo
 $model = new PersonalModel(); // Crear una instancia del modelo
 
 try {
+    // Obtener el valor del parámetro 'todas' de la consulta (GET)
+    $todas = isset($_GET['todas']) && $_GET['todas'] === 'true';
+
     // Llama a la función con el parámetro para filtrar si es necesario
-    $plazas = $model->obtenerPlaza(); // Obtener el personal desde el modelo
+    $plazas = $model->obtenerPlaza($todas); // Pasar el parámetro a la función
 
     // Configurar la cabecera para indicar que es JSON
     header('Content-Type: application/json');
