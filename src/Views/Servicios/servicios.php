@@ -157,27 +157,26 @@
 
                             // Verifica si las fechas son válidas
                             if (!fechaInicio || !fechaFin) {
-                                periodoOutput.value = 'No hay periodo';
+                                periodoOutput.value = 'N/A';
                                 return;
                             }
 
-                            const diaInicio = parseInt(fechaInicio.split('-')[2]); // Extraer día de la fecha inicial
-                            const diaFin = parseInt(fechaFin.split('-')[2]); // Extraer día de la fecha final
-                            const mesInicio = parseInt(fechaInicio.split('-')[1]); // Extraer mes de la fecha inicial
-                            const mesFin = parseInt(fechaFin.split('-')[1]); // Extraer mes de la fecha final
+                            const [anioInicio, mesInicio, diaInicio] = fechaInicio.split('-').map(Number); // Extraer año, mes y día de la fecha inicial
+                            const [anioFin, mesFin, diaFin] = fechaFin.split('-').map(Number); // Extraer año, mes y día de la fecha final
 
                             // Lógica para determinar el periodo
-                            if (mesInicio !== mesFin) {
-                                periodoOutput.value = 'No hay periodo'; // Diferentes meses
+                            if (mesInicio !== mesFin || anioInicio !== anioFin) {
+                                periodoOutput.value = 'N/A'; // Diferentes meses o años
                                 return;
                             }
 
-                            if (diaInicio >= 1 && diaFin <= 15) {
+                            // Verificar el periodo exacto
+                            if (diaInicio === 1 && diaFin === 15) {
                                 periodoOutput.value = 'Primera quincena';
-                            } else if (diaInicio >= 16 && diaFin <= 31) {
+                            } else if ((diaInicio === 16 && (diaFin === 30 || diaFin === 31))) {
                                 periodoOutput.value = 'Segunda quincena';
                             } else {
-                                periodoOutput.value = 'No hay periodo';
+                                periodoOutput.value = 'N/A';
                             }
                         }
 
