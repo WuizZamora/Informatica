@@ -1,5 +1,4 @@
 <?php
-// Establecer el tipo de contenido a JSON
 header('Content-Type: application/json');
 require_once __DIR__ . '/PersonalModel.php'; // Incluir el modelo
 
@@ -21,16 +20,15 @@ if (!isset($data->numeroEmpleado, $data->nombre, $data->rfc, $data->plaza, $data
 }
 
 try {
-    // Llamar al método actualizarActivo del modelo
     $result = $model->actualizarPersonal(
-        $data->numeroEmpleado, 
-        $data->nombre, 
-        $data->rfc, 
-        $data->plaza, 
-        $data->fechaInicial, 
+        $data->numeroEmpleado,
+        $data->nombre,
+        $data->rfc,
+        $data->plaza,
+        $data->fechaInicial,
         $data->estatusUpdate
     );
-    
+
     // Responder con el resultado
     echo json_encode($result);
 } catch (Exception $e) {

@@ -1,5 +1,4 @@
 <?php
-// Establecer el tipo de contenido a JSON
 header('Content-Type: application/json');
 require_once __DIR__ . '/ServicioModel.php'; // Incluir el modelo
 

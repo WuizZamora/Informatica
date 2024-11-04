@@ -28,7 +28,6 @@ class ActivosModel
 
     public function obtenerProgresivo($cabms = null)
     {
-        // Modificar la consulta según si se recibe un CABMS
         $query = "SELECT DISTINCT Progresivo FROM Activos WHERE Estatus = 'ACTIVO'";
         if ($cabms) {
             $query .= " AND CABMS = '" . mysqli_real_escape_string($this->db, $cabms) . "'"; // Asegúrate de escapar la variable
@@ -50,7 +49,6 @@ class ActivosModel
 
     public function obtenerAllActivos()
     {
-        // Consulta base con orden alfabético por nombre
         $query = "SELECT A.Pk_IDActivo, A.NumeroInventario, A.CABMS, A.Progresivo, A.Descripcion, A.Estatus, P.Nombre AS NombreResguardante
         FROM Activos A
         LEFT JOIN 
@@ -71,7 +69,6 @@ class ActivosModel
 
     public function guardarActivo($numeroInventario, $cabmsActivo, $progresivoActivo, $descripcionActivo, $resguardanteActivo, $estatusActivo)
     {
-        // Inserta los datos en la tabla Activos
         $query = "INSERT INTO Activos (NumeroInventario, CABMS, Progresivo, Descripcion, Fk_Resguardante_Personal, Estatus)
             VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
@@ -81,14 +78,14 @@ class ActivosModel
 
             if ($stmt->execute()) {
                 $insertId = $stmt->insert_id;
-                $stmt->close(); // Cierra la declaración
-                return $insertId; // Retorna el ID del servicio recién insertado
+                $stmt->close();
+                return $insertId;
             } else {
                 $stmt->close();
-                return false; // Error al ejecutar
+                return false;
             }
         } else {
-            return false; // Error al preparar la consulta
+            return false;
         }
     }
 
@@ -112,14 +109,13 @@ class ActivosModel
             $activo = $result->fetch_assoc();
             return $activo;
         } else {
-            return ['error' => 'Activo no encontrado.']; // Mensaje de error si no se encuentra
+            return ['error' => 'Activo no encontrado.'];
         }
     }
 
     public function actualizarActivo($idActivo, $numeroInventario, $cabms, $progresivo, $descripcionActivo, $resguardante, $estatusUpdate)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado unificado
             $stmt = $this->db->prepare("CALL Activo_UPDATE(?, ?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("issssss", $idActivo, $numeroInventario, $cabms, $progresivo, $descripcionActivo, $resguardante, $estatusUpdate);
 

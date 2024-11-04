@@ -10,12 +10,10 @@ class ServicioModel
         $this->db = Conexion::conectar(); // Conexión a la BD
     }
 
-    // Método para obtener todos los servicios
     public function obtenerServicios()
     {
         $query = "SELECT * FROM Servicios_informacion_general
-            ORDER BY Pk_IDServicio DESC
-        "; // Ajusta la consulta según tu tabla
+            ORDER BY Pk_IDServicio DESC ";
         $result = $this->db->query($query);
         $VistaDeServicios = $result->fetch_all(MYSQLI_ASSOC);
         return $VistaDeServicios;
@@ -36,7 +34,6 @@ class ServicioModel
 
     public function obtenerServicioDetalles($idServicio)
     {
-        // Llamar al procedimiento almacenado
         $query = "CALL Servicios_SELECT_ToUPDATE(?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $idServicio);
@@ -50,14 +47,12 @@ class ServicioModel
         while ($row = $result->fetch_assoc()) {
             $serviciosDetalles[] = $row;
         }
-
         // Retornar todos los datos del servicio
         return $serviciosDetalles;
     }
 
     public function consultarServicio($idServicio)
     {
-        // Llamar al procedimiento almacenado
         $query = "CALL Servicios_SELECT_Reporte(?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param('i', $idServicio);
@@ -80,9 +75,8 @@ class ServicioModel
 
     public function guardarServicio($PersonalSolicitante, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud)
     {
-        // Inserta los datos en la tabla Servicios
         $query = "INSERT INTO Servicios (Fk_Solicitante_Personal, Fk_Atiende_Personal, TipoServicio, FechaAtencion, Oficio, FechaSolicitud)
-                  VALUES (?, ?, ?, ?, ?, ?)";
+                    VALUES (?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("iissss", $PersonalSolicitante, $PersonalAtiende, $IDTipoServicio, $FechaAtencion, $oficio, $fechaSolicitud);
 
@@ -98,7 +92,6 @@ class ServicioModel
 
     public function guardarIncidencia($idServicio, $campos)
     {
-        // Asegúrate de que ServicioSolicitado sea un array y eliminar duplicados
         if (is_array($campos['ServicioSolicitado'])) {
             // Eliminar duplicados
             $serviciosSinDuplicados = array_unique($campos['ServicioSolicitado']);
@@ -108,9 +101,6 @@ class ServicioModel
             // Manejar el caso donde no se recibe un array
             $serviciosConcatenados = ''; // O manejarlo de otra manera
         }
-
-        // Log para verificar los valores antes de la inserción
-        error_log("Antes de la inserción: ID Servicio: $idServicio, Servicios Solicitados: $serviciosConcatenados, Detalles: {$campos['DetallesServicioIncidencia']}");
 
         // Guardar en tabla Servicios_Incidencias
         $query = "INSERT INTO Servicios_Incidencias (Fk_IDServicio_Servicios, ServicioSolicitado, Descripcion) VALUES (?, ?, ?)";
@@ -137,7 +127,6 @@ class ServicioModel
 
     public function guardarVideos($idServicio, $campos)
     {
-        // Guardar en tabla Atencion_Videos
         $query = "INSERT INTO Servicios_Videos (Fk_IDServicio_Servicios, Descripcion, CantidadVideos, Equipo, PeriodoInicial, PeriodoFinal, Periodo) VALUES (?, ?, ?, ?, ?, ?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param(
@@ -268,15 +257,11 @@ class ServicioModel
     public function actualizarServicioIncidencia($idServicio, $datos)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado
             $stmt = $this->db->prepare("CALL Servicio_Incidencia_UPDATE(?, ?, ?, ?, ?, ?, ?)");
-
             // Vincular los parámetros
             $stmt->bind_param("iiissss", $idServicio, $datos->solicitante, $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->ServicioSolicitado, $datos->DescripcionIncidencia);
-
             // Ejecutar la consulta
             $stmt->execute();
-
             return ['success' => true, 'message' => 'Incidencia actualizada exitosamente'];
         } catch (mysqli_sql_exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
@@ -286,12 +271,9 @@ class ServicioModel
     public function actualizarServicioVideo($idServicio, $datos)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado
             $stmt = $this->db->prepare("CALL Servicio_Video_UPDATE(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-
             // Vincular los parámetros
             $stmt->bind_param("iiisssissss", $idServicio, $datos->solicitante,  $datos->atiende, $datos->fechaSolicitud, $datos->oficio, $datos->DescripcionVideos, $datos->CantidadVideos, $datos->PVideos, $datos->PIVideos, $datos->PFVideos, $datos->Equipo);
-
             // Ejecutar la consulta
             $stmt->execute();
 
@@ -304,15 +286,11 @@ class ServicioModel
     public function actualizarEstadoSolicitudCompleto($idServicio, $estadoSolicitud, $desth_path, $observaciones)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado
             $stmt = $this->db->prepare("CALL Servicio_UPDATE_FileAndEstado(?, ?, ?, ?)");
-
             // Vincular los parámetros
             $stmt->bind_param("isss", $idServicio, $estadoSolicitud, $desth_path, $observaciones);
-
             // Ejecutar la consulta
             $stmt->execute();
-
             return ['success' => true, 'message' => 'Entrega de material fílmico actualizada exitosamente'];
         } catch (mysqli_sql_exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
@@ -322,15 +300,11 @@ class ServicioModel
     public function actualizarEstadoSolicitud($idServicio, $estadoSolicitud, $observaciones)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado
             $stmt = $this->db->prepare("CALL Servicio_UPDATE_EstadoSolicitud(?, ?, ?)");
-
             // Vincular los parámetros (i = integer, s = string)
             $stmt->bind_param("iss", $idServicio, $estadoSolicitud, $observaciones); // Solo 2 parámetros
-
             // Ejecutar la consulta
             $stmt->execute();
-
             return ['success' => true, 'message' => 'Entrega de material fílmico actualizada exitosamente'];
         } catch (mysqli_sql_exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
@@ -353,7 +327,6 @@ class ServicioModel
 
     public function eliminarSoporte($idServicio)
     {
-        // Consulta SQL para eliminar el servicio basado en idServicio
         $query = "UPDATE Servicios SET SoporteDocumental = NULL WHERE Pk_IDServicio=?";
 
         $stmt = $this->db->prepare($query);
@@ -366,18 +339,16 @@ class ServicioModel
         }
 
         // Devuelve verdadero si la consulta se ejecutó sin errores
-        return true; // Cambia esto según lo que necesites
+        return true;
     }
 
     public function ServicioFechas($dateInicial, $dateFinal)
     {
-        // Llamar al procedimiento almacenado
         $query = "CALL Servicios_SELECT_Date(?, ?)";
         $stmt = $this->db->prepare($query);
         $stmt->bind_param("ss", $dateInicial, $dateFinal);
         $stmt->execute();
 
-        // Obtener los resultados
         $result = $stmt->get_result();
         $servicios = [];
 
@@ -414,19 +385,18 @@ class ServicioModel
         $stmt2->bind_param("ss", $fechaInicio, $fechaFin);
         $stmt2->execute();
         $result2 = $stmt2->get_result();
-    
+
         $detalles = [];
         while ($row = $result2->fetch_assoc()) {
             $detalles[] = $row;
         }
-    
-        // Liberar el resultset
+
         $stmt2->close(); // Cerrar el statement
-    
+
         return [
             'detalles' => $detalles
         ];
-    }    
+    }
 
     public function ObtenerVideosPorPeriodo($fechaInicio, $fechaFin)
     {

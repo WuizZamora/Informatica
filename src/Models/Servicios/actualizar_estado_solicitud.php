@@ -16,10 +16,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Obtener la extensión del archivo
         $extension = pathinfo($_FILES['SoporteDocumental']['name'], PATHINFO_EXTENSION);
-        
+
         // Generar un identificador único
         $identificadorUnico = uniqid('', true);
-        
+
         // Definir el nombre del archivo en el formato deseado
         $nombreArchivo = "soporte_{$idServicio}_{$identificadorUnico}.{$extension}";
 
@@ -29,8 +29,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Mueve el archivo a la carpeta de destino
         if (move_uploaded_file($fileTmpPath, $dest_path)) {
-            // Aquí puedes guardar la información en la base de datos
-            // Por ejemplo: guardarEstadoSolicitud($idServicio, $estadoSolicitud, $dest_path);
             $servicio = $model->actualizarEstadoSolicitudCompleto($idServicio, $estadoSolicitud, $dest_path, $observaciones);
             echo json_encode(['success' => true, 'message' => 'Solicitud guardada exitosamente.', 'fileName' => $nombreArchivo]);
         } else {

@@ -1,12 +1,11 @@
 <?php
+header('Content-Type: application/json');
 require_once __DIR__ . '/ServicioModel.php'; // Incluir el modelo
 
 $model = new ServicioModel(); // Crear una instancia del modelo
 
 // Obtener el IDServicio si está presente en la URL
 $idServicio = isset($_GET['IDServicio']) ? intval($_GET['IDServicio']) : null;
-
-header('Content-Type: application/json');
 
 try {
     // Si hay un IDServicio, llamar a un método que consulte un solo servicio

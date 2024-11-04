@@ -62,15 +62,15 @@ if (isset($_GET['IDServicio'])) {
             <div class="parent-container">
             <div class="content-folio">Folio: ' . $data[0]['Folio'] . '</div>
             </div>
-            <div><strong>Área:</strong> Unidad Departamental de Tecnologías de la información</div>
+            <div><strong>Área:</strong> J.U.D de Tecnologías de la información</div>
             <table class="table">
                 <tr>
-                    <th>Solicitante</th>
+                    <th>Solicitante:</th>
                     <td colspan="3">' . $data[0]['Solicitante'] . '</td>
                 </tr>';
         if ($data[0]['TipoServicio'] != 'ENTREGA MATERIAL FÍLMICO') {
             $html .= '<tr>
-                    <th>Área solicitante</th>
+                    <th>Área solicitante:</th>
                     <td colspan="3">' . $data[0]['Area'] . '</td>
                 </tr>';
         }
@@ -78,23 +78,23 @@ if (isset($_GET['IDServicio'])) {
         if ($data[0]['Oficio'] !== 'S/O') {
             $html .= '
                         <tr>
-                            <th>Oficio</th>
+                            <th>Oficio:</th>
                             <td colspan="3">' . $data[0]['Oficio'] . '</td>
                         </tr>';
         }
 
         $html .= '<tr>
-                    <th>Tipo de Servicio</th>
+                    <th>Tipo de Servicio:</th>
                     <td colspan="3">' . $data[0]['TipoServicio'] . '</td>
                 </tr>
                 <tr>
-                    <th>Fecha de Solicitud</th>
+                    <th>Fecha de Solicitud:</th>
                     <td>' . $data[0]['FechaSolicitud'] . '</td>
-                    <th>Fecha de Atención</th>
+                    <th>Fecha de Atención:</th>
                     <td>' . $data[0]['FechaAtencion'] . '</td>
                 </tr>
                 <tr>
-                    <th>Atiende</th>
+                    <th>Atiende:</th>
                     <td colspan="3">' . $data[0]['Atiende'] . '</td>
                 </tr>
         ';
@@ -103,7 +103,7 @@ if (isset($_GET['IDServicio'])) {
         if (!empty($data[0]['Observaciones'])) {
             $html .= '
             <tr>
-                <th>Observaciones</th>
+                <th>Observaciones:</th>
                 <td colspan="3">' . $data[0]['Observaciones'] . '</td>
             </tr>
             ';
@@ -115,39 +115,54 @@ if (isset($_GET['IDServicio'])) {
 ';
         // Mostrar campos adicionales según el tipo de servicio
         if ($data[0]['TipoServicio'] === 'ENTREGA MATERIAL FÍLMICO') {
+            // Convertimos PeriodoFinal a DateTime para obtener el mes en letras
+            $fechaFinal = DateTime::createFromFormat('Y-m-d', $data[0]['PeriodoFinal']);
+            
+            // Obtenemos el nombre del mes en letras en español usando DateTime::format y un arreglo de meses
+            $meses = [
+                '01' => 'enero', '02' => 'febrero', '03' => 'marzo', 
+                '04' => 'abril', '05' => 'mayo', '06' => 'junio', 
+                '07' => 'julio', '08' => 'agosto', '09' => 'septiembre', 
+                '10' => 'octubre', '11' => 'noviembre', '12' => 'diciembre'
+            ];
+            $mesFinal = $meses[$fechaFinal->format('m')]; // Obtenemos el nombre del mes
+        
             $html .= '
                 <div class="section-title">DETALLES DEL MATERIAL FÍLMICO</div>
                 <table class="table">
                     <tr>
-                        <th>Cantidad de videos</th>
+                        <th>Cantidad de videos: </th>
                         <td>' . $data[0]['CantidadVideos'] . '</td>
-                        <th>Periodo</th>
+                        <th>Periodo:</th>
                         <td>' . $data[0]['Periodo'] . '</td>
                     </tr>
                     <tr>
-                        <th>Periodo Inicial</th>
+                        <th>Periodo Inicial:</th>
                         <td>' . $data[0]['PeriodoInicial'] . '</td>
-                            <th>Periodo Final</th>
+                        <th>Periodo Final:</th>
                         <td>' . $data[0]['PeriodoFinal'] . '</td>
                     </tr>
                     <tr>
-                        <th>Equipo</th>
+                        <th>Mes:</th>
+                        <td>' . ucfirst($mesFinal) . '</td>
+                        <th>Equipo:</th>
                         <td>' . $data[0]['Equipo'] . '</td>
                     </tr>';
+        
             if (isset($data[0]['DescripcionVideo']) && trim($data[0]['DescripcionVideo']) !== '') {
                 $html .= '
-                            <tr>
-                                <th>Descripción</th>
-                                <td>' . $data[0]['DescripcionVideo'] . '</td>
-                            </tr>
-                        ';
+                    <tr>
+                        <th>Descripción:</th>
+                        <td>' . $data[0]['DescripcionVideo'] . '</td>
+                    </tr>
+                ';
             }
             $html .= '<br><br><br>
                 </table>
                 <div class="content-firma">
                 ___________________________________________<br>Firma del solicitante
                 </div>';
-        } elseif ($data[0]['TipoServicio'] === 'TÉCNICO') {
+        }elseif ($data[0]['TipoServicio'] === 'TÉCNICO') {
             $html .= '
             <div class="section-title">DETALLES DEL SERVICIO TÉCNICO</div>
             <table style="width: 100%; border-collapse: collapse; text-align:center; margin:1rem;">
@@ -207,11 +222,11 @@ if (isset($_GET['IDServicio'])) {
                 <div class="section-title">DETALLES DE LA INCIDENCIA</div>
                 <table class="table">
                     <tr>
-                        <th>Servicio solicitado</th>
+                        <th>Servicio solicitado:</th>
                         <td>' . $data[0]['ServicioSolicitado'] . '</td>
                     </tr>
                     <tr>
-                        <th>Descripción</th>
+                        <th>Descripción:</th>
                         <td>' . $data[0]['DescripcionIncidencia'] . '</td>
                     </tr>
                 </table><br><br><br>

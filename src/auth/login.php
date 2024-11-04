@@ -40,10 +40,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_SESSION['NumeroEmpleado'])) {
         $numeroEmpleado = $_SESSION['NumeroEmpleado'];
         $query = "SELECT R.Pk_IDRol
-                  FROM Personal P
-                  JOIN Plaza PL ON P.Fk_IDPlaza_Plaza = PL.Pk_IDPlaza
-                  JOIN Roles R ON PL.Fk_IDRol_Roles = R.Pk_IDRol
-                  WHERE P.Pk_NumeroEmpleado = ?";
+                    FROM Personal P
+                    JOIN Plaza PL ON P.Fk_IDPlaza_Plaza = PL.Pk_IDPlaza
+                    JOIN Roles R ON PL.Fk_IDRol_Roles = R.Pk_IDRol
+                WHERE P.Pk_NumeroEmpleado = ?";
 
         $stmt = $conn->prepare($query);
         $stmt->bind_param("i", $numeroEmpleado);

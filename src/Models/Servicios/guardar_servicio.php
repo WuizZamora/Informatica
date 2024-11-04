@@ -4,7 +4,6 @@ header('Content-Type: application/json'); // Establecer encabezado
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['PersonalSolicitante'], $_POST['PersonalAtiende'], $_POST['IDTipoServicio'], $_POST['FechaAtencion'], $_POST['Oficio'], $_POST['FechaSolicitud'])) {
-        
         // Captura los datos
         $personalSolicitante = $_POST['PersonalSolicitante'];
         $personalAtiende = $_POST['PersonalAtiende'];
@@ -14,7 +13,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $fechaSolicitud = $_POST['FechaSolicitud'];
 
         $servicioModel = new ServicioModel();
-
         // Guarda en la tabla Servicios
         $idServicio = $servicioModel->guardarServicio($personalSolicitante, $personalAtiende, $idTipoServicio, $fechaAtencion, $oficio, $fechaSolicitud);
 
@@ -48,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $resultadoAtencion = $servicioModel->guardarTecnico($idServicio, $camposDinamicos);
                     }
                     break;
-                
+
                 case "INCIDENCIA":
                     // Manejar el caso de incidencia
                     $resultadoAtencion = $servicioModel->guardarIncidencia($idServicio, $camposDinamicos);
@@ -58,8 +56,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     // Manejar el caso de entrega de material
                     $resultadoAtencion = $servicioModel->guardarVideos($idServicio, $camposDinamicos);
                     break;
-
-                // Agregar más casos si es necesario para otros tipos de servicios
                 default:
                     echo json_encode(['success' => false, 'message' => 'Tipo de servicio no reconocido.']);
                     exit;

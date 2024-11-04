@@ -1,7 +1,5 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
+header('Content-Type: application/json');
 require_once __DIR__ . '/PersonalModel.php'; // Incluir el modelo
 
 $model = new PersonalModel(); // Crear una instancia del modelo
@@ -9,7 +7,6 @@ $model = new PersonalModel(); // Crear una instancia del modelo
 // Obtener el IDActivo si está presente en la URL
 $numeroEmpleado = isset($_GET['NumeroEmpleado']) ? intval($_GET['NumeroEmpleado']) : null;
 
-header('Content-Type: application/json');
 try {
     if ($numeroEmpleado) {
         $personal = $model->obtenerPersonalDetalles($numeroEmpleado);

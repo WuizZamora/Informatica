@@ -20,8 +20,8 @@ class PersonalModel
         // Si se requiere filtrar por puesto
         if ($filtrarPuesto) {
             $query .= " AND (pl.Puesto LIKE '%LÍDER COORDINADOR DE PROYECTOS DE REDES Y TELE%' 
-                              OR pl.Puesto LIKE '%SISTEMAS%' 
-                              OR pl.Puesto LIKE '%JEFE DE UNIDAD DEPARTAMENTAL DE TECNOLOGÍAS%')";
+                            OR pl.Puesto LIKE '%SISTEMAS%' 
+                            OR pl.Puesto LIKE '%JEFE DE UNIDAD DEPARTAMENTAL DE TECNOLOGÍAS%')";
         }
 
         // Ordenar por nombre de manera alfabética
@@ -42,7 +42,6 @@ class PersonalModel
 
     public function obtenerAllPersonal()
     {
-        // Consulta base con orden alfabético por nombre
         $query = "SELECT * FROM Personal ORDER BY Nombre ASC";
 
         $result = mysqli_query($this->db, $query);
@@ -84,7 +83,6 @@ class PersonalModel
     public function actualizarPersonal($numeroEmpleado, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado unificado
             $stmt = $this->db->prepare("CALL Personal_UPDATE_PersonalAndPlaza(?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("ississ", $numeroEmpleado, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate);
 
@@ -98,7 +96,6 @@ class PersonalModel
 
     public function obtenerPlaza($todas = false)
     {
-        // Si $todas es verdadero, obtener todas las plazas; si no, solo las activas
         $query = $todas ?
             "SELECT Pk_IDPlaza, Puesto FROM Plaza ORDER BY Pk_IDPlaza ASC" :
             "SELECT Pk_IDPlaza, Puesto FROM Plaza WHERE EstatusPlaza = 1 ORDER BY Pk_IDPlaza ASC";
@@ -118,7 +115,6 @@ class PersonalModel
     public function guardarPersonal($numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
     {
         try {
-            // Preparar la llamada al procedimiento almacenado unificado
             $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
             $stmt->bind_param("ississ", $numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
 

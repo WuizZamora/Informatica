@@ -24,4 +24,3 @@ try {
 } catch (Exception $e) {
     echo json_encode(['error' => 'Ocurrió un error: ' . $e->getMessage()]);
 }
-
