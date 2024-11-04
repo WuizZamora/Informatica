@@ -1,7 +1,4 @@
 <div class="container text-center">
-<?php
-        if ($rol == 1 || $rol == 3) {
-        ?>
     <h3>ALTA DE PERSONAL</h3>
     <hr>
     <form id="personalForm" class="needs-validation" autocomplete="off" novalidate>
@@ -77,7 +74,6 @@
             </div>
         </div>
     </form>
-    <?php } ?>
     <h3 class="text-center">DETALLES DEL PERSONAL ACTIVO</h3>
     <hr>
 
