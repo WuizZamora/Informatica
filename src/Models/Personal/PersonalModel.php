@@ -97,7 +97,7 @@ class PersonalModel
     public function obtenerPlaza($todas = false)
     {
         $query = $todas ?
-            "SELECT Pk_IDPlaza, Puesto FROM Plaza ORDER BY Pk_IDPlaza ASC" :
+            "SELECT Pk_IDPlaza, Puesto FROM Plaza ORDER BY Puesto ASC" :
             "SELECT Pk_IDPlaza, Puesto FROM Plaza WHERE EstatusPlaza = 1 ORDER BY Puesto ASC";
 
         $result = mysqli_query($this->db, $query);
@@ -113,24 +113,37 @@ class PersonalModel
     }
 
     public function guardarPersonal($numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
-{
-    try {
-        $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("ississ", $numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
-
-        $stmt->execute();
-
-        return ['success' => true, 'message' => 'Personal registrado exitosamente'];
-    } catch (mysqli_sql_exception $e) {
-        // Verifica si el error es por duplicado (código de error 1062 en MySQL)
-        if ($e->getCode() == 1062) {
-            return ['success' => false, 'error' => 'El número de empleado ya existe.'];
+    {
+        try {
+            // Primero, verificamos si el número de empleado ya existe en la base de datos
+            $stmt = $this->db->prepare("SELECT COUNT(*) AS total FROM Personal WHERE Pk_NumeroEmpleado = ?");
+            $stmt->bind_param("i", $numeroEmpleado);
+            $stmt->execute();
+            
+            // Asociamos el resultado a la variable $count
+            $result = $stmt->get_result();
+            $row = $result->fetch_assoc();
+            $count = $row['total'];
+            $stmt->close();
+    
+            if ($count > 0) {
+                // Si el número de empleado ya existe, devolvemos un error sin necesidad de ejecutar el procedimiento
+                return ['success' => false, 'error' => 'El número de empleado ya existe.'];
+            }
+    
+            // Si no existe, procedemos a llamar al procedimiento almacenado
+            $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("ississ", $numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+    
+            $stmt->execute();
+    
+            return ['success' => true, 'message' => 'Personal registrado exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            // Si ocurre cualquier otro error, lo devolvemos como error general
+            return ['success' => false, 'error' => 'Error al guardar el personal: ' . $e->getMessage()];
         }
-
-        // Si es otro tipo de error, devuelve el mensaje de error general
-        return ['success' => false, 'error' => 'Error al guardar el personal: ' . $e->getMessage()];
     }
-}
+
 
     public function obtenerPersonalAndPlaza($numeroEmpleado)
     {
