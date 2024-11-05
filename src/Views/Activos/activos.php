@@ -26,7 +26,7 @@
                         <input type="number" min="0" class="form-control text-center" id="CABMSActivo" name="CABMSActivo" oninput="checkLength(this)" required>
                     </div>
                     <div class="col-md-4">
-                        <label for="ProgresivoActivo" class="form-label">Progresivo</label>
+                        <label for="ProgresivoActivo" class="form-label">Progresivo (Sin ceros)</label>
                         <input type="number" min="0" class="form-control text-center" id="ProgresivoActivo" name="ProgresivoActivo" oninput="checkLengthProgresivo(this)" required>
                     </div>
                     <div class="col-md-4">
@@ -39,7 +39,7 @@
                             <option disabled selected value="">Selecciona a un resguardante</option>
                         </select>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-4" style="display: none;">
                         <label for="EstatusActivo" class="form-label">Estatus</label>
                         <select class="form-select text-center" id="EstatusActivo" name="EstatusActivo" required>
                             <option disabled value="">Selecciona el estatus del activo</option>

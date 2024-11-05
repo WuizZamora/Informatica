@@ -23,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($personalInsert['success']) {
             echo json_encode(['success' => true, 'message' => 'Personal guardado exitosamente.']);
         } else {
-            echo json_encode(['success' => false, 'message' => 'Error al guardar al personal.', 'error' => $personalInsert['error']]);
+            $errorMessage = isset($personalInsert['error']) ? $personalInsert['error'] : 'Error al guardar al personal.';
+            echo json_encode(['success' => false, 'message' => $errorMessage]);
         }
     } else {
         echo json_encode(['success' => false, 'message' => 'Faltan datos en el formulario.']);

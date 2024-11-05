@@ -23,8 +23,18 @@
                 </div>
                 <div class="col-md-4">
                     <label for="RFCEmpleado" class="form-label">RFC</label>
-                    <input type="text" class="form-control text-center" id="RFCEmpleado" name="RFCEmpleado" maxlength="15" required>
+                    <input type="text" class="form-control text-center" id="RFCEmpleado" name="RFCEmpleado" maxlength="15">
                 </div>
+                <script>
+                    document.getElementById("NombreEmpleado").addEventListener("input", function() {
+                        this.value = this.value.toUpperCase();
+                    });
+
+                    document.getElementById("RFCEmpleado").addEventListener("input", function() {
+                        this.value = this.value.toUpperCase();
+                    });
+                </script>
+
                 <div class="col-md-4">
                     <label class="form-label" for="PlazaEmpleado">Plaza</label>
                     <select class="form-select" name="PlazaEmpleado" id="PlazaEmpleado" required>
@@ -35,7 +45,7 @@
                     <label for="FechaInicial" class="form-label">Fecha inicial</label>
                     <input type="date" class="form-control text-center" id="FechaInicial" name="FechaInicial" required>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4" style="display: none;">
                     <label for="EstatusEmpleado" class="form-label">Estatus</label>
                     <select class="form-select text-center" id="EstatusEmpleado" name="EstatusEmpleado" required>
                         <option disabled value="">Selecciona el estatus del activo</option>

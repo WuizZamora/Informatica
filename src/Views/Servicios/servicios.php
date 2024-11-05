@@ -326,5 +326,34 @@
             </div>
         </div>
 
+        <!-- MODAL FORMATO -->
+        <div class="modal fade" id="formatModal" tabindex="-1" role="dialog" aria-labelledby="formatModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="formatModalLabel">Servicio incidencias</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center" id="formatModalBody">
+                        <!-- Aquí se mostrará la información del servicio -->
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                        <button type="button" class="btn btn-success" id="formatSaveButton">Generar formato</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="pdfDataForm" style="display: none;">
+            <h4>Ingrese los siguientes datos:</h4>
+            <label for="nombreUsuario">Nombre de Usuario:</label>
+            <input type="text" id="nombreUsuario" required><br>
+            <label for="correoUsuario">Correo Electrónico:</label>
+            <input type="email" id="correoUsuario" required><br>
+            <button id="generatePdfButton">Generar PDF</button>
+        </div>
+
     </div>
     <script src="./src/Views/Servicios/js/servicios.js"></script>

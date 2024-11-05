@@ -200,8 +200,8 @@ if (isset($_GET['IDServicio'])) {
 
             $html .= '
             <tr style="text-align: justify;">
-                <th style="text-align: justify;" colspan="2">Descripción del servicio:</th>
-                <td colspan="4" style="max-width: 30rem; word-wrap: break-word; white-space: normal;">' . $data[0]['DescripcionTecnico'] . '</td>
+                <th colspan="2">Descripción del servicio:</th>
+                <td colspan="3" style="max-width: 30rem; word-wrap: break-word; white-space: normal;">' . $data[0]['DescripcionTecnico'] . '</td>
             </tr>
             </tbody>
             </table><br><br><br>';
@@ -239,7 +239,7 @@ if (isset($_GET['IDServicio'])) {
         <script type="text/php">
             if (isset($pdf)) {
                 $x = 20;
-                $y = 800;
+                $y = 780;
                 $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
                 $font = null;
                 $size = 9;

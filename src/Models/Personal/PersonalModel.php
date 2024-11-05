@@ -98,7 +98,7 @@ class PersonalModel
     {
         $query = $todas ?
             "SELECT Pk_IDPlaza, Puesto FROM Plaza ORDER BY Pk_IDPlaza ASC" :
-            "SELECT Pk_IDPlaza, Puesto FROM Plaza WHERE EstatusPlaza = 1 ORDER BY Pk_IDPlaza ASC";
+            "SELECT Pk_IDPlaza, Puesto FROM Plaza WHERE EstatusPlaza = 1 ORDER BY Puesto ASC";
 
         $result = mysqli_query($this->db, $query);
 
@@ -113,17 +113,48 @@ class PersonalModel
     }
 
     public function guardarPersonal($numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
+{
+    try {
+        $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("ississ", $numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+
+        $stmt->execute();
+
+        return ['success' => true, 'message' => 'Personal registrado exitosamente'];
+    } catch (mysqli_sql_exception $e) {
+        // Verifica si el error es por duplicado (código de error 1062 en MySQL)
+        if ($e->getCode() == 1062) {
+            return ['success' => false, 'error' => 'El número de empleado ya existe.'];
+        }
+
+        // Si es otro tipo de error, devuelve el mensaje de error general
+        return ['success' => false, 'error' => 'Error al guardar el personal: ' . $e->getMessage()];
+    }
+}
+
+    public function obtenerPersonalAndPlaza($numeroEmpleado)
     {
-        try {
-            $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ississ", $numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+        $query = "SELECT Personal.Nombre, Plaza.Puesto FROM Personal 
+            JOIN Plaza ON Personal.Fk_IDPlaza_Plaza = Plaza.Pk_IDPlaza
+            WHERE Personal.Pk_NumeroEmpleado = ?";
+        $stmt = $this->db->prepare($query);
 
-            $stmt->execute();
+        // Verifica si la preparación del statement fue exitosa
+        if ($stmt === false) {
+            return ['error' => 'Error al preparar la consulta: ' . $this->db->error];
+        }
 
-            return ['success' => true, 'message' => 'Personal registrado exitosamente'];
-        } catch (mysqli_sql_exception $e) {
-            // Captura el error y devuelve un mensaje adecuado
-            return ['success' => false, 'error' => $e->getMessage()];
+        $stmt->bind_param('i', $numeroEmpleado);
+        $stmt->execute();
+
+        // Obtener los resultados
+        $result = $stmt->get_result();
+
+        if ($result->num_rows > 0) {
+            $personal = $result->fetch_assoc();
+            return $personal;
+        } else {
+            return ['error' => 'Personal no encontrado.']; // Mensaje de error si no se encuentra
         }
     }
 }

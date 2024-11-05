@@ -134,7 +134,6 @@ function crearItemPagina(texto, pagina) {
     return itemPagina;
 }
 
-
 document.addEventListener("DOMContentLoaded", () => {      
     if (userRole != 2) {
         // VALIDACIÓN BOOTSTRAP
@@ -188,178 +187,6 @@ document.addEventListener("DOMContentLoaded", () => {
             activosForm.classList.remove("was-validated"); // Remueve la clase de validación
         }
 
-        function editActivo(id) {
-            fetch(
-                    `/INFORMATICA/src/Models/Activos/obtener_activo_detalles.php?IDActivo=${id}`
-                )
-                .then((response) => response.json())
-                .then((data) => {
-                    if (data.error) {
-                        Swal.fire({
-                            icon: "error",
-                            title: "Oops...",
-                            text: data.error,
-                        });
-                    } else {
-                        // Construir el contenido del modal
-                        let modalContent = `
-                    <strong># ${data.Pk_IDActivo}</strong>
-                    <div class="form-group">
-                        <label for="NumeroInventarioUpdate">Número de inventario:</label>
-                        <input class="form-control text-center" id="NumeroInventarioUpdate" name="NumeroInventarioUpdate" value="${data.NumeroInventario}">
-                    </div>
-                    <div class="form-group">
-                        <label for="CABMSUpdate">CABMS:</label>
-                        <input class="form-control text-center" id="CABMSUpdate" name="CABMSUpdate" value="${data.CABMS}">
-                    </div>
-                    <div class="form-group">
-                        <label for="ProgresivoUpdate">Progresivo:</label>
-                        <input type="text" class="form-control text-center" id="ProgresivoUpdate" name="ProgresivoUpdate" value="${data.Progresivo}">
-                    </div>
-                    <div class="form-group">
-                        <label for="DescripcionUpdate">Descripción:</label>
-                        <input type="text" class="form-control text-center" id="DescripcionUpdate" name="DescripcionUpdate" value="${data.Descripcion}">
-                    </div>
-                    <div class="form-group">
-                        <label for="ResguardanteUpdate">Resguardante:</label>
-                        <select class="form-select text-center" id="ResguardanteUpdate" name="ResguardanteUpdate" required>
-                            <option disabled selected value="">Selecciona un empleado</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="EstatusUpdate">Estatus:</label>
-                        <select class="form-select text-center" id="EstatusUpdate" name="EstatusActivo" required>
-                            <option disabled value="">Selecciona el estatus del activo</option>
-                            <option value="ACTIVO">Activo</option>
-                            <option value="PROCESO DE BAJA">Proceso de baja</option>
-                        </select>
-                    </div>
-                `;
-
-                        // Mostrar contenido en el modal
-                        document.getElementById("modalBodyActivos").innerHTML = modalContent;
-
-                        // Llenar los selects de resguardante
-                        llenarSelectPersonal(
-                            "./src/Models/Personal/obtener_personal.php",
-                            "ResguardanteUpdate",
-                            data.Resguardante
-                        ).then(() => {
-                            const resguardanteSelect =
-                                document.getElementById("ResguardanteUpdate");
-                            resguardanteSelect.value = data.Fk_Resguardante_Personal; // Establecer el valor seleccionado aquí
-                        });
-
-                        // Establecer el valor del select de estatus
-                        const estatusSelect = document.getElementById("EstatusUpdate");
-                        estatusSelect.value = data.Estatus; // Aquí se asigna el valor que viene del backend
-
-                        let myModalActivos = new bootstrap.Modal(
-                            document.getElementById("editModalActivos")
-                        );
-                        myModalActivos.show();
-
-                        document.getElementById("saveButtonActivos").onclick = function() {
-                            // Obtener los valores de los campos
-                            const idActivo = data.Pk_IDActivo;
-                            const numeroInventario = document.getElementById(
-                                "NumeroInventarioUpdate"
-                            ).value;
-                            const cabms = document.getElementById("CABMSUpdate").value;
-                            const progresivo = document.getElementById("ProgresivoUpdate").value;
-                            const descripcionActivo =
-                                document.getElementById("DescripcionUpdate").value;
-                            const reguardante =
-                                document.getElementById("ResguardanteUpdate").value;
-                            const estatusUpdate = document.getElementById("EstatusUpdate").value;
-
-                            // Inicializar un objeto para almacenar los datos del servicio
-                            const datosActivo = {
-                                idActivo,
-                                numeroInventario,
-                                cabms,
-                                progresivo,
-                                descripcionActivo,
-                                reguardante,
-                                estatusUpdate,
-                            };
-
-                            console.log(datosActivo);
-                            // Enviar los datos al backend
-                            fetch("/INFORMATICA/src/Models/Activos/actualizar_activo.php", {
-                                    method: "POST",
-                                    headers: {
-                                        "Content-Type": "application/json",
-                                    },
-                                    body: JSON.stringify(datosActivo), // Convierte los datos a JSON
-                                })
-                                .then(async (response) => {
-                                    const text = await response.text(); // Lee la respuesta como texto
-                                    try {
-                                        const result = JSON.parse(text); // Intenta parsear como JSON
-                                        if (result.success) {
-                                            Swal.fire({
-                                                title: "¡Éxito!",
-                                                text: "Datos del activo actualizados exitosamente.",
-                                                icon: "success",
-                                                timer: 3000, // Duración en milisegundos (3 segundos)
-                                                showConfirmButton: false, // No mostrar botón de aceptar
-                                            });
-                                            myModalActivos.hide(); // Cierra el modal si estás usando uno
-                                            actualizarActivos();
-                                        } else {
-                                            Swal.fire({
-                                                icon: "error",
-                                                title: "Oops...",
-                                                text: result.error, // Aquí se pasa el mensaje del error
-                                            });
-                                        }
-                                    } catch (error) {
-                                        console.error("Respuesta inválida del servidor:", text); // Muestra el contenido
-                                        alert("Error en la respuesta del servidor.");
-                                    }
-                                })
-                                .catch((error) => {
-                                    console.error("Error al guardar el activo:", error);
-                                    Swal.fire({
-                                        icon: "error",
-                                        title: "Oops...",
-                                        text: "Error al guardar el activo",
-                                    });
-                                });
-                        };
-                    }
-                })
-                .catch((error) => {
-                    console.error("Error:", error);
-                    Swal.fire({
-                        icon: "error",
-                        title: "Oops...",
-                        text: "Error al cargar los datos",
-                    });
-                });
-        }
-
-        // Función reutilizable para llenar los selects
-        function llenarSelectPersonal(url, selectId, valorSeleccionado) {
-            return fetch(url)
-                .then((response) => response.json())
-                .then((data) => {
-                    const select = document.getElementById(selectId);
-                    data.forEach((persona) => {
-                        const option = document.createElement("option");
-                        option.value = persona.Pk_NumeroEmpleado;
-                        option.textContent = `${persona.Nombre}- ${persona.Pk_NumeroEmpleado}`;
-                        select.appendChild(option);
-                    });
-
-                    // Establecer el valor seleccionado después de llenar el select
-                    if (valorSeleccionado) {
-                        select.value = valorSeleccionado;
-                    }
-                })
-                .catch((error) => console.error(`Error fetching ${selectId} data:`, error));
-        }
         // Carga de datos en los selects
         function cargarDatosInicialesActivo() {
             fetch("./src/Models/Personal/obtener_personal.php")
@@ -438,3 +265,175 @@ document.addEventListener("DOMContentLoaded", () => {
     }    
     actualizarActivos();
 });
+
+function editActivo(id) {
+    fetch(
+            `/INFORMATICA/src/Models/Activos/obtener_activo_detalles.php?IDActivo=${id}`
+        )
+        .then((response) => response.json())
+        .then((data) => {
+            if (data.error) {
+                Swal.fire({
+                    icon: "error",
+                    title: "Oops...",
+                    text: data.error,
+                });
+            } else {
+                // Construir el contenido del modal
+                let modalContent = `
+            <strong># ${data.Pk_IDActivo}</strong>
+            <div class="form-group">
+                <label for="NumeroInventarioUpdate">Número de inventario:</label>
+                <input class="form-control text-center" id="NumeroInventarioUpdate" name="NumeroInventarioUpdate" value="${data.NumeroInventario}">
+            </div>
+            <div class="form-group">
+                <label for="CABMSUpdate">CABMS:</label>
+                <input class="form-control text-center" id="CABMSUpdate" name="CABMSUpdate" value="${data.CABMS}">
+            </div>
+            <div class="form-group">
+                <label for="ProgresivoUpdate">Progresivo:</label>
+                <input type="text" class="form-control text-center" id="ProgresivoUpdate" name="ProgresivoUpdate" value="${data.Progresivo}">
+            </div>
+            <div class="form-group">
+                <label for="DescripcionUpdate">Descripción:</label>
+                <input type="text" class="form-control text-center" id="DescripcionUpdate" name="DescripcionUpdate" value="${data.Descripcion}">
+            </div>
+            <div class="form-group">
+                <label for="ResguardanteUpdate">Resguardante:</label>
+                <select class="form-select text-center" id="ResguardanteUpdate" name="ResguardanteUpdate" required>
+                    <option disabled selected value="">Selecciona un empleado</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="EstatusUpdate">Estatus:</label>
+                <select class="form-select text-center" id="EstatusUpdate" name="EstatusActivo" required>
+                    <option disabled value="">Selecciona el estatus del activo</option>
+                    <option value="ACTIVO">Activo</option>
+                    <option value="PROCESO DE BAJA">Proceso de baja</option>
+                </select>
+            </div>
+        `;
+
+                // Mostrar contenido en el modal
+                document.getElementById("modalBodyActivos").innerHTML = modalContent;
+
+                // Llenar los selects de resguardante
+                llenarSelectPersonal(
+                    "./src/Models/Personal/obtener_personal.php",
+                    "ResguardanteUpdate",
+                    data.Resguardante
+                ).then(() => {
+                    const resguardanteSelect =
+                        document.getElementById("ResguardanteUpdate");
+                    resguardanteSelect.value = data.Fk_Resguardante_Personal; // Establecer el valor seleccionado aquí
+                });
+
+                // Establecer el valor del select de estatus
+                const estatusSelect = document.getElementById("EstatusUpdate");
+                estatusSelect.value = data.Estatus; // Aquí se asigna el valor que viene del backend
+
+                let myModalActivos = new bootstrap.Modal(
+                    document.getElementById("editModalActivos")
+                );
+                myModalActivos.show();
+
+                document.getElementById("saveButtonActivos").onclick = function() {
+                    // Obtener los valores de los campos
+                    const idActivo = data.Pk_IDActivo;
+                    const numeroInventario = document.getElementById(
+                        "NumeroInventarioUpdate"
+                    ).value;
+                    const cabms = document.getElementById("CABMSUpdate").value;
+                    const progresivo = document.getElementById("ProgresivoUpdate").value;
+                    const descripcionActivo =
+                        document.getElementById("DescripcionUpdate").value;
+                    const reguardante =
+                        document.getElementById("ResguardanteUpdate").value;
+                    const estatusUpdate = document.getElementById("EstatusUpdate").value;
+
+                    // Inicializar un objeto para almacenar los datos del servicio
+                    const datosActivo = {
+                        idActivo,
+                        numeroInventario,
+                        cabms,
+                        progresivo,
+                        descripcionActivo,
+                        reguardante,
+                        estatusUpdate,
+                    };
+
+                    // Enviar los datos al backend
+                    fetch("/INFORMATICA/src/Models/Activos/actualizar_activo.php", {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                            },
+                            body: JSON.stringify(datosActivo), // Convierte los datos a JSON
+                        })
+                        .then(async (response) => {
+                            const text = await response.text(); // Lee la respuesta como texto
+                            try {
+                                const result = JSON.parse(text); // Intenta parsear como JSON
+                                if (result.success) {
+                                    Swal.fire({
+                                        title: "¡Éxito!",
+                                        text: "Datos del activo actualizados exitosamente.",
+                                        icon: "success",
+                                        timer: 3000, // Duración en milisegundos (3 segundos)
+                                        showConfirmButton: false, // No mostrar botón de aceptar
+                                    });
+                                    myModalActivos.hide(); // Cierra el modal si estás usando uno
+                                    actualizarActivos();
+                                } else {
+                                    Swal.fire({
+                                        icon: "error",
+                                        title: "Oops...",
+                                        text: result.error, // Aquí se pasa el mensaje del error
+                                    });
+                                }
+                            } catch (error) {
+                                console.error("Respuesta inválida del servidor:", text); // Muestra el contenido
+                                alert("Error en la respuesta del servidor.");
+                            }
+                        })
+                        .catch((error) => {
+                            console.error("Error al guardar el activo:", error);
+                            Swal.fire({
+                                icon: "error",
+                                title: "Oops...",
+                                text: "Error al guardar el activo",
+                            });
+                        });
+                };
+            }
+        })
+        .catch((error) => {
+            console.error("Error:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Error al cargar los datos",
+            });
+        });
+}
+
+ // Función reutilizable para llenar los selects
+ function llenarSelectPersonal(url, selectId, valorSeleccionado) {
+    return fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+            const select = document.getElementById(selectId);
+            data.forEach((persona) => {
+                const option = document.createElement("option");
+                option.value = persona.Pk_NumeroEmpleado;
+                option.textContent = `${persona.Nombre}- ${persona.Pk_NumeroEmpleado}`;
+                select.appendChild(option);
+            });
+
+            // Establecer el valor seleccionado después de llenar el select
+            if (valorSeleccionado) {
+                select.value = valorSeleccionado;
+            }
+        })
+        .catch((error) => console.error(`Error fetching ${selectId} data:`, error));
+}

@@ -173,7 +173,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const confirmModal = new bootstrap.Modal(
     document.getElementById("confirmModal")
   );
- 
 
   // Validación y envío del formulario
   servicioForm.addEventListener("submit", function (event) {
@@ -279,7 +278,7 @@ document.addEventListener("DOMContentLoaded", function () {
           icon: "success",
           timer: 3000, // Duración en milisegundos (3 segundos)
           showConfirmButton: false, // No mostrar botón de aceptar
-      });
+        });
 
         resetForm(); // Llamar al reseteo completo
         fetchServicios();
@@ -290,7 +289,7 @@ document.addEventListener("DOMContentLoaded", function () {
           icon: "error",
           title: "Oops...",
           text: error, // Aquí se pasa el mensaje del error
-      });
+        });
         isSubmitting = false;
       });
   }
@@ -516,10 +515,10 @@ function actualizarServicios() {
   const searchTerm = searchInput.value.toLowerCase();
   const filteredData = searchTerm
     ? allData.filter(
-        (servicio) =>
-          servicio.Folio.toLowerCase().includes(searchTerm) ||
-          servicio.Oficio.toLowerCase().includes(searchTerm)
-      )
+      (servicio) =>
+        servicio.Folio.toLowerCase().includes(searchTerm) ||
+        servicio.Oficio.toLowerCase().includes(searchTerm)
+    )
     : allData;
 
   totalPages = Math.ceil(filteredData.length / recordsPerPage);
@@ -538,11 +537,16 @@ function renderTable(data, page) {
     const isEntregaMaterial =
       servicio.TipoServicio === "ENTREGA MATERIAL FÍLMICO";
     const isPendiente = servicio.EstadoSolicitud === "PENDIENTE";
-    const shouldDisable = (isEntregaMaterial&&isPendiente) ;
+    const shouldDisable = isEntregaMaterial && isPendiente;
 
     const row = `
       <tr>
-        <td>${servicio.Folio}</td>
+        <td>
+          ${servicio.Folio.startsWith("I")
+        ? `<a href="#" onclick= "formatServicio(${servicio.Pk_IDServicio})">${servicio.Folio}</a>`
+        : servicio.Folio // Solo mostrar Folio como texto si no empieza con 'I'
+      }
+        </td>
         <td>${servicio.Solicitante}</td>
         <td>${servicio.FechaSolicitud}</td>
         <td style="word-break: break-word; white-space: normal;">
@@ -550,47 +554,41 @@ function renderTable(data, page) {
         </td>
         <td>${servicio.FechaAtencion}</td>
         <td>${servicio.TipoServicio}</td>
-        <td class="${
-          servicio.EstadoSolicitud === "CANCELADO"
-            ? "text-danger"
-            : servicio.EstadoSolicitud === "COMPLETADO"
-            ? "text-success"
-            : ""
-        }">
+        <td class="${servicio.EstadoSolicitud === "CANCELADO"
+        ? "text-danger"
+        : servicio.EstadoSolicitud === "COMPLETADO"
+          ? "text-success"
+          : ""
+      }">
           ${servicio.EstadoSolicitud}
         </td>
         <td>
-          ${
-            servicio.SoporteDocumental
-              ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
+          ${servicio.SoporteDocumental
+        ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
                   <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
                 </a>`
-              : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
-          }
+        : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
+      }
         </td>
         <td>
-          ${
-            userRole == 1 || userRole == 2 || userRole == 3 || userRole == 4
-              ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${
-                  servicio.Pk_IDServicio
-                }" 
+          ${userRole == 1 || userRole == 2 || userRole == 3 || userRole == 4
+        ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio
+        }" 
                   target="_blank" 
                   class="btn btn-success ${shouldDisable ? "disabled" : ""}"
                   tabindex="${shouldDisable ? "-1" : "0"}">
                   Ver
                 </a>`
-              : ""
-          }
-          ${
-            userRole == 1 || userRole == 3
-              ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
-              : ""
-          }
-          ${
-            userRole == 1 || userRole == 2 || userRole == 3
-              ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
-              : ""
-          }
+        : ""
+      }
+          ${userRole == 1 || userRole == 3
+        ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
+        : ""
+      }
+          ${userRole == 1 || userRole == 2 || userRole == 3
+        ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
+        : ""
+      }
         </td>
       </tr>
     `;
@@ -606,9 +604,8 @@ function renderPagination(totalPages) {
   // Botón de página anterior
   pagination.innerHTML += `
     <li class="page-item ${currentPage === 1 ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${
-        currentPage - 1
-      })">Anterior</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage - 1
+    })">Anterior</a>
     </li>
   `;
 
@@ -663,9 +660,8 @@ function renderPagination(totalPages) {
   // Botón de página siguiente
   pagination.innerHTML += `
     <li class="page-item ${currentPage === totalPages ? "disabled" : ""}">
-      <a class="page-link" href="#" onclick="changePage(${
-        currentPage + 1
-      })">Siguiente</a>
+      <a class="page-link" href="#" onclick="changePage(${currentPage + 1
+    })">Siguiente</a>
     </li>
   `;
 }
@@ -773,8 +769,6 @@ function editServicio(id) {
             fechaSolicitud,
             tipoServicio,
           };
-
-          console.log(datosServicio);
 
           // Agregar datos específicos según el tipo de servicio
           if (tipoServicio === "TÉCNICO") {
@@ -980,38 +974,32 @@ function mostrarCamposAdicionales(tipoServicio, data) {
         <hr>
         <div class="form-group" style="display:none;">
           <label for="id_${index}">ID:</label>
-          <input type="text" class="form-control" id="id_${index}" value="${
-        item.ID
-      }">
+          <input type="text" class="form-control" id="id_${index}" value="${item.ID
+        }">
         </div>
         <div class="form-group" style="display:none;">
           <label for="id_activo_${index}">ID ACTIVO:</label>
-          <input type="text" class="form-control" id="id_activo_${index}" value="${
-        item.Fk_IDActivo_Activos
-      }">
+          <input type="text" class="form-control" id="id_activo_${index}" value="${item.Fk_IDActivo_Activos
+        }">
         </div>
         <div class="form-group">
           <label for="cabms_Tecnico_${index}">CABMS:</label>
-          <input type="text" class="form-control" id="cabms_Tecnico_${index}" value="${
-        item.CABMS
-      }">
+          <input type="text" class="form-control" id="cabms_Tecnico_${index}" value="${item.CABMS
+        }">
         </div>
         <div class="form-group">
           <label for="progresivo_Tecnico_${index}">PROGRESIVO:</label>
-          <input type="text" class="form-control" id="progresivo_Tecnico_${index}" value="${
-        item.Progresivo
-      }">
+          <input type="text" class="form-control" id="progresivo_Tecnico_${index}" value="${item.Progresivo
+        }">
         </div>
         <div class="form-group">
           <label for="evaluacion_Tecnico_${index}">Evaluación:</label>
           <select class="form-select" id="evaluacion_Tecnico_${index}" name="evaluacion_Tecnico_${index}" required>
             <option selected disabled value="">Elige una opción</option>
-            <option value="FUNCIONAL" ${
-              item.Evaluacion === "FUNCIONAL" ? "selected" : ""
-            }>Funcional</option>
-                  <option value="NO FUNCIONAL" ${
-                    item.Evaluacion === "NO FUNCIONAL" ? "selected" : ""
-                  }>Baja</option>
+            <option value="FUNCIONAL" ${item.Evaluacion === "FUNCIONAL" ? "selected" : ""
+        }>Funcional</option>
+                  <option value="NO FUNCIONAL" ${item.Evaluacion === "NO FUNCIONAL" ? "selected" : ""
+        }>Baja</option>
           </select>
         </div>
         `;
@@ -1028,36 +1016,42 @@ function mostrarCamposAdicionales(tipoServicio, data) {
           <label for="ServicioSolicitadoUPDATE">Servicio Solicitado:</label>
           <select class="form-select text-center" id="ServicioSolicitadoUPDATE" name="ServicioSolicitadoUPDATE[]" size="6" multiple>
               <option value="">Elige una opción</option>
-            <option value="GESTIÓN DE EQUIPOS" ${
-                serviciosSolicitados.includes("GESTIÓN DE EQUIPOS") ? "selected" : ""
-            }>GESTIÓN DE EQUIPOS</option>
-            <option value="CARPETA COMPARTIDA" ${
-                serviciosSolicitados.includes("CARPETA COMPARTIDA") ? "selected" : ""
-            }>CARPETA COMPARTIDA</option>
-            <option value="CREACIÓN DE USUARIO" ${
-                serviciosSolicitados.includes("CREACIÓN DE USUARIO") ? "selected" : ""
-            }>CREACIÓN DE USUARIO</option>
-            <option value="CORREO ELECTRÓNICO INSTITUCIONAL" ${
-                serviciosSolicitados.includes("CORREO ELECTRÓNICO INSTITUCIONAL") ? "selected" : ""
-            }>CORREO ELECTRÓNICO INSTITUCIONAL</option>
-            <option value="SOPORTE TÉCNICO" ${
-                serviciosSolicitados.includes("SOPORTE TÉCNICO") ? "selected" : ""
-            }>SOPORTE TÉCNICO</option>
-            <option value="ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO" ${
-                serviciosSolicitados.includes("ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO") ? "selected" : ""
-            }>ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO</option>
-            <option value="CONECTIVIDAD" ${
-                serviciosSolicitados.includes("CONECTIVIDAD") ? "selected" : ""
-            }>CONECTIVIDAD</option>
-            <option value="GESTIÓN DE USUARIOS" ${
-                serviciosSolicitados.includes("GESTIÓN DE USUARIOS") ? "selected" : ""
-            }>GESTIÓN DE USUARIOS</option>
-            <option value="CAPACITACIÓN Y ASESORÍA" ${
-                serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA") ? "selected" : ""
-            }>CAPACITACIÓN Y ASESORÍA</option>
-            <option value="OTROS" ${
-                serviciosSolicitados.includes("OTROS") ? "selected" : ""
-            }>OTROS</option>
+            <option value="GESTIÓN DE EQUIPOS" ${serviciosSolicitados.includes("GESTIÓN DE EQUIPOS")
+        ? "selected"
+        : ""
+      }>GESTIÓN DE EQUIPOS</option>
+            <option value="CARPETA COMPARTIDA" ${serviciosSolicitados.includes("CARPETA COMPARTIDA")
+        ? "selected"
+        : ""
+      }>CARPETA COMPARTIDA</option>
+            <option value="CREACIÓN DE USUARIO" ${serviciosSolicitados.includes("CREACIÓN DE USUARIO")
+        ? "selected"
+        : ""
+      }>CREACIÓN DE USUARIO</option>
+            <option value="CORREO ELECTRÓNICO INSTITUCIONAL" ${serviciosSolicitados.includes("CORREO ELECTRÓNICO INSTITUCIONAL")
+        ? "selected"
+        : ""
+      }>CORREO ELECTRÓNICO INSTITUCIONAL</option>
+            <option value="SOPORTE TÉCNICO" ${serviciosSolicitados.includes("SOPORTE TÉCNICO") ? "selected" : ""
+      }>SOPORTE TÉCNICO</option>
+            <option value="ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO" ${serviciosSolicitados.includes(
+        "ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO"
+      )
+        ? "selected"
+        : ""
+      }>ENTREGA DE INSUMOS NUEVOS PARA EQUIPO DE COMPUTO</option>
+            <option value="CONECTIVIDAD" ${serviciosSolicitados.includes("CONECTIVIDAD") ? "selected" : ""
+      }>CONECTIVIDAD</option>
+            <option value="GESTIÓN DE USUARIOS" ${serviciosSolicitados.includes("GESTIÓN DE USUARIOS")
+        ? "selected"
+        : ""
+      }>GESTIÓN DE USUARIOS</option>
+            <option value="CAPACITACIÓN Y ASESORÍA" ${serviciosSolicitados.includes("CAPACITACIÓN Y ASESORÍA")
+        ? "selected"
+        : ""
+      }>CAPACITACIÓN Y ASESORÍA</option>
+            <option value="OTROS" ${serviciosSolicitados.includes("OTROS") ? "selected" : ""
+      }>OTROS</option>
           </select>
           <div class="invalid-feedback">
               Ingresa una opción
@@ -1065,9 +1059,8 @@ function mostrarCamposAdicionales(tipoServicio, data) {
       </div>
       <div class="form-group">
           <label for="descripcionIncidencia_Incidencia">Descripción:</label>
-          <textarea class="form-control" rows="8" id="descripcionIncidencia_Incidencia">${
-            data[0].DescripcionIncidencia
-          }</textarea>
+          <textarea class="form-control" rows="8" id="descripcionIncidencia_Incidencia">${data[0].DescripcionIncidencia
+      }</textarea>
       </div>
     `;
   }
@@ -1099,7 +1092,8 @@ function EstadoSolicitud(id) {
     });
 
   function mostrarDatos(servicio) {
-    const { Pk_IDServicio, EstadoSolicitud, SoporteDocumental, Observaciones } = servicio;
+    const { Pk_IDServicio, EstadoSolicitud, SoporteDocumental, Observaciones } =
+      servicio;
     let ModalContentEstado = `
     <div class="row justify-content-center text-center">
     <div class="col-md-8">
@@ -1110,32 +1104,28 @@ function EstadoSolicitud(id) {
       <label for="estadoSolicitud" class="form-label">Estado de Solicitud:</label>
       <select class="form-select text-center" id="estadoSolicitud" name="EstadoSolicitud" required>
       <option selected disabled value="">Elige una opción</option>
-      <option value="PENDIENTE" disabled ${
-        EstadoSolicitud === "PENDIENTE" ? "selected" : ""
+      <option value="PENDIENTE" disabled ${EstadoSolicitud === "PENDIENTE" ? "selected" : ""
       }>PENDIENTE</option>
-      <option value="COMPLETADO" ${
-        EstadoSolicitud === "COMPLETADO" ? "selected" : ""
+      <option value="COMPLETADO" ${EstadoSolicitud === "COMPLETADO" ? "selected" : ""
       }>COMPLETADO</option>
-      <option value="CANCELADO" ${
-        EstadoSolicitud === "CANCELADO" ? "selected" : ""
+      <option value="CANCELADO" ${EstadoSolicitud === "CANCELADO" ? "selected" : ""
       }>CANCELADO</option>
       </select>
 
       <label for="Observaciones" class="form-label">Observaciones:</label>
-      <textarea class="form-control text-center" id="Observaciones" name="Observaciones" maxlength="400" rows="8">${Observaciones !== null ? Observaciones : ""}</textarea>
+      <textarea class="form-control text-center" id="Observaciones" name="Observaciones" maxlength="400" rows="8">${Observaciones !== null ? Observaciones : ""
+      }</textarea>
 
       <label class="form-label">Soporte Documental:</label>
-        ${
-          SoporteDocumental
-            ? `<br><a href="/INFORMATICA/src/Models/Servicios/${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>`
-            : `<input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>`
-        }
+        ${SoporteDocumental
+        ? `<br><a href="/INFORMATICA/src/Models/Servicios/${SoporteDocumental}" target="_blank" class="btn btn-link">Ver documento</a>`
+        : `<input type="file" class="form-control" id="soporteDocumental" name="SoporteDocumental" required>`
+      }
         </form>
-        ${
-          userRole == 1 || userRole == 3
-            ? `<button type="button" class="btn btn-danger btn-sm" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>`
-            : ""
-        }  
+        ${userRole == 1 || userRole == 3
+        ? `<button type="button" class="btn btn-danger btn-sm" onclick="BorrarSoporteDocumental(${Pk_IDServicio});">BORRAR SOPORTE</button>`
+        : ""
+      }  
         </div>
         </div>
     `;
@@ -1168,12 +1158,6 @@ function EstadoSolicitud(id) {
       if (soporteDocumental) {
         formData.append("SoporteDocumental", soporteDocumental);
       }
-
-        // Mostrar en consola el contenido de FormData
-  console.log("Contenido de FormData:");
-  for (let [key, value] of formData.entries()) {
-    console.log(`${key}:`, value);
-  }
       // Enviar los datos al backend usando fetch
       fetch(
         "/INFORMATICA/src/Models/Servicios/actualizar_estado_solicitud.php",
@@ -1248,5 +1232,89 @@ function BorrarSoporteDocumental(idServicio) {
     })
     .catch((error) => {
       console.error("Hubo un problema con la solicitud:", error);
+    });
+}
+
+function formatServicio(id) {
+  fetch(`/INFORMATICA/src/Models/Servicios/obtener_servicio_detalles.php?IDServicio=${id}`)
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.error) {
+        Swal.fire({
+          icon: "error",
+          title: "Oops...",
+          text: data.error,
+        });
+      } else {
+        // Contenido básico del modal
+        let modalContent = `
+          <strong># ${data[0].Pk_IDServicio}</strong>
+          <div class="form-group">
+              <label for="ServicioSolicitado">Servicio solicitado:</label>
+              <p class="form-control-static" id="ServicioSolicitado">${data[0].ServicioSolicitado}</p>
+          </div>
+        `;
+
+        // Verificar si el servicio solicitado incluye "CREACIÓN DE USUARIO"
+        const servicioSolicitado = data[0].ServicioSolicitado;
+        const saveButton = document.getElementById("formatSaveButton");
+
+        // Inicialmente oculta el botón de guardar cambios
+        saveButton.style.display = "none";
+
+        if (servicioSolicitado.includes("CREACIÓN DE USUARIO")) {
+          modalContent += `
+            <div class="form-group">
+              <label for="usuario">Usuario:</label>
+              <input type="text" class="form-control" id="usuario" placeholder="Ingrese el usuario" required>
+            </div>
+            <div class="form-group">
+              <label for="pass">Contraseña:</label>
+              <input type="text" class="form-control" id="pass" placeholder="Ingrese la contraseña" required>
+            </div>
+          `;
+
+          // Muestra el botón de guardar cambios solo si es "CREACIÓN DE USUARIO"
+          saveButton.style.display = "inline-block";
+        }
+
+        // Mostrar contenido en el modal
+        document.getElementById("formatModalBody").innerHTML = modalContent;
+
+        let myFormatModal = new bootstrap.Modal(document.getElementById("formatModal"));
+        myFormatModal.show();
+
+        // Manejar el clic en el botón de guardar cambios
+        saveButton.onclick = function () {
+          const user = document.getElementById("usuario").value.trim();
+          const pass = document.getElementById("pass").value.trim();
+
+          // Verificar si los campos están vacíos
+          if (!user || !pass) {
+            Swal.fire({
+              icon: "warning",
+              title: "Campos requeridos",
+              text: "Por favor, complete los campos de Usuario y Contraseña antes de continuar.",
+            });
+            return; // Evitar que se abra la URL si los campos están vacíos
+          }
+
+          const solicitante = data[0].Solicitante;
+          // Construye la URL con los parámetros
+          const url = `/INFORMATICA/src/Models/Servicios/formato_usuarios_PDF.php?solicitante=${encodeURIComponent(solicitante)}&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
+
+          // Abre la URL en una nueva pestaña
+          window.open(url, '_blank');
+          myFormatModal.hide ();
+        };
+      }
+    })
+    .catch((error) => {
+      console.error("Error:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Oops...",
+        text: "Error al cargar los datos",
+      });
     });
 }
