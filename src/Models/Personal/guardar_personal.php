@@ -4,10 +4,12 @@ header('Content-Type: application/json'); // Establecer encabezado
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     // Verifica que todos los campos necesarios estén presentes
-    if (isset($_POST['NumeroEmpleado'], $_POST['NombreEmpleado'], $_POST['RFCEmpleado'], $_POST['PlazaEmpleado'], $_POST['FechaInicial'], $_POST['EstatusEmpleado'])) {
+    if (isset($_POST['NumeroEmpleado'], $_POST['PrimerApellidoEmpleado'] ,$_POST['SegundoApellidoEmpleado'] ,$_POST['NombreEmpleado'] ,$_POST['RFCEmpleado'], $_POST['PlazaEmpleado'], $_POST['FechaInicial'], $_POST['EstatusEmpleado'])) {
 
         // Captura los datos
         $numeroEmpleado = $_POST['NumeroEmpleado'];
+        $primerApellidoEmpleado = $_POST['PrimerApellidoEmpleado'];
+        $segundoApellidoEmpleado = $_POST['SegundoApellidoEmpleado'];
         $nombreEmpleado = $_POST['NombreEmpleado'];
         $rfcEmpleado = $_POST['RFCEmpleado'];
         $plazaEmpleado = $_POST['PlazaEmpleado'];
@@ -17,7 +19,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $personalModel = new PersonalModel();
 
         // Guarda en la tabla Servicios
-        $personalInsert = $personalModel->guardarPersonal($numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+        $personalInsert = $personalModel->guardarPersonal($numeroEmpleado, $primerApellidoEmpleado,$segundoApellidoEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
 
         // Verifica si el servicio se guardó correctamente
         if ($personalInsert['success']) {

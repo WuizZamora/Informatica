@@ -19,7 +19,7 @@ $NumeroEmpleado = $_SESSION['NumeroEmpleado'];
 $conn = Conexion::conectar();
 
 // Consulta para obtener el rol del usuario
-$sql = "SELECT r.Pk_IDRol, r.DescripcionRol, p.Nombre 
+$sql = "SELECT r.Pk_IDRol, r.DescripcionRol, p.Nombres
         FROM Personal p
         JOIN Plaza pl ON p.Fk_IDPlaza_Plaza = pl.Pk_IDPlaza
         JOIN Roles r ON pl.Fk_IDRol_Roles = r.PK_IDRol
@@ -32,7 +32,7 @@ $result = $stmt->get_result();
 if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $rol = $row['Pk_IDRol'];
-    $nombrePersonal = $row['Nombre'];
+    $nombrePersonal = $row['Nombres'];
 }
 
 // Cerrar el statement y la conexión

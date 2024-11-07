@@ -13,9 +13,15 @@ class PersonalModel
     public function obtenerPersonal($filtrarPuesto = false)
     {
         // Consulta base con orden alfabético por nombre
-        $query = "SELECT p.Pk_NumeroEmpleado, p.Nombre FROM Personal p
-        JOIN Plaza pl ON p.FK_IDPlaza_Plaza = pl.Pk_IDPlaza
-        WHERE p.Estatus = 1";
+        $query = "SELECT 
+            p.Pk_NumeroEmpleado, 
+            CONCAT(p.PrimerApellido, ' ', p.SegundoApellido, ' ', p.Nombres) AS NombreCompleto
+        FROM 
+            Personal p
+        JOIN 
+            Plaza pl ON p.Fk_IDPlaza_Plaza = pl.Pk_IDPlaza
+        WHERE 
+            p.Estatus = 1";
 
         // Si se requiere filtrar por puesto
         if ($filtrarPuesto) {
@@ -24,8 +30,8 @@ class PersonalModel
                             OR pl.Puesto LIKE '%JEFE DE UNIDAD DEPARTAMENTAL DE TECNOLOGÍAS%')";
         }
 
-        // Ordenar por nombre de manera alfabética
-        $query .= " ORDER BY p.Nombre ASC";
+        // Ordenar por nombre completo alfabéticamente
+        $query .= " ORDER BY NombreCompleto ASC";
 
         $result = mysqli_query($this->db, $query);
 
@@ -37,12 +43,23 @@ class PersonalModel
         while ($row = mysqli_fetch_assoc($result)) {
             $personal[] = $row;
         }
+
+        // Verifica si la variable $personal está vacía
+        if (empty($personal)) {
+            return []; // Retorna un array vacío si no se encontraron registros
+        }
+
         return $personal;
     }
 
     public function obtenerAllPersonal()
     {
-        $query = "SELECT * FROM Personal ORDER BY Nombre ASC";
+        $query = "SELECT 
+        Pk_NumeroEmpleado, 
+        CONCAT(PrimerApellido, ' ', SegundoApellido, ' ',Nombres) AS NombreCompleto,
+        RFC, 
+        Estatus
+        FROM Personal ORDER BY NombreCompleto ASC";
 
         $result = mysqli_query($this->db, $query);
 
@@ -80,11 +97,11 @@ class PersonalModel
         }
     }
 
-    public function actualizarPersonal($numeroEmpleado, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate)
+    public function actualizarPersonal($numeroEmpleado, $primerApellido,$segundoApellido, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate, $usuarioUpdate, $passUpdate)
     {
         try {
-            $stmt = $this->db->prepare("CALL Personal_UPDATE_PersonalAndPlaza(?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ississ", $numeroEmpleado, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate);
+            $stmt = $this->db->prepare("CALL Personal_UPDATE_PersonalAndPlaza(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("issssissss", $numeroEmpleado,$primerApellido, $segundoApellido, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate, $usuarioUpdate, $passUpdate);
 
             $stmt->execute();
 
@@ -112,31 +129,31 @@ class PersonalModel
         return $plazas;
     }
 
-    public function guardarPersonal($numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
+    public function guardarPersonal($numeroEmpleado, $primerApellidoEmpleado,$segundoApellidoEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
     {
         try {
             // Primero, verificamos si el número de empleado ya existe en la base de datos
             $stmt = $this->db->prepare("SELECT COUNT(*) AS total FROM Personal WHERE Pk_NumeroEmpleado = ?");
             $stmt->bind_param("i", $numeroEmpleado);
             $stmt->execute();
-            
+
             // Asociamos el resultado a la variable $count
             $result = $stmt->get_result();
             $row = $result->fetch_assoc();
             $count = $row['total'];
             $stmt->close();
-    
+
             if ($count > 0) {
                 // Si el número de empleado ya existe, devolvemos un error sin necesidad de ejecutar el procedimiento
                 return ['success' => false, 'error' => 'El número de empleado ya existe.'];
             }
-    
+
             // Si no existe, procedemos a llamar al procedimiento almacenado
-            $stmt = $this->db->prepare("CALL InsertarPersonal(?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("ississ", $numeroEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
-    
+            $stmt = $this->db->prepare("CALL Personal_INSERT(?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt->bind_param("issssiss", $numeroEmpleado, $primerApellidoEmpleado, $segundoApellidoEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado);
+
             $stmt->execute();
-    
+
             return ['success' => true, 'message' => 'Personal registrado exitosamente'];
         } catch (mysqli_sql_exception $e) {
             // Si ocurre cualquier otro error, lo devolvemos como error general
@@ -147,9 +164,11 @@ class PersonalModel
 
     public function obtenerPersonalAndPlaza($numeroEmpleado)
     {
-        $query = "SELECT Personal.Nombre, Plaza.Puesto FROM Personal 
-            JOIN Plaza ON Personal.Fk_IDPlaza_Plaza = Plaza.Pk_IDPlaza
-            WHERE Personal.Pk_NumeroEmpleado = ?";
+        $query = "SELECT 
+            CONCAT(p.PrimerApellido, ' ', p.SegundoApellido, ' ', p.Nombres) AS NombreCompleto,
+            pl.Puesto FROM Personal p
+            JOIN Plaza pl ON p.Fk_IDPlaza_Plaza = pl.Pk_IDPlaza
+            WHERE p.Pk_NumeroEmpleado = ?";
         $stmt = $this->db->prepare($query);
 
         // Verifica si la preparación del statement fue exitosa

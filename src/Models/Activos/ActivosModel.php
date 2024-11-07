@@ -49,7 +49,8 @@ class ActivosModel
 
     public function obtenerAllActivos()
     {
-        $query = "SELECT A.Pk_IDActivo, A.NumeroInventario, A.CABMS, A.Progresivo, A.Descripcion, A.Estatus, P.Nombre AS NombreResguardante
+        $query = "SELECT A.Pk_IDActivo, A.NumeroInventario, A.CABMS, A.Progresivo, A.Descripcion, A.Estatus, 
+        CONCAT(P.PrimerApellido, ' ', P.SegundoApellido, ' ', P.Nombres) AS NombreResguardante
         FROM Activos A
         LEFT JOIN 
             Personal P ON A.Fk_Resguardante_Personal = P.Pk_NumeroEmpleado

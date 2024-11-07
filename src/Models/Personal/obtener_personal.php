@@ -9,9 +9,14 @@ $filtrarPuesto = isset($_GET['filtrar']) && $_GET['filtrar'] === 'true';
 
 try {
     // Llama a la función con el parámetro para filtrar si es necesario
-    $personal = $model->obtenerPersonal($filtrarPuesto); // Obtener el personal desde el modelo
-    // Retornar los resultados en formato JSON
-    echo json_encode($personal);
+    $personal = $model->obtenerPersonal($filtrarPuesto);
+
+// Verifica si $personal contiene datos
+if (empty($personal)) {
+    $personal = []; // Devolver un array vacío si no hay datos
+}
+
+echo json_encode($personal);
 } catch (Exception $e) {
     echo json_encode(['error' => 'Ocurrió un error: ' . $e->getMessage()]);
 }

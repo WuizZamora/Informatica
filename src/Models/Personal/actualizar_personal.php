@@ -14,7 +14,7 @@ if (json_last_error() !== JSON_ERROR_NONE) {
 }
 
 // Verificar que se recibieron todos los datos requeridos
-if (!isset($data->numeroEmpleado, $data->nombre, $data->rfc, $data->plaza, $data->fechaInicial, $data->estatusUpdate)) {
+if (!isset($data->numeroEmpleado, $data->primerApellido, $data->segundoApellido, $data->nombre, $data->rfc, $data->plaza, $data->fechaInicial, $data->estatusUpdate, $data->usuarioUpdate, $data->passUpdate)) {
     echo json_encode(['success' => false, 'error' => 'Faltan datos requeridos']);
     exit;
 }
@@ -22,11 +22,15 @@ if (!isset($data->numeroEmpleado, $data->nombre, $data->rfc, $data->plaza, $data
 try {
     $result = $model->actualizarPersonal(
         $data->numeroEmpleado,
+        $data->primerApellido, 
+        $data->segundoApellido,
         $data->nombre,
         $data->rfc,
         $data->plaza,
         $data->fechaInicial,
-        $data->estatusUpdate
+        $data->estatusUpdate,
+        $data->usuarioUpdate, 
+        $data->passUpdate
     );
 
     // Responder con el resultado

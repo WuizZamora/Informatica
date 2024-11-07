@@ -47,7 +47,7 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
         <img src="http://localhost/INFORMATICA/public/images/cabecera_completa.png" alt="LOGO CDMX" width=700>
         <p style="padding-left:23rem;">Ciudad de México, a ' . $fecha_hoy . '</p>
         <p class="texto">
-        <strong>' . $data['Nombre'] . '<br>Puesto: ' . $data['Puesto'] . '<br>Usuario:</strong> ' . $user . '<br><strong>Contraseña:</strong> '. $pass . '<br><br>
+        <strong>' . $data['NombreCompleto'] . '<br>Puesto: ' . $data['Puesto'] . '<br>Usuario:</strong> ' . $user . '<br><strong>Contraseña:</strong> '. $pass . '<br><br>
         <strong>PRESENTE</strong><br>
         Con base en las Políticas del Instituto de Verificación Administrativa de la Ciudad de México sobre Usuarios, Contraseñas, Internet, Intranet, Correo Electrónico, Telefonía e Internet Móvil, Telefonía Local y Dispositivos Móviles, descritas de acuerdo al  aviso en la Gaceta Oficial de la Ciudad de México número 239 de fecha 12 de enero de 2018, y que pueden ser consultadas el siguiente enlace electrónico <a href"http://lto7.ddns.net/invea/informes/usuarios.php">http://lto7.ddns.net/invea/informes/usuarios.php</a> así como una implementación de seguridad para el personal de este Instituto, me permito informarle que a partir del día de hoy, le es asignado su nombre de usuario y contraseña, cuya acción permitirá a usted tener la certeza de que la contraseña es UNICA y que personal ajeno a usted no la posee. <br>
 
@@ -61,7 +61,7 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
         En virtud de lo anterior su firma abajo manifiesta el conocimiento, aceptación y apego a las políticas, reglas y procedimientos de la organización en relación al usuario y contraseña que me permite el acceso a los diferentes servicios proporcionados por el Instituto de verificación Administrativa. <br>
 
         La Dirección de Administración y Finanzas hace entrega de la nueva contraseña para el ingreso a los servicios informáticos propiedad del Instituto de Verificación Administrativa de la Ciudad de México.
-        <p style="text-align: center;">Acuse de recibo<br><br>_______________________________<br><strong>'.$data['Nombre'].'</strong></p>
+        <p style="text-align: center;">Acuse de recibo<br><br>_______________________________<br><strong>'.$data['NombreCompleto'].'</strong></p>
         </p>
     ';
 
@@ -69,7 +69,7 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
     <script type="text/php">
         if (isset($pdf)) {
             $x = 490;
-            $y = 800;
+            $y = 775;
             $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
             $font = null;
             $size = 9;

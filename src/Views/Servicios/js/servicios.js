@@ -351,7 +351,7 @@ document.addEventListener("DOMContentLoaded", function () {
     data,
     selectId,
     valueKey = "Pk_NumeroEmpleado",
-    textKey = "Nombre"
+    textKey = "NombreCompleto"
   ) {
     const select = document.getElementById(selectId);
     data.forEach((item) => {
@@ -913,7 +913,7 @@ function llenarSelectPersonal(url, selectId, valorSeleccionado) {
       data.forEach((persona) => {
         const option = document.createElement("option");
         option.value = persona.Pk_NumeroEmpleado;
-        option.textContent = `${persona.Nombre}-${persona.Pk_NumeroEmpleado}`;
+        option.textContent = `${persona.NombreCompleto}-${persona.Pk_NumeroEmpleado}`;
         select.appendChild(option);
       });
 
@@ -1263,50 +1263,64 @@ function formatServicio(id) {
         saveButton.style.display = "none";
 
         if (servicioSolicitado.includes("CREACIÓN DE USUARIO")) {
-          modalContent += `
-            <div class="form-group">
-              <label for="usuario">Usuario:</label>
-              <input type="text" class="form-control" id="usuario" placeholder="Ingrese el usuario" required>
-            </div>
-            <div class="form-group">
-              <label for="pass">Contraseña:</label>
-              <input type="text" class="form-control" id="pass" placeholder="Ingrese la contraseña" required>
-            </div>
-          `;
+          // Realizar una segunda solicitud para obtener el usuario y la contraseña
+          fetch(`/INFORMATICA/src/Models/Personal/obtener_personal_detalles.php?NumeroEmpleado=${data[0].Solicitante}`)
+            .then((response) => response.json())
+            .then((personalData) => {
+              if (personalData.error) {
+                Swal.fire({
+                  icon: "error",
+                  title: "Error al obtener detalles del personal",
+                  text: personalData.error,
+                });
+              } else {
+                // Agregar los detalles del usuario y la contraseña obtenidos
+                modalContent += `
+                  <div class="form-group">
+                    <label for="usuario">Usuario:</label>
+                    <p class="form-control-static" id="usuario">${personalData.Usuario}</p>
+                  </div>
+                  <div class="form-group">
+                    <label for="pass">Contraseña:</label>
+                    <p class="form-control-static" id="pass">${personalData.Pass}</p>
+                  </div>
+                `;
 
-          // Muestra el botón de guardar cambios solo si es "CREACIÓN DE USUARIO"
-          saveButton.style.display = "inline-block";
-        }
+                // Muestra el botón de guardar cambios solo si es "CREACIÓN DE USUARIO"
+                saveButton.style.display = "inline-block";
 
-        // Mostrar contenido en el modal
-        document.getElementById("formatModalBody").innerHTML = modalContent;
+                // Mostrar contenido en el modal
+                document.getElementById("formatModalBody").innerHTML = modalContent;
 
-        let myFormatModal = new bootstrap.Modal(document.getElementById("formatModal"));
-        myFormatModal.show();
+                let myFormatModal = new bootstrap.Modal(document.getElementById("formatModal"));
+                myFormatModal.show();
 
-        // Manejar el clic en el botón de guardar cambios
-        saveButton.onclick = function () {
-          const user = document.getElementById("usuario").value.trim();
-          const pass = document.getElementById("pass").value.trim();
+                // Manejar el clic en el botón de guardar cambios
+                saveButton.onclick = function () {
+                  // Construye la URL con los parámetros
+                  const url = `/INFORMATICA/src/Models/Servicios/formato_usuarios_PDF.php?solicitante=${encodeURIComponent(data[0].Solicitante)}&user=${encodeURIComponent(personalData.Usuario)}&pass=${encodeURIComponent(personalData.Pass)}`;
 
-          // Verificar si los campos están vacíos
-          if (!user || !pass) {
-            Swal.fire({
-              icon: "warning",
-              title: "Campos requeridos",
-              text: "Por favor, complete los campos de Usuario y Contraseña antes de continuar.",
+                  // Abre la URL en una nueva pestaña
+                  window.open(url, '_blank');
+                  myFormatModal.hide();
+                };
+              }
+            })
+            .catch((error) => {
+              console.error("Error:", error);
+              Swal.fire({
+                icon: "error",
+                title: "Oops...",
+                text: "Error al cargar los detalles del personal",
+              });
             });
-            return; // Evitar que se abra la URL si los campos están vacíos
-          }
+        } else {
+          // Mostrar contenido en el modal si no es "CREACIÓN DE USUARIO"
+          document.getElementById("formatModalBody").innerHTML = modalContent;
 
-          const solicitante = data[0].Solicitante;
-          // Construye la URL con los parámetros
-          const url = `/INFORMATICA/src/Models/Servicios/formato_usuarios_PDF.php?solicitante=${encodeURIComponent(solicitante)}&user=${encodeURIComponent(user)}&pass=${encodeURIComponent(pass)}`;
-
-          // Abre la URL en una nueva pestaña
-          window.open(url, '_blank');
-          myFormatModal.hide ();
-        };
+          let myFormatModal = new bootstrap.Modal(document.getElementById("formatModal"));
+          myFormatModal.show();
+        }
       }
     })
     .catch((error) => {

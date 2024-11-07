@@ -201,7 +201,7 @@ document.addEventListener("DOMContentLoaded", () => {
             data,
             selectId,
             valueKey = "Pk_NumeroEmpleado",
-            textKey = "Nombre"
+            textKey = "NombreCompleto"
         ) {
             const select = document.getElementById(selectId);
             data.forEach((item) => {
@@ -426,7 +426,7 @@ function editActivo(id) {
             data.forEach((persona) => {
                 const option = document.createElement("option");
                 option.value = persona.Pk_NumeroEmpleado;
-                option.textContent = `${persona.Nombre}- ${persona.Pk_NumeroEmpleado}`;
+                option.textContent = `${persona.NombreCompleto}- ${persona.Pk_NumeroEmpleado}`;
                 select.appendChild(option);
             });
 

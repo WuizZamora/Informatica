@@ -6,7 +6,7 @@
         <hr>
         <form id="personalForm" class="needs-validation" autocomplete="off" novalidate>
             <div class="row">
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <label for="NumeroEmpleado" class="form-label">Número de empleado</label>
                     <input type="number" class="form-control text-center" id="NumeroEmpleado" name="NumeroEmpleado" min="0" max="214748364" required oninput="checkLength(this)">
                 </div>
@@ -17,7 +17,15 @@
                         }
                     }
                 </script>
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <label for="PrimerApellidoEmpleado" class="form-label">Primer apellido</label>
+                    <input type="text" class="form-control text-center" id="PrimerApellidoEmpleado" name="PrimerApellidoEmpleado" maxlength="150" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="SegundoApellidoEmpleado" class="form-label">Segundo apellido</label>
+                    <input type="text" class="form-control text-center" id="SegundoApellidoEmpleado" name="SegundoApellidoEmpleado" maxlength="150" required>
+                </div>
+                <div class="col-md-3">
                     <label for="NombreEmpleado" class="form-label">Nombre completo</label>
                     <input type="text" class="form-control text-center" id="NombreEmpleado" name="NombreEmpleado" maxlength="150" required>
                 </div>
@@ -26,6 +34,12 @@
                     <input type="text" class="form-control text-center" id="RFCEmpleado" name="RFCEmpleado" maxlength="15">
                 </div>
                 <script>
+                    document.getElementById("PrimerApellidoEmpleado").addEventListener("input", function() {
+                        this.value = this.value.toUpperCase();
+                    });
+                    document.getElementById("SegundoApellidoEmpleado").addEventListener("input", function() {
+                        this.value = this.value.toUpperCase();
+                    });
                     document.getElementById("NombreEmpleado").addEventListener("input", function() {
                         this.value = this.value.toUpperCase();
                     });

@@ -168,7 +168,7 @@ function filtrarPersonal() {
     const datosFiltrados = datosPersonal.filter(
         (persona) =>
             persona.Pk_NumeroEmpleado.toString().toLowerCase().includes(filtro) ||
-            persona.Nombre.toLowerCase().includes(filtro)
+            persona.NombreCompleto.toLowerCase().includes(filtro)
     );
     mostrarPaginaConDatos(datosFiltrados);
 }
@@ -188,7 +188,7 @@ function mostrarPagina(pagina) {
         const fila = document.createElement("tr");
         fila.innerHTML = `
             <td>${persona.Pk_NumeroEmpleado}</td>
-            <td>${persona.Nombre}</td>
+            <td>${persona.NombreCompleto}</td>
             <td>${persona.RFC}</td>
             <td> 
             ${userRole == 1 || userRole == 3
@@ -225,7 +225,7 @@ function mostrarPaginaConDatos(datos) {
         const fila = document.createElement("tr");
         fila.innerHTML = `
             <td>${persona.Pk_NumeroEmpleado}</td>
-            <td>${persona.Nombre}</td>
+            <td>${persona.NombreCompleto}</td>
             <td>${persona.RFC}</td>
             <td> 
             ${userRole == 1 || userRole == 3
@@ -346,9 +346,16 @@ function editPersonal(id) {
                 let modalContent = `
                     <strong># ${data.Pk_NumeroEmpleado}</strong>
                     <div class="form-group">
+                        <label for="PrimerApellidoUpdate">Primer apellido:</label>
+                        <input class="form-control text-center" id="PrimerApellidoUpdate" name="PrimerApellidoUpdate" value="${data.PrimerApellido}">
+                    </div>
+                    <div class="form-group">
+                        <label for="SegundoApellidoUpdate">Segundo apellido:</label>
+                        <input class="form-control text-center" id="SegundoApellidoUpdate" name="SegundoApellidoUpdate" value="${data.SegundoApellido}">
+                    </div>
+                    <div class="form-group">
                         <label for="NombreUpdate">Nombre:</label>
-                        <input class="form-control text-center" id="NombreUpdate" name="NombreUpdate" value="${data.Nombre
-                    }">
+                        <input class="form-control text-center" id="NombreUpdate" name="NombreUpdate" value="${data.Nombres}">
                     </div>
                     <div class="form-group">
                         <label for="RFCUpdate">RFC:</label>
@@ -376,6 +383,14 @@ function editPersonal(id) {
                     }>No Vigente</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="UsuarioUpdate">Usuario:</label>
+                        <input type="text" class="form-control text-center" id="UsuarioUpdate" name="UsuarioUpdate" value="${data.Usuario}">
+                    </div>
+                    <div class="form-group">
+                        <label for="PassUpdate">Pass:</label>
+                        <input type="text" class="form-control text-center" id="PassUpdate" name="PassUpdate" value="${data.Pass}">
+                    </div>
                 `;
 
                 // Mostrar contenido en el modal
@@ -402,21 +417,29 @@ function editPersonal(id) {
                 document.getElementById("saveButtonPersonal").onclick = function () {
                     // Obtener los valores de los campos
                     const numeroEmpleado = data.Pk_NumeroEmpleado;
+                    const primerApellido = document.getElementById("PrimerApellidoUpdate").value;
+                    const segundoApellido = document.getElementById("SegundoApellidoUpdate").value;
                     const nombre = document.getElementById("NombreUpdate").value;
                     const rfc = document.getElementById("RFCUpdate").value;
                     const plaza = document.getElementById("PlazaUpdate").value;
                     const fechaInicial =
                         document.getElementById("FechaInicialUpdate").value;
                     const estatusUpdate = document.getElementById("EstatusUpdate").value;
+                    const usuarioUpdate = document.getElementById("UsuarioUpdate").value;
+                    const passUpdate = document.getElementById("PassUpdate").value;
 
                     // Inicializar un objeto para almacenar los datos del servicio
                     const datosPersonal = {
                         numeroEmpleado,
+                        primerApellido, 
+                        segundoApellido,
                         nombre,
                         rfc,
                         plaza,
                         fechaInicial,
                         estatusUpdate,
+                        usuarioUpdate,
+                        passUpdate
                     };
 
                     // Enviar los datos al backend
