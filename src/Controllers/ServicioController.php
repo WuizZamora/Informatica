@@ -10,4 +10,9 @@ class ServicioController
     {
         include './src/Views/Servicios/servicios_informe_periodos.php';
     }
+
+    public function informeServiciosPasados($rol)
+    {
+        include './src/Views/Servicios/servicios_pasados_informe_periodos.php';
+    }
 }
