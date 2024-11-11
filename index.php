@@ -46,7 +46,7 @@ $page = isset($_GET['page']) ? $_GET['page'] : '';
 if ($rol == 2 && empty($page)) {
     header('Location: index.php?page=servicios');
     exit();
-}elseif(($rol == 1 || $rol == 3) && empty($page)){
+} elseif (($rol == 1 || $rol == 3) && empty($page)) {
     header('Location: index.php?page=serviciosInforme');
 }
 
@@ -81,6 +81,9 @@ $Servicios = new ServicioController();
                 break;
             case 'serviciosInforme':
                 $Servicios->informeServicios($rol);
+                break;
+            case 'serviciosInformePasados':
+                $Servicios->informeServiciosPasados($rol);
                 break;
             default:
                 echo "<div class='alert alert-warning'>Página no encontrada.</div>";

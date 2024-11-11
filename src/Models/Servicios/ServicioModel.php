@@ -431,4 +431,40 @@ class ServicioModel
 
         return $equipoDetalles;
     }
+
+    public function ServicioFechasPasadas($dateInicial, $dateFinal)
+    {
+        $query = "CALL Servicios_Videos_Pasados_SELECT_Date(?, ?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("ss", $dateInicial, $dateFinal);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $servicios = [];
+
+        // Almacenar todos los resultados en un array
+        while ($row = $result->fetch_assoc()) {
+            $servicios[] = $row;
+        }
+
+        // Retornar los datos del servicio
+        return $servicios;
+    }
+
+    public function consultarDetallesEquipoPasado($equipo, $fechaInicio, $fechaFin)
+    {
+        $query = "CALL Servicios_Videos_Pasados_SELECT_DetalleEquipo(?, ?, ?)";
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("sss", $fechaInicio, $fechaFin, $equipo);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $equipoDetalles = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $equipoDetalles[] = $row;
+        }
+
+        return $equipoDetalles;
+    }
 }
