@@ -517,7 +517,9 @@ function actualizarServicios() {
     ? allData.filter(
       (servicio) =>
         servicio.Folio.toLowerCase().includes(searchTerm) ||
-        servicio.Oficio.toLowerCase().includes(searchTerm)
+        servicio.Oficio.toLowerCase().includes(searchTerm) ||
+        servicio.Solicitante.toLowerCase().includes(searchTerm)
+
     )
     : allData;
 

@@ -142,7 +142,12 @@
                     </div>
                     <div class="col-md-3">
                         <label class="form-label" for="Periodo">Periodo</label>
-                        <input type="text" class="form-control text-center" name="Periodo" id="Periodo" required readonly>
+                        <select name="Periodo" id="Periodo" class="form-select text-center">
+                            <option selected disabled value="" class="text-center">Elige una opción</option>
+                            <option value="N/A">No hay periodo</option>
+                            <option value="Primera quincena">1era quincena</option>
+                            <option value="Segunda quincena">2da quincena</option>
+                        </select>
                     </div>
                     <!-- CALCULA LAS QUINCENAS -->
                     <script>
@@ -254,8 +259,8 @@
                             type="text"
                             id="searchInput"
                             class="form-control text-center"
-                            placeholder="Buscar por Folio u Oficio"
-                            aria-label="Buscar por Folio u Oficio"
+                            placeholder="Buscar por Folio, Oficio o Solicitante"
+                            aria-label="Buscar por Folio, Oficio o Solicitante"
                             aria-describedby="search-icon"
                             oninput="actualizarServicios()" />
                     </div>
