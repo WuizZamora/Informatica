@@ -47,7 +47,7 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
         <img src="http://localhost/INFORMATICA/public/images/cabecera_completa.png" alt="LOGO CDMX" width=700>
         <p style="padding-left:23rem;">Ciudad de México, a ' . $fecha_hoy . '</p>
         <p class="texto">
-        <strong>' . $data['NombreCompleto'] . '<br>Puesto: ' . $data['Puesto'] . '<br>Usuario:</strong> ' . $user . '<br><strong>Contraseña:</strong> '. $pass . '<br><br>
+        <strong>' . $data['NombreCompleto'] . '<br>Puesto: ' . $data['Puesto'] . '</strong> '. '<br><strong>Contraseña:</strong> '. $pass . '<br><br>
         <strong>PRESENTE</strong><br>
         Con base en las Políticas del Instituto de Verificación Administrativa de la Ciudad de México sobre Usuarios, Contraseñas, Internet, Intranet, Correo Electrónico, Telefonía e Internet Móvil, Telefonía Local y Dispositivos Móviles, descritas de acuerdo al  aviso en la Gaceta Oficial de la Ciudad de México número 239 de fecha 12 de enero de 2018, y que pueden ser consultadas el siguiente enlace electrónico <a href"http://lto7.ddns.net/invea/informes/usuarios.php">http://lto7.ddns.net/invea/informes/usuarios.php</a> así como una implementación de seguridad para el personal de este Instituto, me permito informarle que a partir del día de hoy, le es asignado su nombre de usuario y contraseña, cuya acción permitirá a usted tener la certeza de que la contraseña es UNICA y que personal ajeno a usted no la posee. <br>
 
