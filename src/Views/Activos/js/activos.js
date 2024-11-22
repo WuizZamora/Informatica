@@ -46,10 +46,17 @@ buscarCABMS.addEventListener("input", () => {
     datosFiltrados = datosActivos.filter((activo) => {
         // Formatear el Progresivo como un número de 6 dígitos
         const progresivoFormateado = String(activo.Progresivo).padStart(6, "0");
-        return `${activo.CABMS}-${progresivoFormateado}`
-            .toLowerCase()
-            .includes(terminoBusqueda);
+        
+        // Generar el término a comparar para CABMS-Progresivo
+        const cabmsProgresivo = `${activo.CABMS}-${progresivoFormateado}`.toLowerCase();
+
+        // Convertir el Resguardante a minúsculas para comparar
+        const resguardante = activo.NombreResguardante?.toLowerCase() || "";
+
+        // Retornar true si el término de búsqueda está en CABMS-Progresivo o en Resguardante
+        return cabmsProgresivo.includes(terminoBusqueda) || resguardante.includes(terminoBusqueda);
     });
+
     paginaActualActivos = 1; // Reiniciar a la primera página
     renderTablaActivos();
     renderPaginacionActivos();
