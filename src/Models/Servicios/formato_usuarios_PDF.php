@@ -39,7 +39,7 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
         <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
             body {font-family: "Roboto", sans-serif; margin: 0; padding: 0;}
-            .texto {font-size: 0.8rem; padding:1rem; text-align: justify;}
+            .texto {font-size: 0.9rem; padding:1rem; text-align: justify;}
             .footer {position: fixed; bottom: 0; left: 0; width: 100%; height: 4rem; display: flex; align-items: center; padding: 0 1rem; box-sizing: border-box;}
             .footer img { right: 1rem; bottom: 1rem; object-fit: contain; margin-bottom:2rem;}
         </style>
