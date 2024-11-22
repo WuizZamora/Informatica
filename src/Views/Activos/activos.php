@@ -91,8 +91,8 @@
                         type="text"
                         id="buscarCABMS"
                         class="form-control"
-                        placeholder="Buscar por CABMS-Progresivo"
-                        aria-label="Buscar por CABMS-Progresivo"
+                        placeholder="Buscar por CABMS-Progresivo o Resguardante"
+                        aria-label="Buscar por CABMS-Progresivo o Resguardante"
                         aria-describedby="search-icon"
                         oninput="actualizarActivos()" />
                 </div>
