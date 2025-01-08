@@ -45,10 +45,11 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
         </style>
     </head>
     <body>
-        <img src="http://localhost/INFORMATICA/public/images/encabezado.png" alt="LOGO CDMX" width=700>
+        <img src="http://localhost/INFORMATICA/public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="200" height="150">
+        <p style="float: right; color: #757575";><strong>INSTITUTO DE VERIFICACIÓN ADMINISTRATIVA</strong><br> DIRECCIÓN DE ADMINISTRACIÓN Y FINANZAS</p>
         <p style="padding-left:23rem;">Ciudad de México, a ' . $fecha_hoy . '</p>
         <p class="texto">
-        <strong>' . $data['NombreCompleto'] . '<br>Puesto: ' . $data['Puesto'] . '</strong> ' . '<br><strong>Contraseña:</strong> '. $pass . '<br>
+        <strong>' . $data['NombreCompleto'] . '<br>Puesto: ' . $data['Puesto'] . '</strong> ' .'<br><strong>Usuario: </strong>'.$user . '<br><strong>Contraseña: </strong>'. $pass . '<br>
         <strong>PRESENTE</strong><br>
         Con base en las Políticas del Instituto de Verificación Administrativa de la Ciudad de México sobre Usuarios, Contraseñas, Internet, Intranet, Correo Electrónico, Telefonía e Internet Móvil, Telefonía Local y Dispositivos Móviles, descritas de acuerdo al  aviso en la Gaceta Oficial de la Ciudad de México número 239 de fecha 12 de enero de 2018, y que pueden ser consultadas el siguiente enlace electrónico <a href"http://lto7.ddns.net/invea/informes/usuarios.php">http://lto7.ddns.net/invea/informes/usuarios.php</a> así como una implementación de seguridad para el personal de este Instituto, me permito informarle que a partir del día de hoy, le es asignado su nombre de usuario y contraseña, cuya acción permitirá a usted tener la certeza de que la contraseña es ÚNICA y  que personal ajeno a usted no la posee. <br>
 
@@ -78,8 +79,8 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
             $pdf->page_text($x, $y, $text, $font, $size, $color);
         }
     </script>
-    <img src="http://localhost/INFORMATICA/public/images/fcp.png" alt="Logo Felipe" width="150" height="100" style="float: right;">
-
+    <img src="http://localhost/INFORMATICA/public/images/pie_pagina_2025.png" alt="Logo Felipe" width="90" height="120" style="float: right;">
+    
     <div class="footer"> 
         <img src="http://localhost/INFORMATICA/public/images/direccion_invea.png" alt="Logo Footer" width=300>
         </div>

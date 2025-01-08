@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-dark bg-success">
   <div class="container-fluid">
     <a href="/INFORMATICA/index.php" class="mb-2 text-white text-decoration-none d-flex align-items-center me-3">
-      <img src="./public/images/cdmx_logo_completo.png" alt="LOGO CDMX" width="80" class="me-2"> INVEA
+      <img src="./public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="80" class="me-2"> INVEA
     </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>

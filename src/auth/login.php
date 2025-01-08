@@ -76,7 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <h1 class="text-center">INFORMÁTICA</h1>
             <h4 class="h3 mb-3 fw-normal text-center">Inicio de Sesión</h4>
             <div class="text-center mb-4">
-                <img src="<?php echo ASSETS_URL; ?>images/cdmx_logo_completo.png" alt="LOGO" width="200">
+                <img src="<?php echo ASSETS_URL; ?>images/encabezado_2025_corto.png" alt="LOGO" width="200">
             </div>
             <div class="mb-3">
                 <div class="form-floating">

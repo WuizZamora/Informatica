@@ -47,14 +47,14 @@ if (isset($_GET['IDServicio'])) {
                 
                 .footer {position: fixed; bottom: 0; left: 0; width: 100%; height: 3rem; display: flex; align-items: center; padding: 0 1rem; box-sizing: border-box;}
 
-                .footer img {position: absolute; right: 1rem; bottom: 1rem; height: 1rem; object-fit: contain;}
+                .footer img {position: absolute; right: 1rem; bottom: 1rem; height: 9rem; object-fit: contain;}
             </style>
         </head>
         <body>
             <div class="header">
-                <img src="http://localhost/INFORMATICA/public/images/logo_cdmx_new.png" alt="LOGO CDMX" width="120">
-                <span class="texto">INSTITUTO DE VERIFICACIÓN ADMINISTRATIVA DE LA CDMX </span>
-                <img src="http://localhost/INFORMATICA/public/images/logo_identidad_gris.png" alt="LOGO INVEA" width="120">
+                <img src="http://localhost/INFORMATICA/public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="120" style="float: left;"><br><br>
+                <span class="texto">INSTITUTO DE VERIFICACIÓN ADMINISTRATIVA DE LA CDMX</span>
+                <img src="http://localhost/INFORMATICA/public/images/logo_identidad_gris.png" alt="LOGO INVEA" width="120" style="float: right;">
             </div>
             <div class="sub-texto">DIRECCIÓN DE ADMINISTRACIÓN Y FINANZAS</div>
             <hr>
@@ -248,7 +248,7 @@ if (isset($_GET['IDServicio'])) {
             }
         </script>
         <div class="footer"> 
-            <img src="http://localhost/INFORMATICA/public/images/Ciudad_Innovadora.jpg" alt="Logo Footer">
+            <img src="http://localhost/INFORMATICA/public/images/pie_pagina_2025.png" alt="Logo Footer">
         </div>
         </body>
         </html>';
