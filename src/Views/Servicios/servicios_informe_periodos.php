@@ -349,6 +349,8 @@ if ($rol == 1 || $rol == 3) { ?>
                         <th>Periodo Final</th>
                         <th>Mes</th>
                         <th>Periodo</th>
+                        <th>Folio</th>
+                        <th>Soporte</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -363,6 +365,15 @@ if ($rol == 1 || $rol == 3) { ?>
                     <td>${detalle.PeriodoFinal}</td>
                     <td>${detalle.Mes}</td>
                     <td>${detalle.Periodo}</td>
+                    <td>${detalle.Folio}</td>
+                     <td>
+          ${detalle.Observaciones
+        ? `<a href="/INFORMATICA/src/Models/Servicios/${detalle.Observaciones}" target="_blank">
+                  <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
+                </a>`
+        : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
+      }
+        </td>
                 </tr>`;
             });
 

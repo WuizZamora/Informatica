@@ -79,7 +79,7 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
             $pdf->page_text($x, $y, $text, $font, $size, $color);
         }
     </script>
-    <img src="http://localhost/INFORMATICA/public/images/pie_pagina_2025.png" alt="Logo Felipe" width="90" height="120" style="float: right;">
+    <img src="http://localhost/INFORMATICA/public/images/logo_2025_newww.png" alt="Logo Tenochtitlan" width="250" height="100" style="float: right;">
     
     <div class="footer"> 
         <img src="http://localhost/INFORMATICA/public/images/direccion_invea.png" alt="Logo Footer" width=300>

@@ -209,7 +209,7 @@ if (isset($_GET['IDServicio'])) {
             if ($data[0]['Evaluacion'] === 'NO FUNCIONAL') {
                 $html .= '
                 <div class="content-firma">
-                ___________________________________________<br>LIC. ' . $data[0]['Nombre_JUD_IT'] . '
+                ___________________________________________<br>' . $data[0]['Nombre_JUD_IT'] . '
                 </div>';
             } else {
                 $html .= '
