@@ -122,14 +122,11 @@
                             <option value="INVEA 1">INVEA 1</option>
                             <option value="INVEA 2">INVEA 2</option>
                             <option value="INVEA 3">INVEA 3</option>
-                            <option value="INVEA 4">INVEA 4</option>
-                            <option value="INVEA 5">INVEA 5</option>
                             <option value="TRANSPORTE 1">TRANSPORTE 1</option>
                             <option value="TRANSPORTE 2">TRANSPORTE 2</option>
                             <option value="TRANSPORTE 3">TRANSPORTE 3</option>
                             <option value="TRANSPORTE 4">TRANSPORTE 4</option>
                             <option value="TRANSPORTE 5">TRANSPORTE 5</option>
-                            <option value="TRANSPORTE 6">TRANSPORTE 6</option>
                         </select>
                     </div>
                     <div class="col-md-3">
