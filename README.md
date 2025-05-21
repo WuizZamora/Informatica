@@ -71,7 +71,7 @@ DB_NAME=     # Nombre de la base de datos
 
 ## ⚠️ Notas Importantes
 1. **Seguridad:**  
-   - Nunca subir el archivo `.env` al repositorio (ya esta excluido el .gitignore)
+   - Nunca subir el archivo `.env` al repositorio (ya esta excluido en el .gitignore)
 
 2. **Requisitos Servidor:**  
    - PHP 7.4 o superior
