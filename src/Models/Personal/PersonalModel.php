@@ -97,11 +97,11 @@ class PersonalModel
         }
     }
 
-    public function actualizarPersonal($numeroEmpleado, $primerApellido,$segundoApellido, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate, $usuarioUpdate, $passUpdate)
+    public function actualizarPersonal($numeroEmpleado, $primerApellido, $segundoApellido, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate, $usuarioUpdate, $passUpdate)
     {
         try {
             $stmt = $this->db->prepare("CALL Personal_UPDATE_PersonalAndPlaza(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt->bind_param("issssissss", $numeroEmpleado,$primerApellido, $segundoApellido, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate, $usuarioUpdate, $passUpdate);
+            $stmt->bind_param("issssissss", $numeroEmpleado, $primerApellido, $segundoApellido, $nombre, $rfc, $plaza, $fechaInicial, $estatusUpdate, $usuarioUpdate, $passUpdate);
 
             $stmt->execute();
 
@@ -129,7 +129,7 @@ class PersonalModel
         return $plazas;
     }
 
-    public function guardarPersonal($numeroEmpleado, $primerApellidoEmpleado,$segundoApellidoEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
+    public function guardarPersonal($numeroEmpleado, $primerApellidoEmpleado, $segundoApellidoEmpleado, $nombreEmpleado, $rfcEmpleado, $plazaEmpleado, $fechaInicial, $estatusEmpleado)
     {
         try {
             // Primero, verificamos si el número de empleado ya existe en la base de datos
@@ -161,6 +161,66 @@ class PersonalModel
         }
     }
 
+    public function guardarConstanciaPersonal($personalSolicitante, $fechaSeparacion, $oficio, $constancia, $oficioTI)
+    {
+        try {
+            $stmt = $this->db->prepare("Insert INTO Constancia_No_Adeudos(Fk_NumeroEmpleado, FechaSeparacion, Oficio, NumeroConstancia, FechaEmision, OficioTI) VALUES (?, ?, ?, ?, NOW(), ?)");
+            $stmt->bind_param("issss", $personalSolicitante, $fechaSeparacion, $oficio, $constancia, $oficioTI);
+
+            $stmt->execute();
+
+            return ['success' => true, 'message' => 'Constancia guardada exitosamente'];
+        } catch (mysqli_sql_exception $e) {
+            return ['success' => false, 'error' => $e->getMessage()];
+        }
+    }
+
+    public function obtenerConstancia()
+    {
+        $query = "SELECT 
+            c.Pk_IDConstancia,
+            CONCAT(p.PrimerApellido, ' ', p.SegundoApellido, ' ', p.Nombres) AS Nombre,
+            c.FechaSeparacion,
+            c.Oficio,
+            c.NumeroConstancia,
+            c.FechaEmision, 
+            c.OficioTI
+        FROM Constancia_No_Adeudos c
+        JOIN Personal p ON c.Fk_NumeroEmpleado = p.Pk_NumeroEmpleado
+        ORDER BY c.FechaEmision DESC";
+
+        $result = mysqli_query($this->db, $query);
+
+        if (!$result) {
+            throw new Exception("Error en la consulta: " . mysqli_error($this->db));
+        }
+        $constancias = [];
+        while ($row = mysqli_fetch_assoc($result)) {
+            $constancias[] = $row;
+        }
+        return $constancias;
+    }
+
+    public function obtenerConstanciaID ($IDConstancia) {
+        $query = "CALL Personal_SELECT_Constancia_ID(?)";
+
+        $stmt = $this->db->prepare($query);
+        $stmt->bind_param("i", $IDConstancia);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+
+        if (!$result) {
+            throw new Exception("Error en la consulta: " . mysqli_error($this->db));
+        }
+        
+        if ($result->num_rows > 0) {
+            return $result->fetch_assoc();
+        } else {
+            return null; // O manejar el caso cuando no se encuentra la constancia
+        }
+
+    }
 
     public function obtenerPersonalAndPlaza($numeroEmpleado)
     {

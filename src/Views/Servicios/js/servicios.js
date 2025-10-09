@@ -501,6 +501,8 @@ function fetchServicios() {
     .then((data) => {
       allData = data; // Guardar los datos originales
       actualizarServicios(); // Renderizar todos los servicios inicialmente
+      // FECHA DE SOLUCITUD AUTOMATICA EN INPUT
+      FechaSolicitud.valueAsDate = new Date();
     })
     .catch((error) => console.error("Error:", error));
 }
@@ -577,7 +579,7 @@ function renderTable(data, page) {
         ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio
         }" 
                   target="_blank" 
-                  class="btn btn-success ${shouldDisable ? "disabled" : ""}"
+                  class="btn btn-success"
                   tabindex="${shouldDisable ? "-1" : "0"}">
                   Ver
                 </a>`

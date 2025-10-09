@@ -53,6 +53,7 @@
                 <label class="form-label" for="FechaSolicitud">Fecha de solicitud</label>
                 <input type="date" class="form-control text-center" name="FechaSolicitud" id="FechaSolicitud" required>
             </div>
+
             <div class="col-md-3" style="display: none;">
                 <label class="form-label" for="FechaAtencion">Fecha de atención</label>
                 <input type="datetime-local" class="form-control text-center" name="FechaAtencion" id="FechaAtencion" required readonly>
@@ -152,7 +153,7 @@
                         const periodoInicial = document.getElementById('PeriodoInicial');
                         const periodoFinal = document.getElementById('PeriodoFinal');
                         const periodoOutput = document.getElementById('Periodo');
-
+                    
                         function calcularPeriodo() {
                             const fechaInicio = periodoInicial.value; // Valor de la fecha inicial
                             const fechaFin = periodoFinal.value; // Valor de la fecha final

@@ -342,15 +342,13 @@ if ($rol == 1 || $rol == 3) { ?>
             <table class="table table-striped table-hover table-responsive text-center">
                 <thead class="table-warning">
                     <tr>
-                        <th>Solicitante</th>
-                        <th>Cantidad de videos</th>
-                        <th>Fecha de Solicitud</th>
-                        <th>Periodo Inicial</th>
-                        <th>Periodo Final</th>
-                        <th>Mes</th>
-                        <th>Periodo</th>
-                        <th>Folio</th>
-                        <th>Soporte</th>
+                    <th>Cantidad de videos</th>
+                    <th>Fecha de Solicitud</th>
+                    <th>Periodo</th>
+                    <th>Mes - Quincena</th>
+                    <th>Solicitante</th>
+                    <th>Folio</th>
+                    <th>Soporte</th>
                     </tr>
                 </thead>
                 <tbody>`;
@@ -358,13 +356,11 @@ if ($rol == 1 || $rol == 3) { ?>
             data.forEach(detalle => {
                 html += `
                 <tr>
-                    <td>${detalle.Solicitante}</td>
-                    <td>${detalle.CantidadVideos}</td>
-                    <td>${detalle.FechaSolicitud}</td>
-                    <td>${detalle.PeriodoInicial}</td>
-                    <td>${detalle.PeriodoFinal}</td>
-                    <td>${detalle.Mes}</td>
-                    <td>${detalle.Periodo}</td>
+                <td>${detalle.CantidadVideos}</td>
+                <td>${detalle.FechaSolicitud}</td>
+                <td><strong>Periodo Inicial: </strong>${detalle.PeriodoInicial}<br> <strong>Periodo Final:</strong><br>${detalle.PeriodoFinal}</td>
+                <td>${detalle.Mes} - ${detalle.Periodo}</td>
+                <td>${detalle.Solicitante}</td>
                     <td>${detalle.Folio}</td>
                      <td>
           ${detalle.Observaciones

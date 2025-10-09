@@ -76,6 +76,9 @@ $Servicios = new ServicioController();
             case 'personal':
                 $Personal->index($rol);
                 break;
+            case 'NoAdeudos':
+                $Personal->NoAdeudos($rol);
+                break;
             case 'servicios':
                 $Servicios->index($rol);
                 break;
