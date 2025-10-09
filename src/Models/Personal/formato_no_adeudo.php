@@ -8,21 +8,6 @@ require_once __DIR__ . '/../../../vendor/autoload.php';
 use Dompdf\Dompdf;
 use Dompdf\Options;
 
-date_default_timezone_set('America/Mexico_City');
-
-// Crear un objeto DateTime con la fecha actual
-$fecha = new DateTime();
-
-// Crear un formateador de fecha en español
-$formatter = new IntlDateFormatter(
-    'es_ES', // Configuración regional en español
-    IntlDateFormatter::LONG, // Formato de fecha largo (ej: "4 de noviembre de 2024")
-    IntlDateFormatter::NONE // Sin formato de hora
-);
-
-// Formatear la fecha
-$fecha_hoy = $formatter->format($fecha);
-
 if (isset($_GET['IDConstancia'])) {
     $IDConstancia = htmlspecialchars($_GET['IDConstancia']);
     // Asumimos que ya tienes una instancia de tu modelo
@@ -39,7 +24,6 @@ if (isset($_GET['IDConstancia'])) {
     <head>
         <meta charset="UTF-8">
         <title>CONSTANCIA DE NO ADEUDO</title>
-        <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
         <style>
             body {font-family: "Arial", sans-serif; margin: 0; padding: 0;}
             .texto {font-size: 1rem; padding:1rem; text-align: justify;}
