@@ -164,12 +164,11 @@ class PersonalModel
     public function guardarConstanciaPersonal($personalSolicitante, $fechaSeparacion, $oficio, $constancia, $oficioTI)
     {
         try {
-            $stmt = $this->db->prepare("Insert INTO Constancia_No_Adeudos(Fk_NumeroEmpleado, FechaSeparacion, Oficio, NumeroConstancia, FechaEmision, OficioTI) VALUES (?, ?, ?, ?, NOW(), ?)");
+            $stmt = $this->db->prepare("CALL Personal_INSERT_Constancia(?, ?, ?, ?, ?)");
             $stmt->bind_param("issss", $personalSolicitante, $fechaSeparacion, $oficio, $constancia, $oficioTI);
-
             $stmt->execute();
 
-            return ['success' => true, 'message' => 'Constancia guardada exitosamente'];
+            return ['success' => true, 'message' => 'Constancia guardada y estatus actualizados correctamente'];
         } catch (mysqli_sql_exception $e) {
             return ['success' => false, 'error' => $e->getMessage()];
         }
@@ -201,7 +200,8 @@ class PersonalModel
         return $constancias;
     }
 
-    public function obtenerConstanciaID ($IDConstancia) {
+    public function obtenerConstanciaID($IDConstancia)
+    {
         $query = "CALL Personal_SELECT_Constancia_ID(?)";
 
         $stmt = $this->db->prepare($query);
@@ -213,13 +213,12 @@ class PersonalModel
         if (!$result) {
             throw new Exception("Error en la consulta: " . mysqli_error($this->db));
         }
-        
+
         if ($result->num_rows > 0) {
             return $result->fetch_assoc();
         } else {
             return null; // O manejar el caso cuando no se encuentra la constancia
         }
-
     }
 
     public function obtenerPersonalAndPlaza($numeroEmpleado)
