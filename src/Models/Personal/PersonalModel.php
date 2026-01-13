@@ -186,7 +186,7 @@ class PersonalModel
             c.OficioTI
         FROM Constancia_No_Adeudos c
         JOIN Personal p ON c.Fk_NumeroEmpleado = p.Pk_NumeroEmpleado
-        ORDER BY c.FechaEmision DESC";
+        ORDER BY c.Pk_IdConstancia DESC";
 
         $result = mysqli_query($this->db, $query);
 

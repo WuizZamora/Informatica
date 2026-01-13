@@ -34,7 +34,7 @@ if (isset($_GET['IDConstancia'])) {
     <body>
         <img src="http://localhost/INFORMATICA/public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="200" height="150">
         <p style="float: right; color: #757575";><strong>INSTITUTO DE VERIFICACIÓN <br>ADMINISTRATIVA</strong><br> DIRECCIÓN DE ADMINISTRACIÓN Y FINANZAS</p>
-        <p style="padding-left:23rem;">Ciudad de México, a ' . $data['FechaEmision'] . '<br> <strong>INVEACDMX/DG/DAF/JUDTI/'.$data['OficioTI'].'/2025</strong></p>
+        <p style="padding-left:23rem;">Ciudad de México, a ' . $data['FechaEmision'] . '<br> <strong>INVEACDMX/DG/DAF/JUDTI/'.$data['OficioTI'].'/2026</strong></p>
         <p class="texto">
         <strong>LCDO. ' . $data['Nombre_Finanzas'] . '</strong><br>Coordinador de Finanzas ' . '<br>
         <strong>PRESENTE</strong><br><br>
@@ -47,7 +47,7 @@ if (isset($_GET['IDConstancia'])) {
         Cabe señalar que se hicieron los trabajos técnicos conducentes para asegurar que no tenga acceso a los equipos de cómputo mediante el cambio de contraseña asignada para sus labores en las oficinas de este Instituto.
         <br><br>
         Sin más por el momento, le envío un cordial saludo.
-        <br><br><br>
+        <br><br>
         <strong>A T E N T A M E N T E<br>
         JEFE DE UNIDAD DEPARTAMENTAL<br>TECNOLOGÍAS DE LA INFORMACIÓN
         <br><br><br><br><br><br>'. $data['Nombre_JUD_IT'] . '<br>
