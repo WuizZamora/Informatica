@@ -126,8 +126,8 @@
 
     <!-- Tabla de Personal -->
     <div class="table-responsive">
-        <table class="table table-striped-columns table-hover text-center">
-            <thead class="table-success">
+        <table class="table table-hover text-center">
+            <thead class="table-secondary">
                 <tr>
                     <th>NÚMERO DE EMPLEADO</th>
                     <th>NOMBRE</th>

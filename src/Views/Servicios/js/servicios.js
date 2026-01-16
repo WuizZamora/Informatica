@@ -551,28 +551,27 @@ function renderTable(data, page) {
         : servicio.Folio // Solo mostrar Folio como texto si no empieza con 'I'
       }
         </td>
-        <td>${servicio.Solicitante}</td>
-        <td>${servicio.FechaSolicitud}</td>
+        <td>${servicio.Solicitante}<br><strong>Fecha de atención:</strong><br>${servicio.FechaAtencion}</td>
         <td style="word-break: break-word; white-space: normal;">
           ${servicio.Oficio}
         </td>
-        <td>${servicio.FechaAtencion}</td>
         <td>${servicio.TipoServicio}</td>
-        <td class="${servicio.EstadoSolicitud === "CANCELADO"
-        ? "text-danger"
-        : servicio.EstadoSolicitud === "COMPLETADO"
-          ? "text-success"
-          : ""
-      }">
-          ${servicio.EstadoSolicitud}
-        </td>
         <td>
           ${servicio.SoporteDocumental
-        ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
+            ? `<a href="/INFORMATICA/src/Models/Servicios/${servicio.SoporteDocumental}" target="_blank">
                   <i class="bi bi-file-earmark-text text-primary" style="font-size: 1.5rem;"></i>
                 </a>`
-        : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
-      }
+            : `<i class="bi bi-file-earmark-text text-muted" style="font-size: 1.5rem; opacity: 0.5;" title="Sin información"></i>`
+          }
+          <br>
+          <span class="${servicio.EstadoSolicitud === "CANCELADO"
+              ? "text-danger"
+              : servicio.EstadoSolicitud === "COMPLETADO"
+                ? "text-success"
+                : ""
+            }">
+            ${servicio.EstadoSolicitud}
+          </span>
         </td>
         <td>
           ${userRole == 1 || userRole == 2 || userRole == 3 || userRole == 4

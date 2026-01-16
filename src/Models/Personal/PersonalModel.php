@@ -176,17 +176,7 @@ class PersonalModel
 
     public function obtenerConstancia()
     {
-        $query = "SELECT 
-            c.Pk_IDConstancia,
-            CONCAT(p.PrimerApellido, ' ', p.SegundoApellido, ' ', p.Nombres) AS Nombre,
-            c.FechaSeparacion,
-            c.Oficio,
-            c.NumeroConstancia,
-            c.FechaEmision, 
-            c.OficioTI
-        FROM Constancia_No_Adeudos c
-        JOIN Personal p ON c.Fk_NumeroEmpleado = p.Pk_NumeroEmpleado
-        ORDER BY c.Pk_IdConstancia DESC";
+        $query = "CALL Personal_SELECT_Constancias";
 
         $result = mysqli_query($this->db, $query);
 

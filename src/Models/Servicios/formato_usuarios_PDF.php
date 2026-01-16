@@ -40,8 +40,8 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
         <style>
             body {font-family: "Roboto", sans-serif; margin: 0; padding: 0;}
             .texto {font-size: 0.9rem; padding:1rem; text-align: justify;}
-            .footer {position: fixed; bottom: 0; left: 0; width: 100%; height: 4rem; display: flex; align-items: center; padding: 0 1rem; box-sizing: border-box;}
-            .footer img { right: 1rem; bottom: 1rem; object-fit: contain; margin-bottom:2rem;}
+           .footer {position: fixed; bottom: 0; left: 0; width: 100%; height: 5rem; display: flex; align-items: center; padding: 0 1rem; box-sizing: border-box;}
+            .footer img {height: 4.5rem; object-fit: contain;}
         </style>
     </head>
     <body>
@@ -68,21 +68,22 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
     ';
 
     $html .= '</div>
-    <script type="text/php">
+        <script type="text/php">
         if (isset($pdf)) {
-            $x = 280;
-            $y = 770;
+            $x = 485;
+            $y = 810;
             $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
             $font = null;
             $size = 9;
             $color = array(0,0,0);
-            $pdf->page_text($x, $y, $text, $font, $size, $color);
-        }
-    </script>
-    <img src="http://localhost/INFORMATICA/public/images/logo_2025_newww.png" alt="Logo Tenochtitlan" width="250" height="100" style="float: right;">
-    
-    <div class="footer"> 
-        <img src="http://localhost/INFORMATICA/public/images/direccion_invea.png" alt="Logo Footer" width=300>
+            $pdf->page_text($x, $y, $text, $font, $size, $color, $word_space, $char_space, $angle);
+            }
+        </script>
+     <div class="footer"> 
+        <hr style="margin-bottom: 1rem; height: 5px; background-color: purple; border: none;">
+        <img src="http://localhost/INFORMATICA/public/images/direccion_invea.png" alt="Logo Footer" style="height: 2.5rem;">
+        <img src="http://localhost/INFORMATICA/public/images/MAZA26.png" alt="Logo Footer" style="margin-left: -1.5rem; ">
+        <img src="http://localhost/INFORMATICA/public/images/AXOLOTE26.png" alt="Logo Footer">
         </div>
     </body>
     </html>';

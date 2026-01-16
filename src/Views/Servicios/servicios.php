@@ -268,17 +268,17 @@
                 </div>
             </div>
 
-            <table class="table table-striped-columns table-hover" id="serviciosTable">
-                <thead class="table-warning">
+            <table class="table table-hover" id="serviciosTable">
+                <thead class="table-secondary table-hover">
                     <tr>
                         <th>FOLIO</th>
                         <th>Personal Solicitante</th>
-                        <th>Fecha de solicitud</th>
+                        <!-- <th>Fecha de solicitud</th> -->
                         <th>Oficio</th>
-                        <th>Fecha de atención</th>
+                        <!-- <th>Fecha de atención</th> -->
                         <th>Tipo de servicio</th>
-                        <th>Estado de la solicitud</th>
-                        <th>Soporte Documental</th>
+                        <!-- <th>Estado de la solicitud</th> -->
+                        <th>Documental/Estado</th>
                         <th>Acciones</th>
                     </tr>
                 </thead>

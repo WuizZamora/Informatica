@@ -42,7 +42,7 @@
         </div>
 
         <div class="modal-footer">
-            <button type="submit" class="btn btn-primary" id="confirmSubmit">Guardar</button>
+            <button type="submit" class="btn btn-danger" id="confirmSubmit">Guardar</button>
         </div>
     </form>
 </div>
@@ -51,8 +51,8 @@
 <div class="container mt-4">
     <h3 class="text-center">Constancias registradas</h3>
     <hr>
-    <table class="table table-bordered text-center" id="tablaConstancias">
-        <thead>
+    <table class="table table-hover text-center" id="tablaConstancias">
+        <thead class="table-secondary">
             <tr>
                 <th>Constancia #</th>
                 <th>Empleado</th>

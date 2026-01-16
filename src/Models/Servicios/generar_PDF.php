@@ -45,9 +45,9 @@ if (isset($_GET['IDServicio'])) {
 
                 .table td {padding: 0.8rem; max-width: 30rem; word-wrap: break-word; white-space: normal; vertical-align: top;}
                 
-                .footer {position: fixed; bottom: 0; left: 0; width: 100%; height: 3rem; display: flex; align-items: center; padding: 0 1rem; box-sizing: border-box;}
+                .footer {position: fixed; bottom: 0; left: 0; width: 100%; height: 5rem; display: flex; align-items: center; padding: 0 1rem; box-sizing: border-box;}
 
-                .footer img {position: absolute; right: 1rem; bottom: 1rem; height: 9rem; object-fit: contain;}
+                .footer img {height: 4.5rem; object-fit: contain;}
             </style>
         </head>
         <body>
@@ -238,8 +238,8 @@ if (isset($_GET['IDServicio'])) {
         $html .= '</div>
         <script type="text/php">
             if (isset($pdf)) {
-                $x = 20;
-                $y = 780;
+                $x = 485;
+                $y = 810;
                 $text = "Página {PAGE_NUM} de {PAGE_COUNT}";
                 $font = null;
                 $size = 9;
@@ -248,7 +248,10 @@ if (isset($_GET['IDServicio'])) {
             }
         </script>
         <div class="footer"> 
-            <img src="http://localhost/INFORMATICA/public/images/pie_pagina_2025.png" alt="Logo Footer">
+        <hr style="margin-bottom: 1rem; height: 5px; background-color: purple; border: none;">
+        <img src="http://localhost/INFORMATICA/public/images/direccion_invea.png" alt="Logo Footer" style="height: 2.5rem;">
+        <img src="http://localhost/INFORMATICA/public/images/MAZA26.png" alt="Logo Footer" style="margin-left: -1.5rem; ">
+        <img src="http://localhost/INFORMATICA/public/images/AXOLOTE26.png" alt="Logo Footer">
         </div>
         </body>
         </html>';

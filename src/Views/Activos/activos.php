@@ -106,8 +106,8 @@
 
         <!-- Tabla de Activos -->
         <div class="table-responsive">
-            <table class="table table-striped-columns table-hover text-center">
-                <thead class="table-primary">
+            <table class="table table-hover text-center">
+                <thead class="table-secondary">
                     <tr>
                         <th>ID ACTIVO</th>
                         <th>

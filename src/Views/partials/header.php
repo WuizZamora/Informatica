@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-success">
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
   <div class="container-fluid">
     <a href="/INFORMATICA/index.php" class="mb-2 text-white text-decoration-none d-flex align-items-center me-3">
       <img src="./public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="80" class="me-2"> INVEA
