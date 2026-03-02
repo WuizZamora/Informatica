@@ -467,4 +467,34 @@ class ServicioModel
 
         return $equipoDetalles;
     }
+
+    public function obtenerVideosPorQuincena($anio)
+    {
+        $query = "CALL Servicios_Videos_SELECT_Quincena(?)";
+        $stmt = $this->db->prepare($query);
+
+        if (!$stmt) {
+            throw new Exception($this->db->error);
+        }
+
+        $stmt->bind_param("i", $anio);
+        $stmt->execute();
+
+        $result = $stmt->get_result();
+        $data = [];
+
+        while ($row = $result->fetch_assoc()) {
+            $data[] = $row;
+        }
+
+        $result->free();
+        $stmt->close();
+
+        while ($this->db->more_results()) {
+            $this->db->next_result();
+        }
+
+        return $data;
+    }
+
 }

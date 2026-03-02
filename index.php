@@ -62,6 +62,8 @@ $Servicios = new ServicioController();
     <meta charset="UTF-8">
     <title><?php echo SITE_NAME; ?></title>
     <?php include BASE_PATH . 'src/Views/partials/head.php'; ?>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@10.1.1/dist/gridstack.min.css">
+    <link rel="stylesheet" href=".css">
 </head>
 
 <body>
@@ -88,6 +90,12 @@ $Servicios = new ServicioController();
             case 'serviciosInformePasados':
                 $Servicios->informeServiciosPasados($rol);
                 break;
+            case 'reporteQuincenal':
+                $Servicios->reporteQuincenal($rol);
+                break;
+            case 'scanvideos':
+                $Servicios->scanvideos($rol);
+                break;
             default:
                 echo "<div class='alert alert-warning'>Página no encontrada.</div>";
                 break;
@@ -99,6 +107,9 @@ $Servicios = new ServicioController();
             </div>
         ";
     }
+
+   echo "<script src='https://cdn.jsdelivr.net/npm/gridstack@10.1.1/dist/gridstack-all.js'></script>" 
+
     ?>
 </body>
 

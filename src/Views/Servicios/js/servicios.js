@@ -575,23 +575,33 @@ function renderTable(data, page) {
         </td>
         <td>
           ${userRole == 1 || userRole == 2 || userRole == 3 || userRole == 4
-        ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio
-        }" 
-                  target="_blank" 
-                  class="btn btn-success"
-                  tabindex="${shouldDisable ? "-1" : "0"}">
-                  Ver
-                </a>`
-        : ""
-      }
+          ? `<a href="/INFORMATICA/src/Models/Servicios/generar_PDF.php?IDServicio=${servicio.Pk_IDServicio}"
+                target="_blank"
+                class="icon-action"
+                title="Ver documento"
+                tabindex="${shouldDisable ? "-1" : "0"}">
+                📄
+              </a>`
+            : ""
+          }
+
           ${userRole == 1 || userRole == 3
-        ? `<button class="btn btn-primary" onclick="editServicio(${servicio.Pk_IDServicio})">Editar</button>`
-        : ""
-      }
+            ? `<span class="icon-action"
+                    onclick="editServicio(${servicio.Pk_IDServicio})"
+                    title="Editar servicio">
+                    ✏️
+              </span>`
+            : ""
+          }
+
           ${userRole == 1 || userRole == 2 || userRole == 3
-        ? `<button class="btn btn-warning" onclick="EstadoSolicitud(${servicio.Pk_IDServicio})">Estado</button>`
-        : ""
-      }
+            ? `<span class="icon-action"
+                    onclick="EstadoSolicitud(${servicio.Pk_IDServicio})"
+                    title="Cambiar estado">
+                    🔄
+              </span>`
+            : ""
+          }
         </td>
       </tr>
     `;

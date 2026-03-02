@@ -249,7 +249,7 @@
         <!--  -->
         <h3 class="text-center">SEGUIMIENTO DE SERVICIOS</h3>
         <hr>
-        <div class="container mt-3 text-center">
+        <div class=" mt-3 text-center">
             <div class="row justify-content-center">
                 <div class="col-md-6">
                     <div class="input-group mb-3">

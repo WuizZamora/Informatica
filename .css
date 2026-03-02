@@ -1,0 +1,82 @@
+.navbar {
+    background: linear-gradient(
+        to bottom,
+        #0054d3,
+        #0066ff
+    ) !important;
+      box-shadow: 0 5px 10px rgba(0, 0, 0, 0.411);
+}
+
+.grid-stack-item-content {
+  background: #fff;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow: auto;
+}
+
+.grid-stack-item-content table {
+  width: 100%;
+  font-size: 0.7rem;
+}
+
+.grid-stack {
+  width: 100%;
+}
+
+.tabla-equipo {
+    background: linear-gradient(
+        to right,
+        #14b8a6,
+        #0f766e
+    );
+    color: white !important; 
+    font-weight: 600;
+    white-space: nowrap;
+
+}
+
+#tablaQuincenal thead.thead-quincenal th {
+    background: linear-gradient(
+        to bottom,
+        #0f766e,
+        #115e59
+    ) !important;
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.8rem;
+}
+
+#tablaQuincenal td {
+    background-color: #ffffff;
+    font-size: 0.75rem;
+}
+
+#tablaQuincenal td.mes-separador {
+    background-color: #f1f3f5;
+}
+
+
+
+/* Hover de fila */
+#tablaQuincenal tbody tr:nth-child(n+3):hover > * {
+  filter: brightness(0.92);
+  transition: filter 0.15s ease-in-out;
+}
+
+/* Hover de columna */
+#tablaQuincenal td.col-hover,
+#tablaQuincenal th.col-hover {
+    filter: brightness(0.92);
+}
+
+.icon-action {
+    cursor: pointer;
+    font-size: 1.2rem;
+    margin: 0 6px;
+    transition: transform 0.15s ease, filter 0.15s ease;
+}
+
+.icon-action:hover {
+    transform: scale(1.15);
+    filter: brightness(0.85);
+}

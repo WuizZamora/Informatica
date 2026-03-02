@@ -3,30 +3,27 @@
 echo "<script>const userRole = " . json_encode($rol) . ";</script>";
 
 if ($rol == 1 || $rol == 3) { ?>
-
-    <div class="container">
-        <div class="row justify-content-center m-3">
-            <div class="col-md-6 text-center">
-                <button type="button" class="btn btn-info" onclick="window.location.href='index.php?page=serviciosInformePasados'">VIDEOS 2022-2023</button>
-            </div>
-        </div>
-    </div>
-
-    <div class="container text-center">
-        <h2>Consulta de Servicios por Fecha</h2>
+    <br>
+    <div class="text-center">
         <form id="fechaForm">
             <div class="row">
-                <div class="col-md-6">
-                    <div class="mb-3">
+                <div class="col-md-3">
+                    <h4>Consulta de Servicios por Fecha</h4>
+                </div>
+                <div class="col-md-2">
+                    <div class="mb-2">
                         <label for="fechaInicio" class="form-label">Fecha de Inicio:</label>
                         <input type="date" id="fechaInicio" class="form-control text-center" required>
                     </div>
                 </div>
-                <div class="col-md-6">
-                    <div class="mb-3">
+                <div class="col-md-2">
+                    <div class="mb-2">
                         <label for="fechaFin" class="form-label">Fecha de Fin:</label>
                         <input type="date" id="fechaFin" class="form-control text-center" required>
                     </div>
+                </div>
+                <div class="col-md-4 text-end">
+                    <button type="button" class="btn btn-info" onclick="window.location.href='index.php?page=serviciosInformePasados'">VIDEOS 2022-2023</button>
                 </div>
             </div>
         </form>
@@ -57,7 +54,10 @@ if ($rol == 1 || $rol == 3) { ?>
         <h2>No tienes permiso para acceder a esta sección.</h2>
     </div>
 <?php } ?>
+
 <script>
+    let gridPrincipal = null;
+    let gridVideos = null;
     const fechaInicioInput = document.getElementById('fechaInicio');
     const fechaFinInput = document.getElementById('fechaFin');
 
@@ -164,7 +164,12 @@ if ($rol == 1 || $rol == 3) { ?>
         const totalSolicitudesPorPeriodo = servicios[0]?.TotalSolicitudesPorPeriodo || 0;
 
         let html = `
-            <h3>Servicios solicitados</h3><hr>
+            <div class="grid-stack" id="grid-principal">
+
+            <div class="grid-stack-item" gs-w="3" gs-h="5">
+                <div class="grid-stack-item-content">
+
+            <h5>Servicios solicitados</h5><hr>
             <table class="table table-striped-columns table-hover">
                 <thead class="table-secondary">
                     <tr><th>Tipo de Servicio</th><th>Número de solicitudes</th></tr>
@@ -180,10 +185,10 @@ if ($rol == 1 || $rol == 3) { ?>
 
         html += `
         <div class="row justify-content-center">
-            <div class="col-md-3">
-                <div class="alert alert-success">Total de Solicitudes por Período: ${totalSolicitudesPorPeriodo}</div>        
+            <div class="col-md-6">
+                <div class="alert alert-success small">Total de Solicitudes por Período: ${totalSolicitudesPorPeriodo}</div>        
             </div>
-        </div>`;
+        </div></div></div>`;
 
         // Sección de Activos
         const totalActivosFuncionales = reporteActivos.filter(item => item.Estado === 'FUNCIONAL').length;
@@ -191,7 +196,9 @@ if ($rol == 1 || $rol == 3) { ?>
         const totalActivos = reporteActivos.length;
 
         html += `
-            <h3>Reporte de Activos</h3><hr>
+         <div class="grid-stack-item" gs-w="4" gs-h="5">
+                <div class="grid-stack-item-content">
+            <h5>Reporte de Activos</h5><hr>
             <table class="table table-striped-columns table-hover">
                 <thead class="table-secondary">
                     <tr>
@@ -213,18 +220,20 @@ if ($rol == 1 || $rol == 3) { ?>
         html += '</tbody></table>';
 
         html += `
-            <div class="row justify-content-center">
+            <div class="row justify-content-center small">
                 <div class="alert alert-success col-md-4">Activos revisados: ${totalActivos}</div>
                 <div class="alert alert-success col-md-4">Activos dictaminados como  No Funcionales: ${totalActivosNoFuncionales}</div>
                 <div class="alert alert-success col-md-4">Activos Funcionales: ${totalActivosFuncionales}</div>
-            </div>`;
+            </div></div></div>`;
 
         const incidenciaDetalles = detallesIncidencias.length;
         const totalSolicitudes = detallesIncidencias.length > 0 ? detallesIncidencias[0].TotalSolicitudes || 0 : 0;
         const totalGeneralIncidencias = detallesIncidencias.length > 0 ? detallesIncidencias[0].TotalGeneral || 0 : 0;
 
         html += `
-        <h3>Reporte de Incidencias</h3><hr>
+        <div class="grid-stack-item" gs-w="3" gs-h="5">
+        <div class="grid-stack-item-content">
+        <h5>Reporte de Incidencias</h5><hr>
         <table class="table table-striped-columns table-hover">
             <thead class="table-secondary">
                 <tr>
@@ -242,19 +251,22 @@ if ($rol == 1 || $rol == 3) { ?>
         });
         html += '</tbody></table>';
         html += `  
-        <div class="row justify-content-center">
-            <div class="alert alert-success col-md-3">Total de Solicitudes de Incidencias: ${totalSolicitudes}</div>
-            <div class="alert alert-success col-md-3">Total de Servicios solicitados: ${totalGeneralIncidencias}</div>
-        </div>`;
+        <div class="row justify-content-center small">
+            <div class="alert alert-success col-md-6">Total de Solicitudes de Incidencias: ${totalSolicitudes}</div>
+            <div class="alert alert-success col-md-6">Total de Servicios solicitados: ${totalGeneralIncidencias}</div>
+        </div></div></div></div>`;
 
         // Sección de Videos - Agrupación por Categoría
-        html += '<h3>Reporte de Videos</h3><hr>';
+        
+        html += `<h3>Reporte de Videos</h3><hr> `;
         const categorias = agruparPorCategoria(videos);
-
+        html += `<div class="grid-stack" id="grid-videos">`;
         Object.entries(categorias).forEach(([categoria, datos]) => {
             html += `
-        <h4>${categoria}</h4>
-        <div class="row justify-content-center">
+        <div class="grid-stack-item" gs-w="6" gs-h="4">
+        <div class="grid-stack-item-content">
+            <h5>${categoria}</h5>
+        <div class="row justify-content-center small">
             <div class="alert alert-info col-md-3">Total de Videos por ${categoria}: ${datos.TotalVideosPorCategoria}</div>
             <div class="alert alert-info col-md-3">Total de Solicitudes por ${categoria}: ${datos.TotalSolicitudesPorCategoria}</div>
         </div>
@@ -276,17 +288,36 @@ if ($rol == 1 || $rol == 3) { ?>
                         <td>${equipo.CantidadVideosPorEquipo}</td>
                     </tr>`;
             });
-            html += '</tbody></table>';
+            html += '</tbody></table></div></div>';
         });
 
         const totalVideosPeriodo = videos[0]?.TotalVideosPeriodo || 0;
         html += `
-        <div class="row justify-content-center">
+         </div>
+        <div class="row justify-content-center small">
             <div class="alert alert-success col-md-3">Total de Videos en el período: ${totalVideosPeriodo}</div>
         </div>`;
 
         // Renderizar el resultado final
         resultadoDiv.innerHTML = html;
+        if (gridPrincipal) gridPrincipal.destroy(false);
+        if (gridVideos) gridVideos.destroy(false);
+
+        gridPrincipal = GridStack.init({
+        column: 12,
+        float: true,
+        cellHeight: 80,
+        margin: 10,
+        draggable: { handle: 'h3' }
+        }, '#grid-principal');
+
+        gridVideos = GridStack.init({
+        column: 12,
+        float: true,
+        cellHeight: 80,
+        margin: 10,
+        draggable: { handle: 'h4' }
+        }, '#grid-videos');
     }
 
     //modal
@@ -381,3 +412,4 @@ if ($rol == 1 || $rol == 3) { ?>
         document.getElementById('modalBodyEquipo').innerHTML = html; // Asegúrate de usar el ID correcto
     }
 </script>
+

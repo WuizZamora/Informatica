@@ -1,4 +1,4 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+<nav class="navbar navbar-expand-lg navbar-dark ">
   <div class="container-fluid">
     <a href="/INFORMATICA/index.php" class="mb-2 text-white text-decoration-none d-flex align-items-center me-3">
       <img src="./public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="80" class="me-2"> INVEA
@@ -20,6 +20,12 @@
           </li>
           <li class="nav-item mx-5">
             <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'NoAdeudos') ? 'active' : ''; ?>" href="?page=NoAdeudos">No adeudos</a>
+          </li>
+          <li class="nav-item mx-5">
+            <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'reporteQuincenal') ? 'active' : ''; ?>" href="?page=reporteQuincenal">Videos</a>
+          </li>
+          <li class="nav-item mx-5">
+            <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'scanvideos') ? 'active' : ''; ?>" href="?page=scanvideos">ScanV</a>
           </li>
         </ul>
         <ul class="navbar-nav">
