@@ -45,7 +45,7 @@ if (isset($_GET['solicitante']) && isset($_GET['user']) && isset($_GET['pass']))
         </style>
     </head>
     <body>
-        <img src="http://localhost/INFORMATICA/public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="200" height="150">
+        <img src="http://localhost/INFORMATICA/public/images/encabezado_2026.png" alt="LOGO CDMX" width="200" height="150">
         <p style="float: right; color: #757575";><strong>INSTITUTO DE VERIFICACIÓN ADMINISTRATIVA</strong><br> DIRECCIÓN DE ADMINISTRACIÓN Y FINANZAS</p>
         <p style="padding-left:23rem;">Ciudad de México, a ' . $fecha_hoy . '</p>
         <p class="texto">

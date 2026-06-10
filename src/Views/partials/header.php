@@ -21,12 +21,6 @@
           <li class="nav-item mx-5">
             <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'NoAdeudos') ? 'active' : ''; ?>" href="?page=NoAdeudos">No adeudos</a>
           </li>
-          <li class="nav-item mx-5">
-            <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'reporteQuincenal') ? 'active' : ''; ?>" href="?page=reporteQuincenal">Videos</a>
-          </li>
-          <li class="nav-item mx-5">
-            <a class="nav-link <?php echo (isset($_GET['page']) && $_GET['page'] == 'scanvideos') ? 'active' : ''; ?>" href="?page=scanvideos">ScanV</a>
-          </li>
         </ul>
         <ul class="navbar-nav">
           <li class="nav-item dropdown">

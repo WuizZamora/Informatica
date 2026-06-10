@@ -32,7 +32,7 @@ if (isset($_GET['IDConstancia'])) {
         </style>
     </head>
     <body>
-        <img src="http://localhost/INFORMATICA/public/images/encabezado_2025_corto.png" alt="LOGO CDMX" width="200" height="150">
+        <img src="http://localhost/INFORMATICA/public/images/encabezado_2026_corto.png" alt="LOGO CDMX" width="250" height="170">
         <p style="float: right; color: #757575";><strong>INSTITUTO DE VERIFICACIÓN <br>ADMINISTRATIVA</strong><br> DIRECCIÓN DE ADMINISTRACIÓN Y FINANZAS</p>
         <p style="padding-left:23rem;">Ciudad de México, a ' . $data['FechaEmision'] . '<br> <strong>INVEACDMX/DG/DAF/JUDTI/'.$data['OficioTI'].'/2026</strong></p>
         <p class="texto">
